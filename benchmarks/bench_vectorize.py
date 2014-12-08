@@ -1,3 +1,6 @@
+"""
+Benchmarks for ``@vectorize`` ufuncs.
+"""
 
 import numpy as np
 
