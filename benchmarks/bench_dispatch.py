@@ -33,6 +33,9 @@ def binary_pyobj(x, y):
 
 
 def setup():
+    """
+    Precompile jitted functions.
+    """
     for tp in samples.values():
         binary(tp, tp)
     binary_pyobj(object(), object())
