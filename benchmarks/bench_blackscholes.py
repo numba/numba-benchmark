@@ -11,6 +11,8 @@ from numba import jit
 
 # Taken from numba.tests.test_blackscholes
 
+# XXX this data should be shared with bench_cuda.py
+# (see https://github.com/spacetelescope/asv/issues/129)
 N = 1000
 
 RISKFREE = 0.02
@@ -74,5 +76,5 @@ def setup():
 class BlackScholes:
 
     def time_blackscholes(self):
-        blackscholes(*args)
-
+        for i in range(10):
+            blackscholes(*args)
