@@ -6,7 +6,17 @@ import math
 
 import numpy as np
 
-from numba import cuda, double
+from numba import cuda, float32, float64
+
+
+def addmul(x, y, out):
+    i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
+    if i >= x.shape[0]:
+        return
+    out[i] = x[i] + y[i] * math.fabs(x[i])
+
+addmul_f32 = cuda.jit(argtypes=(float32[:], float32[:], float32[:]))(addmul)
+addmul_f64 = cuda.jit(argtypes=(float64[:], float64[:], float64[:]))(addmul)
 
 
 # Taken from numba.cuda.tests.cudapy.test_blackscholes
@@ -34,7 +44,7 @@ args = (callResultGold, putResultGold, stockPrice, optionStrike,
         optionYears, RISKFREE, VOLATILITY)
 
 
-@cuda.jit(argtypes=(double,), restype=double, device=True, inline=True)
+@cuda.jit(argtypes=(float64,), restype=float64, device=True, inline=True)
 def cnd_cuda(d):
     K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
     ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
@@ -44,8 +54,8 @@ def cnd_cuda(d):
     return ret_val
 
 
-@cuda.jit(argtypes=(double[:], double[:], double[:], double[:], double[:],
-                    double, double))
+@cuda.jit(argtypes=(float64[:], float64[:], float64[:], float64[:], float64[:],
+                    float64, float64))
 def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
     i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
     if i >= S.shape[0]:
@@ -59,6 +69,34 @@ def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
     expRT = math.exp((-1. * R) * T[i])
     callResult[i] = (S[i] * cndd1 - X[i] * expRT * cndd2)
     putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
+
+
+class Synthetic:
+    n = 4 * 256 * 1024
+
+    def setup(self):
+        self.stream = cuda.stream()
+        self.f32 = np.zeros(self.n, dtype=np.float32)
+        self.d_f32 = cuda.to_device(self.f32, self.stream)
+        self.f64 = np.zeros(self.n, dtype=np.float64)
+        self.d_f64 = cuda.to_device(self.f64, self.stream)
+        self.stream.synchronize()
+
+    def time_addmul_f32(self):
+        blockdim = 512, 1
+        griddim = int(math.ceil(float(self.n) / blockdim[0])), 1
+        for i in range(10):
+            addmul_f32[griddim, blockdim, self.stream](
+                self.d_f32, self.d_f32, self.d_f32)
+        self.stream.synchronize()
+
+    def time_addmul_f64(self):
+        blockdim = 512, 1
+        griddim = int(math.ceil(float(self.n) / blockdim[0])), 1
+        for i in range(10):
+            addmul_f64[griddim, blockdim, self.stream](
+                self.d_f64, self.d_f64, self.d_f64)
+        self.stream.synchronize()
 
 
 class BlackScholes:
