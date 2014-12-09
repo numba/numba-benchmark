@@ -13,7 +13,7 @@ from numba import jit
 
 # XXX this data should be shared with bench_cuda.py
 # (see https://github.com/spacetelescope/asv/issues/129)
-N = 1000
+N = 16384
 
 RISKFREE = 0.02
 VOLATILITY = 0.30

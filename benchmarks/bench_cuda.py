@@ -11,7 +11,7 @@ from numba import cuda, double
 
 # Taken from numba.cuda.tests.cudapy.test_blackscholes
 
-N = 1000
+N = 16384
 
 RISKFREE = 0.02
 VOLATILITY = 0.30
@@ -61,18 +61,6 @@ def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
     putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
 
 
-def run_black_scholes(iterations):
-    blockdim = 512, 1
-    griddim = int(math.ceil(float(N) / blockdim[0])), 1
-    stream = cuda.stream()
-    for i in range(iterations):
-        black_scholes_cuda[griddim, blockdim, stream](
-            d_callResult, d_putResult, d_stockPrice, d_optionStrike,
-            d_optionYears, RISKFREE, VOLATILITY)
-    d_callResult.copy_to_host(callResultGold, stream)
-    d_putResult.copy_to_host(putResultGold, stream)
-
-
 class BlackScholes:
 
     def setup(self):
@@ -92,4 +80,35 @@ class BlackScholes:
                 self.d_callResult, self.d_putResult,
                 self.d_stockPrice, self.d_optionStrike, self.d_optionYears,
                 RISKFREE, VOLATILITY)
+        self.stream.synchronize()
+
+
+class DataTransfer:
+
+    def setup(self):
+        self.stream = cuda.stream()
+        self.small_data = np.zeros(512, dtype=np.float64)
+        self.large_data = np.zeros(512 * 1024, dtype=np.float64)
+        self.d_small_data = cuda.to_device(self.small_data, self.stream)
+        self.d_large_data = cuda.to_device(self.large_data, self.stream)
+        self.stream.synchronize()
+
+    def time_transfer_to_gpu_small(self):
+        for i in range(10):
+            cuda.to_device(self.small_data, self.stream)
+        self.stream.synchronize()
+
+    def time_transfer_to_gpu_large(self):
+        for i in range(10):
+            cuda.to_device(self.large_data, self.stream)
+        self.stream.synchronize()
+
+    def time_transfer_from_gpu_small(self):
+        for i in range(10):
+            self.d_small_data.copy_to_host(self.small_data, self.stream)
+        self.stream.synchronize()
+
+    def time_transfer_from_gpu_large(self):
+        for i in range(10):
+            self.d_large_data.copy_to_host(self.large_data, self.stream)
         self.stream.synchronize()
