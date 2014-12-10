@@ -1,5 +1,5 @@
 """
-Benchmark an implementation of the Black–Scholes model.
+Benchmarks for the CUDA backend.
 """
 
 import math
