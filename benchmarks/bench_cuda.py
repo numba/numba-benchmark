@@ -22,6 +22,11 @@ addmul_f32 = cuda.jit(argtypes=(float32[:], float32[:], float32[:]))(addmul)
 addmul_f64 = cuda.jit(argtypes=(float64[:], float64[:], float64[:]))(addmul)
 
 
+@cuda.jit(argtypes=())
+def no_op():
+    pass
+
+
 # N-body simulation.  We actually only run the step which computes the
 # accelerations from the positions and weights of the bodies (updating
 # speeds and positions is relatively uninteresting).
@@ -192,6 +197,9 @@ def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
 
 
 class Synthetic:
+    """
+    Micro-Benchmarks.
+    """
     n = 4 * 256 * 1024
 
     def setup(self):
@@ -216,6 +224,10 @@ class Synthetic:
         for i in range(10):
             addmul_f64[griddim, blockdim, self.stream](
                 self.d_f64, self.d_f64, self.d_f64)
+        self.stream.synchronize()
+
+    def time_run_empty_kernel(self):
+        no_op[1, 1, self.stream]()
         self.stream.synchronize()
 
 
