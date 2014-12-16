@@ -72,7 +72,7 @@ def tile_calculation(xi, yi, axi, ayi, positions, weights):
 
 tile_size = 128
 
-@cuda.jit(argtypes=(float32[:,:], float32[:], float32[:,:]))
+# Don't JIT this function at the top-level as it breaks until Numba 0.16.
 def calculate_forces(positions, weights, accelerations):
     """
     Calculate accelerations produced on all bodies by mutual gravitational
@@ -102,6 +102,9 @@ def calculate_forces(positions, weights, accelerations):
 class NBodyCUDARunner:
 
     def __init__(self, positions, weights):
+        self.calculate_forces = cuda.jit(
+            argtypes=(float32[:,:], float32[:], float32[:,:])
+            )(calculate_forces)
         self.accelerations = np.zeros_like(positions)
         self.n_bodies = len(weights)
         self.stream = cuda.stream()
@@ -113,7 +116,7 @@ class NBodyCUDARunner:
     def run(self):
         blockdim = tile_size
         griddim = int(math.ceil(self.n_bodies / blockdim))
-        calculate_forces[griddim, blockdim, self.stream](
+        self.calculate_forces[griddim, blockdim, self.stream](
             self.d_pos, self.d_wei, self.d_acc)
         self.stream.synchronize()
 
