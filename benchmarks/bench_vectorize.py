@@ -23,7 +23,7 @@ def rel_diff(x, y):
     return 2 * (x - y) / (x + y)
 
 
-class TimeSuite:
+class Vectorize:
 
     n = 10000
     dtypes = ('float32', 'float64', 'complex64', 'complex128')
