@@ -45,7 +45,9 @@ class IndirectIndexing:
         grouped_sum(self.values, self.unsigned_labels, self.targets)
 
     def time_signed_indirect_indexing(self):
+        self.targets[:] = 0
         grouped_sum(self.values, self.labels, self.targets)
 
     def time_unsigned_indirect_indexing(self):
+        self.targets[:] = 0
         grouped_sum(self.values, self.unsigned_labels, self.targets)
