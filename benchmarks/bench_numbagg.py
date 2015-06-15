@@ -3,8 +3,6 @@ Benchmark some functions from the `numbagg` project:
 https://github.com/shoyer/numbagg
 """
 
-import sys
-
 import numpy as np
 
 from numba import jit, guvectorize
