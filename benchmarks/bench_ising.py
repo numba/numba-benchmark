@@ -3,8 +3,6 @@ Ising model benchmark, adapted from
 http://matthewrocklin.com/blog/work/2015/02/28/Ising/
 """
 
-import numpy as np
-
 from math import exp, log, e, sqrt
 
 import numpy as np
@@ -16,7 +14,9 @@ kT = 2 / log(1 + sqrt(2), e)
 
 N = 200
 
-x_start = np.random.randint(2, size=(N, N)).astype('i8')
+random = np.random.RandomState(0)
+
+x_start = random.randint(2, size=(N, N)).astype('i8')
 x_start[x_start == 0] = -1
 
 N_iterations = 10
