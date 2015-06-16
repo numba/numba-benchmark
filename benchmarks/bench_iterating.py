@@ -65,7 +65,7 @@ def range2d(arr):
     return total
 
 
-class NumbaIterators:
+class NumpyIterators:
 
     # These are the dimensions-agnostic iteration methods
 
