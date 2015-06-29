@@ -12,6 +12,7 @@ rec_dtype = np.dtype([('a', np.float64),
                       ('c', np.complex64),
                       ])
 
+
 samples = {
     'bool': True,
     'int': 100000,
@@ -37,7 +38,8 @@ def binary_pyobj(x, y):
 
 def setup():
     """
-    Precompile jitted functions.
+    Precompile jitted functions.  This will register many specializations
+    to choose from.
     """
     for tp in samples.values():
         binary(tp, tp)
@@ -45,6 +47,13 @@ def setup():
 
 
 class NoPythonDispatch:
+    """
+    Time dispatching to a jitted function's specializations based on argument
+    types.
+    This stresses two things:
+    - the typing of arguments (from argument value to typecode)
+    - the selection of the best specialization amongst all the known ones
+    """
 
     # We repeat 1000 times so as to make the overhead of benchmark launching
     # negligible.
@@ -53,8 +62,9 @@ class NoPythonDispatch:
     def generate_benchmarks(cls, names):
         for name in names:
             def timefunc(self, arg=samples[name]):
+                func = binary
                 for i in range(1000):
-                    binary(arg, arg)
+                    func(arg, arg)
             timefunc.__name__ = "time_dispatch_" + name
             setattr(cls, timefunc.__name__, timefunc)
 
