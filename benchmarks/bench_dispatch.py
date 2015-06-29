@@ -17,10 +17,13 @@ samples = {
     'int': 100000,
     'float': 0.5,
     'complex': 0.5 + 1.0j,
-    'arr1': np.zeros(10, dtype=np.int64),
-    'arr2': np.zeros(20, dtype=np.float64).reshape(2, 2, 5),
-    'arr3': np.zeros(10, dtype=rec_dtype),
-    'recarr': np.recarray(10, dtype=rec_dtype),
+    'array_1d': np.zeros(10, dtype=np.int64),
+    'array_3d': np.zeros(20, dtype=np.float64).reshape(2, 2, 5),
+    'array_records': np.zeros(10, dtype=rec_dtype),
+    'recarray': np.recarray(10, dtype=rec_dtype),
+    'tuple': (0.5, 1.0j, ()),
+    'record': np.empty(1, dtype=rec_dtype)[0],
+    'bytearray': bytearray(3),
     }
 
 @jit(nopython=True)
@@ -46,30 +49,17 @@ class NoPythonDispatch:
     # We repeat 1000 times so as to make the overhead of benchmark launching
     # negligible.
 
-    def time_dispatch_scalar(self):
-        f = samples['float']
-        for i in range(1000):
-            binary(f, f)
+    @classmethod
+    def generate_benchmarks(cls, names):
+        for name in names:
+            def timefunc(self, arg=samples[name]):
+                for i in range(1000):
+                    binary(arg, arg)
+            timefunc.__name__ = "time_dispatch_" + name
+            setattr(cls, timefunc.__name__, timefunc)
 
-    def time_dispatch_array_1d(self):
-        arr = samples['arr1']
-        for i in range(1000):
-            binary(arr, arr)
 
-    def time_dispatch_array_3d(self):
-        arr = samples['arr2']
-        for i in range(1000):
-            binary(arr, arr)
-
-    def time_dispatch_array_records(self):
-        arr = samples['arr3']
-        for i in range(1000):
-            binary(arr, arr)
-
-    def time_dispatch_recarray(self):
-        arr = samples['recarr']
-        for i in range(1000):
-            binary(arr, arr)
+NoPythonDispatch.generate_benchmarks(samples.keys())
 
 
 class PyObjectDispatch:
