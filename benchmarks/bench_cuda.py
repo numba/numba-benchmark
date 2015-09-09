@@ -211,6 +211,9 @@ class Synthetic:
         self.d_f32 = cuda.to_device(self.f32, self.stream)
         self.f64 = np.zeros(self.n, dtype=np.float64)
         self.d_f64 = cuda.to_device(self.f64, self.stream)
+        self.sum_reduce = cuda.reduce(lambda x, y: x+y)
+        self.res_f32 = cuda.to_device(np.zeros(1, dtype=np.float32))
+        self.res_f64 = cuda.to_device(np.zeros(1, dtype=np.float64))
         self.stream.synchronize()
 
     def time_addmul_f32(self):
@@ -233,6 +236,13 @@ class Synthetic:
         no_op[1, 1, self.stream]()
         self.stream.synchronize()
 
+    def time_reduce_f32(self):
+        self.sum_reduce(self.d_f32, res=self.res_f32, stream=self.stream)
+        self.stream.synchronize()
+
+    def time_reduce_f64(self):
+        self.sum_reduce(self.d_f64, res=self.res_f64, stream=self.stream)
+        self.stream.synchronize()
 
 class BlackScholes:
 
