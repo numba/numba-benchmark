@@ -26,7 +26,8 @@ def force_obj(x):
     object()
 
 def lift(x):
-    # Outer needs object mode because of np.empty()
+    # Outer needs object mode because of object()
+    object()
     a = np.empty((2, 3))
     for i in range(a.shape[0]):
         for j in range(a.shape[1]):
@@ -64,3 +65,17 @@ class LoopLiftedCompilation:
         f = jit(lift)
         f(1.0)
 
+
+class CachedCompilation:
+
+    def setup_cache(self):
+        # Ensure the functions are cached into the ASV environment
+        # before running the actual benchmark methods.
+        jit(mandel_sig, cache=True, nopython=True)(mandel)
+        jit("int32(int32)", cache=True, nopython=True)(no_op)
+
+    def time_jit_noop(self):
+        jit("int32(int32)", cache=True, nopython=True)(no_op)
+
+    def time_jit_mandel(self):
+        jit(mandel_sig, cache=True, nopython=True)(mandel)
