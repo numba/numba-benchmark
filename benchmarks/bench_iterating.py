@@ -12,10 +12,11 @@ arr1 = np.zeros(N * N, dtype=np.float64)
 arr2c = arr1.reshape((N, N))
 arr2f = arr2c.T
 arr2a = np.concatenate((arr2c, arr2c))[::2]
+# 2d with a very small inner dimension
+arr2c2 = arr1.reshape((N * N // 5, 5))
+arr2f2 = arr2c2.copy(order='F')
+arr2a2 = np.concatenate((arr2c2, arr2c2))[::2]
 
-
-# XXX: also add benchmarks iterating over two arrays in lock step?
-# (e.g. to measure zip() overhead)
 
 
 @jit(nopython=True)
@@ -64,6 +65,34 @@ def range2d(arr):
             total += arr[i, j]
     return total
 
+@jit(nopython=True)
+def nditer1(a):
+    total = 0.0
+    for u in np.nditer(a):
+        total += u.item()
+    return total
+
+@jit(nopython=True)
+def nditer2(a, b):
+    total = 0.0
+    for u, v in np.nditer((a, b)):
+        total += u.item() * v.item()
+    return total
+
+@jit(nopython=True)
+def zip_iter(a, b):
+    total = 0.0
+    for u, v in zip(a, b):
+        total += u * v
+    return total
+
+@jit(nopython=True)
+def zip_flat(a, b):
+    total = 0.0
+    for u, v in zip(a.flat, b.flat):
+        total += u * v
+    return total
+
 
 class NumpyIterators:
 
@@ -99,6 +128,21 @@ class NumpyIterators:
     def time_ndindex_2d(self):
         ndindex(arr2c)
 
+    def time_nditer_iter_1d(self):
+        nditer1(arr1)
+
+    def time_nditer_iter_2d_C(self):
+        nditer1(arr2c)
+
+    def time_nditer_iter_2d_C_small_inner_dim(self):
+        nditer1(arr2c2)
+
+    def time_nditer_iter_2d_fortran(self):
+        nditer1(arr2f)
+
+    def time_nditer_iter_2d_non_contiguous(self):
+        nditer1(arr2a)
+
     # When the number of dimensions is known / hardcoded
 
     def time_array_iter_1d(self):
@@ -109,3 +153,55 @@ class NumpyIterators:
 
     def time_range_index_2d(self):
         range2d(arr2c)
+
+
+class MultiArrayIterators:
+
+    # These are the dimensions-agnostic iteration methods
+
+    def time_nditer_two_1d(self):
+        nditer2(arr1, arr1)
+
+    def time_nditer_two_2d_C_C(self):
+        nditer2(arr2c, arr2c)
+
+    def time_nditer_two_2d_F_F(self):
+        nditer2(arr2f, arr2f)
+
+    def time_nditer_two_2d_F_C(self):
+        nditer2(arr2f, arr2c)
+
+    def time_nditer_two_2d_C_A(self):
+        nditer2(arr2c, arr2a)
+
+    def time_nditer_two_2d_A_A(self):
+        nditer2(arr2a, arr2a)
+
+    def time_nditer_two_2d_C_C_small_inner_dim(self):
+        nditer2(arr2c2, arr2c2)
+
+    def time_nditer_two_2d_F_F_small_inner_dim(self):
+        nditer2(arr2f2, arr2f2)
+
+    def time_nditer_two_2d_F_C_small_inner_dim(self):
+        nditer2(arr2f2, arr2c2)
+
+    def time_nditer_two_2d_C_A_small_inner_dim(self):
+        nditer2(arr2c2, arr2a2)
+
+    def time_zip_flat_two_1d(self):
+        zip_flat(arr1, arr1)
+
+    def time_zip_flat_two_2d_C_C(self):
+        zip_flat(arr2c, arr2c)
+
+    def time_zip_flat_two_2d_C_C_small_inner_dim(self):
+        zip_flat(arr2c2, arr2c2)
+
+    def time_zip_flat_two_2d_F_F(self):
+        zip_flat(arr2f, arr2f)
+
+    # When the number of dimensions is known / hardcoded
+
+    def time_zip_iter_two_1d(self):
+        zip_iter(arr1, arr1)
