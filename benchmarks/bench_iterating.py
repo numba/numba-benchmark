@@ -6,9 +6,14 @@ import numpy as np
 
 from numba import jit
 
-N = 500
+# This choice of dtype is intentional.  It seems to allow better
+# vectorization with LLVM 3.7 than either float32 or float64 (at least here
+# on SandyBridge), and therefore helps reveal iterator inefficiences.
+dtype = np.int32
+zero = dtype(0)
+N = 1000
 
-arr1 = np.zeros(N * N, dtype=np.float64)
+arr1 = np.zeros(N * N, dtype=dtype)
 arr2c = arr1.reshape((N, N))
 arr2f = arr2c.T
 arr2a = np.concatenate((arr2c, arr2c))[::2]
@@ -21,21 +26,21 @@ arr2a2 = np.concatenate((arr2c2, arr2c2))[::2]
 
 @jit(nopython=True)
 def array_iter_1d(arr):
-    total = 0.0
+    total = zero
     for val in arr:
         total += val
     return total
 
 @jit(nopython=True)
 def flat_iter(arr):
-    total = 0.0
+    total = zero
     for val in arr.flat:
         total += val
     return total
 
 @jit(nopython=True)
 def flat_index(arr):
-    total = 0.0
+    total = zero
     flat = arr.flat
     for i in range(arr.size):
         total += flat[i]
@@ -43,14 +48,14 @@ def flat_index(arr):
 
 @jit(nopython=True)
 def ndindex(arr):
-    total = 0.0
+    total = zero
     for ind in np.ndindex(arr.shape):
         total += arr[ind]
     return total
 
 @jit(nopython=True)
 def range1d(arr):
-    total = 0
+    total = zero
     n, = arr.shape
     for i in range(n):
         total += arr[i]
@@ -58,7 +63,7 @@ def range1d(arr):
 
 @jit(nopython=True)
 def range2d(arr):
-    total = 0
+    total = zero
     m, n = arr.shape
     for i in range(m):
         for j in range(n):
@@ -67,34 +72,41 @@ def range2d(arr):
 
 @jit(nopython=True)
 def nditer1(a):
-    total = 0.0
+    total = zero
     for u in np.nditer(a):
         total += u.item()
     return total
 
 @jit(nopython=True)
 def nditer2(a, b):
-    total = 0.0
+    total = zero
     for u, v in np.nditer((a, b)):
         total += u.item() * v.item()
     return total
 
 @jit(nopython=True)
+def nditer3(a, b, out):
+    total = zero
+    for u, v, res in np.nditer((a, b, out)):
+        res.itemset(u.item() * v.item())
+    return total
+
+@jit(nopython=True)
 def zip_iter(a, b):
-    total = 0.0
+    total = zero
     for u, v in zip(a, b):
         total += u * v
     return total
 
 @jit(nopython=True)
 def zip_flat(a, b):
-    total = 0.0
+    total = zero
     for u, v in zip(a.flat, b.flat):
         total += u * v
     return total
 
 
-class NumpyIterators:
+class MonoArrayIterators:
 
     # These are the dimensions-agnostic iteration methods
 
@@ -200,6 +212,18 @@ class MultiArrayIterators:
 
     def time_zip_flat_two_2d_F_F(self):
         zip_flat(arr2f, arr2f)
+
+    def time_zip_flat_two_2d_A_A(self):
+        zip_flat(arr2a, arr2a)
+
+    def time_nditer_three_2d_C_C_C(self):
+        nditer3(arr2c, arr2c, arr2c)
+
+    def time_nditer_three_2d_F_F_F(self):
+        nditer3(arr2f, arr2f, arr2f)
+
+    def time_nditer_three_2d_A_A_A(self):
+        nditer3(arr2a, arr2a, arr2a)
 
     # When the number of dimensions is known / hardcoded
 
