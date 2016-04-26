@@ -23,12 +23,12 @@ def sort(x):
     # to measure sort() performance, not the performance of Numba's copy().
     real_sort(x.copy())
 
+@jit(nopython=True)
+def median(x):
+    return np.median(x)
 
-class ArraySorting:
-    n = 100000
-    # Reduce memory size to minimize possible cache aliasing effects and
-    # other oddities.
-    dtype = np.float32
+
+class BaseArraySorting:
 
     def setup(self):
         s = 1.0
@@ -43,6 +43,16 @@ class ArraySorting:
         # Note the amount of duplicates depends on `e - s`, so those
         # values shouldn't be changed lightly.
         self.duplicates_array = np.floor(self.random_array)
+
+
+class ArraySorting(BaseArraySorting):
+    n = 100000
+    # Reduce memory size to minimize possible cache aliasing effects and
+    # other oddities.
+    dtype = np.float32
+
+    def setup(self):
+        BaseArraySorting.setup(self)
         # Warm up
         dummy = np.arange(10, dtype=self.dtype)
         sort(dummy)
@@ -71,3 +81,49 @@ class ArraySorting:
         """
         sort(self.duplicates_array)
 
+
+class ArrayMedian(BaseArraySorting):
+    n = 100000
+    # Reduce memory size to minimize possible cache aliasing effects and
+    # other oddities.
+    dtype = np.float32
+
+    def setup(self):
+        BaseArraySorting.setup(self)
+        # Warm up
+        dummy = np.arange(10, dtype=self.dtype)
+        median(dummy)
+
+    def time_median_sorted_array(self):
+        """
+        Median of a sorted array.
+        """
+        median(self.sorted_array)
+
+    def time_median_triangle_array(self):
+        """
+        Median of a "triangular" array: ascending then descending.
+        """
+        median(self.triangle_array)
+
+    def time_median_random_array_even(self):
+        """
+        Median of an even-sized random array.
+        """
+        arr = self.random_array
+        assert arr.size & 1 == 0
+        median(arr)
+
+    def time_median_random_array_odd(self):
+        """
+        Median of an odd-sized random array.
+        """
+        arr = self.random_array[:-1]
+        assert arr.size & 1 == 1
+        median(arr)
+
+    def time_median_duplicates_array(self):
+        """
+        Median of a random array with many duplicates.
+        """
+        median(self.duplicates_array)

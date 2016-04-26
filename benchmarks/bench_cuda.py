@@ -18,11 +18,10 @@ def addmul(x, y, out):
         return
     out[i] = x[i] + y[i] * math.fabs(x[i])
 
-addmul_f32 = cuda.jit(argtypes=(float32[:], float32[:], float32[:]))(addmul)
-addmul_f64 = cuda.jit(argtypes=(float64[:], float64[:], float64[:]))(addmul)
+addmul_f32 = cuda.jit()(addmul)
+addmul_f64 = cuda.jit()(addmul)
 
 
-@cuda.jit(argtypes=())
 def no_op():
     pass
 
@@ -37,10 +36,7 @@ eps_2 = np.float32(1e-6)
 zero = np.float32(0.0)
 one = np.float32(1.0)
 
-@cuda.jit(argtypes=(float32, float32,
-                    float32, float32, float32,
-                    float32, float32),
-          device=True, inline=True)
+@cuda.jit(device=True, inline=True)
 def body_body_interaction(xi, yi, xj, yj, wj, axi, ayi):
     """
     Compute the influence of body j on the acceleration of body i.
@@ -55,8 +51,7 @@ def body_body_interaction(xi, yi, xj, yj, wj, axi, ayi):
     ayi += ry * s
     return axi, ayi
 
-@cuda.jit(argtypes=(float32, float32, float32, float32,
-                    float32[:,:], float32[:]), device=True, inline=True)
+@cuda.jit(device=True, inline=True)
 def tile_calculation(xi, yi, axi, ayi, positions, weights):
     """
     Compute the contribution of this block's tile to the acceleration
@@ -172,7 +167,7 @@ args = (callResultGold, putResultGold, stockPrice, optionStrike,
         optionYears, RISKFREE, VOLATILITY)
 
 
-@cuda.jit(argtypes=(float64,), restype=float64, device=True, inline=True)
+@cuda.jit(device=True, inline=True)
 def cnd_cuda(d):
     K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
     ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
@@ -182,8 +177,7 @@ def cnd_cuda(d):
     return ret_val
 
 
-@cuda.jit(argtypes=(float64[:], float64[:], float64[:], float64[:], float64[:],
-                    float64, float64))
+@cuda.jit()
 def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
     i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
     if i >= S.shape[0]:
@@ -206,6 +200,7 @@ class Synthetic:
     n = 4 * 256 * 1024
 
     def setup(self):
+        self.no_op = cuda.jit(argtypes=())(no_op)
         self.stream = cuda.stream()
         self.f32 = np.zeros(self.n, dtype=np.float32)
         self.d_f32 = cuda.to_device(self.f32, self.stream)
@@ -233,7 +228,7 @@ class Synthetic:
         self.stream.synchronize()
 
     def time_run_empty_kernel(self):
-        no_op[1, 1, self.stream]()
+        self.no_op[1, 1, self.stream]()
         self.stream.synchronize()
 
     def time_reduce_f32(self):
