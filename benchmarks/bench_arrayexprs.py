@@ -19,6 +19,17 @@ def sq_diff(a, b):
 def rel_diff(a, b):
     return (a - b) / (a + b)
 
+@jit(nopython=True)
+def square(a, b):
+    # Note this is currently slower than `a ** 2 + b`, due to how LLVM
+    # seems to lower the power intrinsic.  It's still faster than the naive
+    # lowering as `exp(2 * log(a))`, though
+    return a ** 2
+
+@jit(nopython=True)
+def cube(a, b):
+    return a ** 3
+
 
 def setup():
     ArrayExpressions.setupClass()
@@ -47,7 +58,7 @@ class ArrayExpressions:
     @classmethod
     def generate_benchmarks(cls):
         for dtype in cls.dtypes:
-            for func in (sum, sq_diff, rel_diff):
+            for func in (sum, sq_diff, rel_diff, square, cube):
                 bench_func = cls._binary_func(func, dtype)
                 setattr(cls, 'time_%s_%s' % (func.__name__, dtype), bench_func)
 
