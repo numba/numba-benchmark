@@ -24,6 +24,10 @@ def sort(x):
     real_sort(x.copy())
 
 @jit(nopython=True)
+def argsort(x):
+    return x.argsort()
+
+@jit(nopython=True)
 def median(x):
     return np.median(x)
 
@@ -56,6 +60,7 @@ class ArraySorting(BaseArraySorting):
         # Warm up
         dummy = np.arange(10, dtype=self.dtype)
         sort(dummy)
+        argsort(dummy)
 
     def time_sort_sorted_array(self):
         """
@@ -80,6 +85,12 @@ class ArraySorting(BaseArraySorting):
         Sort a random array with many duplicates.
         """
         sort(self.duplicates_array)
+
+    def time_argsort_random_array(self):
+        """
+        Arg-sort a random array.
+        """
+        argsort(self.random_array)
 
 
 class ArrayMedian(BaseArraySorting):
