@@ -35,6 +35,10 @@ def binary(x, y):
 def binary_pyobj(x, y):
     pass
 
+@jit(nopython=True)
+def unary_default(x=None):
+    pass
+
 
 def setup():
     """
@@ -44,6 +48,7 @@ def setup():
     for tp in samples.values():
         binary(tp, tp)
     binary_pyobj(object(), object())
+    unary_default()
 
 
 class NoPythonDispatch:
@@ -67,6 +72,9 @@ class NoPythonDispatch:
                     func(arg, arg)
             timefunc.__name__ = "time_dispatch_" + name
             setattr(cls, timefunc.__name__, timefunc)
+
+    def time_dispatch_defaults(self):
+        unary_default()
 
 
 NoPythonDispatch.generate_benchmarks(samples.keys())
