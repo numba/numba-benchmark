@@ -50,17 +50,19 @@ class ArrayExpressions:
             cls.samples[dtype] = arrays
 
     @classmethod
-    def _binary_func(cls, func, dtype):
+    def _binary_func(cls, func, dtype, fname):
         def f(self):
             func(*self.samples[dtype])
+        f.__name__ = fname
         return f
 
     @classmethod
     def generate_benchmarks(cls):
         for dtype in cls.dtypes:
             for func in (sum, sq_diff, rel_diff, square, cube):
-                bench_func = cls._binary_func(func, dtype)
-                setattr(cls, 'time_%s_%s' % (func.__name__, dtype), bench_func)
+                fname = 'time_%s_%s' % (func.__name__, dtype)
+                bench_func = cls._binary_func(func, dtype, fname)
+                setattr(cls, fname, bench_func)
 
 
 ArrayExpressions.generate_benchmarks()

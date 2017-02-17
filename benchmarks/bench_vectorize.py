@@ -35,15 +35,17 @@ class Vectorize:
             self.samples[dtype] = np.linspace(0.1, 1, self.n, dtype=dtype)
             self.out[dtype] = np.zeros(self.n, dtype=dtype)
 
-    def _binary_func(func, dtype):
+    def _binary_func(func, dtype, name):
         def f(self):
             func(self.samples[dtype], self.samples[dtype], self.out[dtype])
+        f.__name__ = name
         return f
 
     for dtype in dtypes:
-        locals()['time_mul_%s' % dtype] = _binary_func(mul, dtype)
+        fname = 'time_mul_%s' % dtype
+        locals()[fname] = _binary_func(mul, dtype, fname)
 
-    time_rel_diff_float32 = _binary_func(rel_diff, 'float32')
-    time_rel_diff_float64 = _binary_func(rel_diff, 'float64')
+    time_rel_diff_float32 = _binary_func(rel_diff, 'float32', 'time_rel_diff_float32')
+    time_rel_diff_float64 = _binary_func(rel_diff, 'float64', 'time_rel_diff_float64')
 
     del _binary_func
