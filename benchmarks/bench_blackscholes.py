@@ -6,7 +6,6 @@ import math
 
 import numpy as np
 
-from numba import jit
 
 
 # Taken from numba.tests.test_blackscholes
@@ -35,41 +34,45 @@ optionYears = np.random.RandomState(2).uniform(0.25, 10.0, N)
 args = (callResultGold, putResultGold, stockPrice, optionStrike,
         optionYears, RISKFREE, VOLATILITY)
 
-
-@jit(nopython=True)
-def cnd(d):
-    K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
-    ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
-               (K * (A1 + K * (A2 + K * (A3 + K * (A4 + K * A5))))))
-    if d > 0:
-        ret_val = 1.0 - ret_val
-    return ret_val
-
-
-@jit(nopython=True)
-def blackscholes(callResult, putResult, stockPrice, optionStrike,
-                 optionYears, Riskfree, Volatility):
-    S = stockPrice
-    X = optionStrike
-    T = optionYears
-    R = Riskfree
-    V = Volatility
-    for i in range(len(S)):
-        sqrtT = math.sqrt(T[i])
-        d1 = (math.log(S[i] / X[i]) + (R + 0.5 * V * V) * T[i]) / (V * sqrtT)
-        d2 = d1 - V * sqrtT
-        cndd1 = cnd(d1)
-        cndd2 = cnd(d2)
-
-        expRT = math.exp((-1. * R) * T[i])
-        callResult[i] = (S[i] * cndd1 - X[i] * expRT * cndd2)
-        putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
-
-
 def setup():
     """
     Precompile jitted functions.
     """
+    global cnd, blackscholes
+    from numba import jit
+
+
+    @jit(nopython=True)
+    def cnd(d):
+        K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
+        ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
+                (K * (A1 + K * (A2 + K * (A3 + K * (A4 + K * A5))))))
+        if d > 0:
+            ret_val = 1.0 - ret_val
+        return ret_val
+
+
+    @jit(nopython=True)
+    def blackscholes(callResult, putResult, stockPrice, optionStrike,
+                    optionYears, Riskfree, Volatility):
+        S = stockPrice
+        X = optionStrike
+        T = optionYears
+        R = Riskfree
+        V = Volatility
+        for i in range(len(S)):
+            sqrtT = math.sqrt(T[i])
+            d1 = (math.log(S[i] / X[i]) + (R + 0.5 * V * V) * T[i]) / (V * sqrtT)
+            d2 = d1 - V * sqrtT
+            cndd1 = cnd(d1)
+            cndd2 = cnd(d2)
+
+            expRT = math.exp((-1. * R) * T[i])
+            callResult[i] = (S[i] * cndd1 - X[i] * expRT * cndd2)
+            putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
+
+
+
     blackscholes(*args)
 
 

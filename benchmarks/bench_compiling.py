@@ -4,7 +4,6 @@ Benchmarks of compilation time.
 
 import numpy as np
 
-from numba import jit
 
 
 def no_op(x):
@@ -35,6 +34,9 @@ def lift(x):
             a[i, j] = x
     return a
 
+def setup():
+    global jit
+    from numba import jit
 
 class NoPythonCompilation:
 
@@ -54,7 +56,7 @@ class PyObjectCompilation:
         jit("int32(int32)", forceobj=True)(force_obj)
 
     def time_jit_mandel_forceobj(self):
-        jit(mandel_sig, forceobj=True)(mandel)
+        jit(mandel_sig, forceobj=True, looplift=False)(mandel)
 
 
 class LoopLiftedCompilation:
@@ -69,6 +71,7 @@ class LoopLiftedCompilation:
 class CachedCompilation:
 
     def setup_cache(self):
+        from numba import jit
         # Ensure the functions are cached into the ASV environment
         # before running the actual benchmark methods.
         jit(mandel_sig, cache=True, nopython=True)(mandel)

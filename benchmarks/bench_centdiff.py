@@ -5,7 +5,6 @@ http://nbviewer.ipython.org/gist/ketch/ae87a94f4ef0793d5d52
 
 import numpy as np
 
-from numba import jit
 
 
 N = 250
@@ -24,20 +23,24 @@ D2a = np.zeros_like(u2a)
 dx = 1.5
 
 
-@jit(nopython=True)
-def centered_difference_range1d(u, D, dx=1.):
-    m, = u.shape
-    for i in range(1, m - 1):
-        D[i] = (u[i-1] + u[i+1] - 2.0*u[i]) / dx**2
-    return D
+def setup():
+    global centered_difference_range1d, centered_difference_range2d
+    from numba import jit
 
-@jit(nopython=True)
-def centered_difference_range2d(u, D, dx=1.):
-    m, n = u.shape
-    for i in range(1, m - 1):
-        for j in range(1, n - 1):
-            D[i,j] = (u[i+1,j] + u[i,j+1] + u[i-1,j] + u[i,j-1] - 4.0*u[i,j]) / dx**2
-    return D
+    @jit(nopython=True)
+    def centered_difference_range1d(u, D, dx=1.):
+        m, = u.shape
+        for i in range(1, m - 1):
+            D[i] = (u[i-1] + u[i+1] - 2.0*u[i]) / dx**2
+        return D
+
+    @jit(nopython=True)
+    def centered_difference_range2d(u, D, dx=1.):
+        m, n = u.shape
+        for i in range(1, m - 1):
+            for j in range(1, n - 1):
+                D[i,j] = (u[i+1,j] + u[i,j+1] + u[i-1,j] + u[i,j-1] - 4.0*u[i,j]) / dx**2
+        return D
 
 
 class CenteredDifference:

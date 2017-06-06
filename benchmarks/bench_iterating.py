@@ -4,7 +4,6 @@ Benchmarks for the various ways of iterating over the values of an array.
 
 import numpy as np
 
-from numba import jit
 
 # This choice of dtype is intentional.  It seems to allow better
 # vectorization with LLVM 3.7 than either float32 or float64 (at least here
@@ -23,88 +22,92 @@ arr2f2 = arr2c2.copy(order='F')
 arr2a2 = np.concatenate((arr2c2, arr2c2))[::2]
 
 
+def setup():
+    from numba import jit
 
-@jit(nopython=True)
-def array_iter_1d(arr):
-    total = zero
-    for val in arr:
-        total += val
-    return total
 
-@jit(nopython=True)
-def flat_iter(arr):
-    total = zero
-    for val in arr.flat:
-        total += val
-    return total
+    @jit(nopython=True)
+    def array_iter_1d(arr):
+        total = zero
+        for val in arr:
+            total += val
+        return total
 
-@jit(nopython=True)
-def flat_index(arr):
-    total = zero
-    flat = arr.flat
-    for i in range(arr.size):
-        total += flat[i]
-    return total
+    @jit(nopython=True)
+    def flat_iter(arr):
+        total = zero
+        for val in arr.flat:
+            total += val
+        return total
 
-@jit(nopython=True)
-def ndindex(arr):
-    total = zero
-    for ind in np.ndindex(arr.shape):
-        total += arr[ind]
-    return total
+    @jit(nopython=True)
+    def flat_index(arr):
+        total = zero
+        flat = arr.flat
+        for i in range(arr.size):
+            total += flat[i]
+        return total
 
-@jit(nopython=True)
-def range1d(arr):
-    total = zero
-    n, = arr.shape
-    for i in range(n):
-        total += arr[i]
-    return total
+    @jit(nopython=True)
+    def ndindex(arr):
+        total = zero
+        for ind in np.ndindex(arr.shape):
+            total += arr[ind]
+        return total
 
-@jit(nopython=True)
-def range2d(arr):
-    total = zero
-    m, n = arr.shape
-    for i in range(m):
-        for j in range(n):
-            total += arr[i, j]
-    return total
+    @jit(nopython=True)
+    def range1d(arr):
+        total = zero
+        n, = arr.shape
+        for i in range(n):
+            total += arr[i]
+        return total
 
-@jit(nopython=True)
-def nditer1(a):
-    total = zero
-    for u in np.nditer(a):
-        total += u.item()
-    return total
+    @jit(nopython=True)
+    def range2d(arr):
+        total = zero
+        m, n = arr.shape
+        for i in range(m):
+            for j in range(n):
+                total += arr[i, j]
+        return total
 
-@jit(nopython=True)
-def nditer2(a, b):
-    total = zero
-    for u, v in np.nditer((a, b)):
-        total += u.item() * v.item()
-    return total
+    @jit(nopython=True)
+    def nditer1(a):
+        total = zero
+        for u in np.nditer(a):
+            total += u.item()
+        return total
 
-@jit(nopython=True)
-def nditer3(a, b, out):
-    total = zero
-    for u, v, res in np.nditer((a, b, out)):
-        res.itemset(u.item() * v.item())
-    return total
+    @jit(nopython=True)
+    def nditer2(a, b):
+        total = zero
+        for u, v in np.nditer((a, b)):
+            total += u.item() * v.item()
+        return total
 
-@jit(nopython=True)
-def zip_iter(a, b):
-    total = zero
-    for u, v in zip(a, b):
-        total += u * v
-    return total
+    @jit(nopython=True)
+    def nditer3(a, b, out):
+        total = zero
+        for u, v, res in np.nditer((a, b, out)):
+            res.itemset(u.item() * v.item())
+        return total
 
-@jit(nopython=True)
-def zip_flat(a, b):
-    total = zero
-    for u, v in zip(a.flat, b.flat):
-        total += u * v
-    return total
+    @jit(nopython=True)
+    def zip_iter(a, b):
+        total = zero
+        for u, v in zip(a, b):
+            total += u * v
+        return total
 
+    @jit(nopython=True)
+    def zip_flat(a, b):
+        total = zero
+        for u, v in zip(a.flat, b.flat):
+            total += u * v
+        return total
+
+    globals().update(locals())
 
 class MonoArrayIterators:
 

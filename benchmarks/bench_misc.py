@@ -8,14 +8,16 @@ import time
 
 import numpy as np
 
-from numba import jit
+def setup():
+    global grouped_sum
+    from numba import jit
 
 
-@jit(nopython=True)
-def grouped_sum(values, labels, target):
-    for i in range(len(values)):
-        idx = labels[i]
-        target[idx] += values[i]
+    @jit(nopython=True)
+    def grouped_sum(values, labels, target):
+        for i in range(len(values)):
+            idx = labels[i]
+            target[idx] += values[i]
 
 
 class InitializationTime:
