@@ -4,7 +4,6 @@ Benchmarks for argument dispatching and call overhead of ``@jit`` functions.
 
 import numpy as np
 
-from numba import jit
 
 
 rec_dtype = np.dtype([('a', np.float64),
@@ -27,24 +26,27 @@ samples = {
     'bytearray': bytearray(3),
     }
 
-@jit(nopython=True)
-def binary(x, y):
-    pass
-
-@jit(forceobj=True)
-def binary_pyobj(x, y):
-    pass
-
-@jit(nopython=True)
-def unary_default(x=None):
-    pass
-
 
 def setup():
     """
     Precompile jitted functions.  This will register many specializations
     to choose from.
     """
+    from numba import jit
+    global binary, binary_pyobj, unary_default
+
+    @jit(nopython=True)
+    def binary(x, y):
+        pass
+
+    @jit(forceobj=True)
+    def binary_pyobj(x, y):
+        pass
+
+    @jit(nopython=True)
+    def unary_default(x=None):
+        pass
+
     for tp in samples.values():
         binary(tp, tp)
     binary_pyobj(object(), object())

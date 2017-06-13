@@ -9,60 +9,63 @@ import sys
 
 import numpy as np
 
-from numba import cuda, float32, float64
+def _jit_setup1():
+    from numba import cuda, float32, float64
 
 
-def addmul(x, y, out):
-    i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
-    if i >= x.shape[0]:
-        return
-    out[i] = x[i] + y[i] * math.fabs(x[i])
+    def addmul(x, y, out):
+        i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
+        if i >= x.shape[0]:
+            return
+        out[i] = x[i] + y[i] * math.fabs(x[i])
 
-addmul_f32 = cuda.jit()(addmul)
-addmul_f64 = cuda.jit()(addmul)
-
-
-def no_op():
-    pass
+    addmul_f32 = cuda.jit()(addmul)
+    addmul_f64 = cuda.jit()(addmul)
 
 
-# N-body simulation.  We actually only run the step which computes the
-# accelerations from the positions and weights of the bodies (updating
-# speeds and positions is relatively uninteresting).
+    def no_op():
+        pass
 
-# CUDA version adapted from http://http.developer.nvidia.com/GPUGems3/gpugems3_ch31.html
 
-eps_2 = np.float32(1e-6)
-zero = np.float32(0.0)
-one = np.float32(1.0)
+    # N-body simulation.  We actually only run the step which computes the
+    # accelerations from the positions and weights of the bodies (updating
+    # speeds and positions is relatively uninteresting).
 
-@cuda.jit(device=True, inline=True)
-def body_body_interaction(xi, yi, xj, yj, wj, axi, ayi):
-    """
-    Compute the influence of body j on the acceleration of body i.
-    """
-    rx = xj - xi
-    ry = yj - yi
-    sqr_dist = rx * rx + ry * ry + eps_2
-    sixth_dist = sqr_dist * sqr_dist * sqr_dist
-    inv_dist_cube = one / math.sqrt(sixth_dist)
-    s = wj * inv_dist_cube
-    axi += rx * s
-    ayi += ry * s
-    return axi, ayi
+    # CUDA version adapted from http://http.developer.nvidia.com/GPUGems3/gpugems3_ch31.html
 
-@cuda.jit(device=True, inline=True)
-def tile_calculation(xi, yi, axi, ayi, positions, weights):
-    """
-    Compute the contribution of this block's tile to the acceleration
-    of body i.
-    """
-    for j in range(cuda.blockDim.x):
-        xj = positions[j,0]
-        yj = positions[j,1]
-        wj = weights[j]
-        axi, ayi = body_body_interaction(xi, yi, xj, yj, wj, axi, ayi)
-    return axi, ayi
+    eps_2 = np.float32(1e-6)
+    zero = np.float32(0.0)
+    one = np.float32(1.0)
+
+    @cuda.jit(device=True, inline=True)
+    def body_body_interaction(xi, yi, xj, yj, wj, axi, ayi):
+        """
+        Compute the influence of body j on the acceleration of body i.
+        """
+        rx = xj - xi
+        ry = yj - yi
+        sqr_dist = rx * rx + ry * ry + eps_2
+        sixth_dist = sqr_dist * sqr_dist * sqr_dist
+        inv_dist_cube = one / math.sqrt(sixth_dist)
+        s = wj * inv_dist_cube
+        axi += rx * s
+        ayi += ry * s
+        return axi, ayi
+
+    @cuda.jit(device=True, inline=True)
+    def tile_calculation(xi, yi, axi, ayi, positions, weights):
+        """
+        Compute the contribution of this block's tile to the acceleration
+        of body i.
+        """
+        for j in range(cuda.blockDim.x):
+            xj = positions[j,0]
+            yj = positions[j,1]
+            wj = weights[j]
+            axi, ayi = body_body_interaction(xi, yi, xj, yj, wj, axi, ayi)
+        return axi, ayi
+
+    globals().update(locals())
 
 
 tile_size = 128
@@ -167,30 +170,34 @@ args = (callResultGold, putResultGold, stockPrice, optionStrike,
         optionYears, RISKFREE, VOLATILITY)
 
 
-@cuda.jit(device=True, inline=True)
-def cnd_cuda(d):
-    K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
-    ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
-               (K * (A1 + K * (A2 + K * (A3 + K * (A4 + K * A5))))))
-    if d > 0:
-        ret_val = 1.0 - ret_val
-    return ret_val
+def _jit_setup2():
+    from numba import cuda
 
+    @cuda.jit(device=True, inline=True)
+    def cnd_cuda(d):
+        K = 1.0 / (1.0 + 0.2316419 * math.fabs(d))
+        ret_val = (RSQRT2PI * math.exp(-0.5 * d * d) *
+                (K * (A1 + K * (A2 + K * (A3 + K * (A4 + K * A5))))))
+        if d > 0:
+            ret_val = 1.0 - ret_val
+        return ret_val
 
-@cuda.jit()
-def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
-    i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
-    if i >= S.shape[0]:
-        return
-    sqrtT = math.sqrt(T[i])
-    d1 = (math.log(S[i] / X[i]) + (R + 0.5 * V * V) * T[i]) / (V * sqrtT)
-    d2 = d1 - V * sqrtT
-    cndd1 = cnd_cuda(d1)
-    cndd2 = cnd_cuda(d2)
+    @cuda.jit()
+    def black_scholes_cuda(callResult, putResult, S, X, T, R, V):
+        i = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x
+        if i >= S.shape[0]:
+            return
+        sqrtT = math.sqrt(T[i])
+        d1 = (math.log(S[i] / X[i]) + (R + 0.5 * V * V) * T[i]) / (V * sqrtT)
+        d2 = d1 - V * sqrtT
+        cndd1 = cnd_cuda(d1)
+        cndd2 = cnd_cuda(d2)
 
-    expRT = math.exp((-1. * R) * T[i])
-    callResult[i] = (S[i] * cndd1 - X[i] * expRT * cndd2)
-    putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
+        expRT = math.exp((-1. * R) * T[i])
+        callResult[i] = (S[i] * cndd1 - X[i] * expRT * cndd2)
+        putResult[i] = (X[i] * expRT * (1.0 - cndd2) - S[i] * (1.0 - cndd1))
+
+    globals().update(locals())
 
 
 class Synthetic:
@@ -312,3 +319,8 @@ class DataTransfer:
         for i in range(10):
             self.d_large_data.copy_to_host(self.large_data, self.stream)
         self.stream.synchronize()
+
+
+def setup():
+    _jit_setup1()
+    _jit_setup2()

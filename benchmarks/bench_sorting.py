@@ -8,28 +8,31 @@ import math
 
 import numpy as np
 
-from numba import jit
+def setup():
+    from numba import jit
 
 
-@jit(nopython=True)
-def real_sort(x):
-    x.sort()
+    @jit(nopython=True)
+    def real_sort(x):
+        x.sort()
 
-def sort(x):
-    # We *have* to do a copy, otherwise repeating the benchmark will
-    # produce skewed results in the later iterations, as an already-sorted
-    # array will be passed.
-    # We prefer do the copying outside of the JITted function, as we want
-    # to measure sort() performance, not the performance of Numba's copy().
-    real_sort(x.copy())
+    def sort(x):
+        # We *have* to do a copy, otherwise repeating the benchmark will
+        # produce skewed results in the later iterations, as an already-sorted
+        # array will be passed.
+        # We prefer do the copying outside of the JITted function, as we want
+        # to measure sort() performance, not the performance of Numba's copy().
+        real_sort(x.copy())
 
-@jit(nopython=True)
-def argsort(x):
-    return x.argsort()
+    @jit(nopython=True)
+    def argsort(x):
+        return x.argsort()
 
-@jit(nopython=True)
-def median(x):
-    return np.median(x)
+    @jit(nopython=True)
+    def median(x):
+        return np.median(x)
+
+    globals().update(locals())
 
 
 class BaseArraySorting:

@@ -6,30 +6,32 @@ from __future__ import division
 
 import numpy as np
 
-from numba import jit
+
+def setup():
+    global unique, setops
+    from numba import jit
+
+    # Set benchmarks
+    # Notes:
+    # - unless we want to benchmark marshalling a set or list back to Python,
+    #   we return a single value to avoid conversion costs
+
+    @jit(nopython=True)
+    def unique(seq):
+        l = []
+        seen = set()
+        for v in seq:
+            if v not in seen:
+                seen.add(v)
+                l.append(v)
+        return l[-1]
 
 
-# Set benchmarks
-# Notes:
-# - unless we want to benchmark marshalling a set or list back to Python,
-#   we return a single value to avoid conversion costs
-
-@jit(nopython=True)
-def unique(seq):
-    l = []
-    seen = set()
-    for v in seq:
-        if v not in seen:
-            seen.add(v)
-            l.append(v)
-    return l[-1]
-
-
-@jit(nopython=True)
-def setops(a, b):
-    sa = set(a)
-    sb = set(b)
-    return len(sa & sb), len(sa | sb), len(sa ^ sb), len(sa - sb), len(sb - sa)
+    @jit(nopython=True)
+    def setops(a, b):
+        sa = set(a)
+        sb = set(b)
+        return len(sa & sb), len(sa | sb), len(sa ^ sb), len(sa - sb), len(sb - sa)
 
 
 class IntegerSets:

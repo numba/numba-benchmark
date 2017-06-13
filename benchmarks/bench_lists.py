@@ -6,7 +6,6 @@ Note: sorting has its own benchmark file.
 
 from __future__ import division
 
-from numba import jit
 
 
 # List benchmarks
@@ -16,45 +15,49 @@ from numba import jit
 # - we don't want LLVM to optimize away the whole list creation, so
 #   we make the returned value unknown at compile-time.
 
-@jit(nopython=True)
-def list_append(n, i):
-    l = []
-    for v in range(n):
-        l.append(v)
-    return l[i]
+def setup():
+    from numba import jit
 
-@jit(nopython=True)
-def list_extend(n, i):
-    l = []
-    l.extend(range(n // 2))
-    l.extend(range(n // 2))
-    return l[i]
+    @jit(nopython=True)
+    def list_append(n, i):
+        l = []
+        for v in range(n):
+            l.append(v)
+        return l[i]
 
-@jit(nopython=True)
-def list_call(n, i):
-    l = list(range(n))
-    return l[i]
+    @jit(nopython=True)
+    def list_extend(n, i):
+        l = []
+        l.extend(range(n // 2))
+        l.extend(range(n // 2))
+        return l[i]
+
+    @jit(nopython=True)
+    def list_call(n, i):
+        l = list(range(n))
+        return l[i]
 
 
-@jit(nopython=True)
-def list_return(n):
-    return [0] * n
+    @jit(nopython=True)
+    def list_return(n):
+        return [0] * n
 
-@jit(nopython=True)
-def list_pop(n):
-    l = list(range(n))
-    v = 0
-    while len(l) > 0:
-        v = v ^ l.pop()
-    return v
+    @jit(nopython=True)
+    def list_pop(n):
+        l = list(range(n))
+        v = 0
+        while len(l) > 0:
+            v = v ^ l.pop()
+        return v
 
-@jit(nopython=True)
-def list_insert(n, i):
-    l = [0]
-    for v in range(n):
-        l.insert(0, v)
-    return l[i]
+    @jit(nopython=True)
+    def list_insert(n, i):
+        l = [0]
+        for v in range(n):
+            l.insert(0, v)
+        return l[i]
 
+    globals().update(locals())
 
 class ListConstruction:
     n = 100000
