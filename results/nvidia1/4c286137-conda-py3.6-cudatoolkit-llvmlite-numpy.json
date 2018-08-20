@@ -1,0 +1,2984 @@
+{
+    "benchmark_version": {
+        "bench_arrayexprs.ArrayExpressions.time_cube_float32": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_cube_float64": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float32": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float64": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float32": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float64": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_square_float32": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_square_float64": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_sum_float32": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_arrayexprs.ArrayExpressions.time_sum_float64": "1151032abb1a474047d75729df99dd3d8747e03d4286942f01814ef3596b355f",
+        "bench_blackscholes.BlackScholes.time_blackscholes": "713317b9a430aef49eeec252abe1094c762b66cb0a4bfe98c94d411aec759716",
+        "bench_centdiff.CenteredDifference.time_centered_difference_1d": "346a30e261ca79ed2cda69d7b874027c6421aa74ec323be016703c840bda9e48",
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_C": "4931b9a5724f1867b2f4289eec02d0b52b757cfe4c7b0772043836f4064252eb",
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_fortran": "d178f6a31b51aff3e8d3271dd2e2718fdff8298e5ccc8d985acdf1e37049d02b",
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_non_contiguous": "6444f2b118b6fa213f3e6b588a26bae278754d3c7f3a52e09ffff5c0b6e709b3",
+        "bench_compiling.CachedCompilation.time_jit_mandel": "31e72bce638c21023b9d4c26195cd4ebdcccda552a431270eeb06ea18f550ea3",
+        "bench_compiling.CachedCompilation.time_jit_noop": "20b3b035b520c679bebebe1398a47ea9d0dd85cf0c412ab08e98a5e167f1f57d",
+        "bench_compiling.LoopLiftedCompilation.time_lift": "fdd062a3b3282be795df2896e8f64900902cda619a91af87de528cfcd6cb3d6b",
+        "bench_compiling.NoPythonCompilation.time_jit_mandel": "1a619b88830330f5ce3ee18f2c92ec41a5cdb1f549bb441fdb0303f8cfd63fa0",
+        "bench_compiling.NoPythonCompilation.time_jit_noop": "0aa9d7870a50c68f04ab9c981ce12208e1f430afb8c51c681e91cddca7a056af",
+        "bench_compiling.PyObjectCompilation.time_jit_mandel_forceobj": "697ed3240cacc08c5e1479c724a1345999f5d28441492f772cd6a37e87660793",
+        "bench_compiling.PyObjectCompilation.time_jit_noop_fallback": "1923c71bd4f2e278762785b7e4b762a4bd1baf051a1e92f45c224e30b1b53ba2",
+        "bench_compiling.PyObjectCompilation.time_jit_noop_forceobj": "4d86add590e9e4c9935ba4d707e3fb334dcce473a57798f3b446114457ebeb30",
+        "bench_cuda.BlackScholes.time_blackscholes": "4a457708adad4165a73f676965e3d4bb544b2e02bbc9944ebb5397fbb1493d97",
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_large": "627ef5f5c0cab131d4bdb52bd9cc299c93195c054cf4f9f1dd6984189f318573",
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_small": "e05c66672408a57598ab202ec459859c32903b3eb4c138f2382909fea0acba57",
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_large": "e92aeef7a46c8f1ae4858791b2a95483195f85cd6b481c31ddae0210786ca557",
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_small": "579d23ce90eda6dfbe8856731832783b31bb12ba3445d01f9938233aaf1e0916",
+        "bench_cuda.NBody.time_cpu_nbody": "bd1b3a45b9aada49d32ae28fdc3fd31b672f09b6a9fb9b5179b59572eb30cebe",
+        "bench_cuda.NBody.time_cuda_nbody": "5b4c25c6c67d0a1be4e141104c929a892b7ca63fafc8b85e344bb223ba5e0667",
+        "bench_cuda.Synthetic.time_addmul_f32": "3d4d84e0ba35073275b596474bddf0ba09bb2f0761d7317f398b7af972224d81",
+        "bench_cuda.Synthetic.time_addmul_f64": "d40df27c87a924c27c65502e6f24001107ab6cac083e272405d436d5f1e4c4cb",
+        "bench_cuda.Synthetic.time_reduce_f32": "b52d9ff3d4bb96858a6cce2e71bdce2c5394c0326322f980d7d6d23d4516b8fe",
+        "bench_cuda.Synthetic.time_reduce_f64": "42c187dd3a477b110fae4e2210aecb9822d93705b2bb757cbf554ccd50a03532",
+        "bench_cuda.Synthetic.time_run_empty_kernel": "9831057d2f0c86594e2f83dfec1fac2da4310283a0b8f1618f9652c77673ac36",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_1d": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_3d": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_records": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bool": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bytearray": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_complex": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_defaults": "9fba0101c9f7c382cb5cbac32232e3548aaea428b652d55f266d6600c4207842",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_float": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_int": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_recarray": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_record": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.NoPythonDispatch.time_dispatch_tuple": "05707650b7675868c56d7bfe435123521dd8d4229819c38286c2148266dcbcc6",
+        "bench_dispatch.PyObjectDispatch.time_dispatch_pyobject": "8ed3e0180ccac61c9469e83a2525e187d967a9478e9896941acb82d21a3adc72",
+        "bench_gameoflife.GameOfLife.time_gameoflife": "3a62cd617bff882688bdb0a603333b98170f24fc0fc77ea3f6d653aac46a72ee",
+        "bench_ising.IsingModel.time_ising": "72f6ae6e633558ee6af5118f6c3877e5b6979722eff230e381df38fcdb06be87",
+        "bench_iterating.MonoArrayIterators.time_array_iter_1d": "57da53fe053d58fe885e45316cb6d7cacb759ae3a2ab7bff6fc60a3872f50ae5",
+        "bench_iterating.MonoArrayIterators.time_flat_index_1d": "b7f1d3a1d70fb1e55addabda8a1b9c7b7b38728f8ad1c84290eae97e394c1a8a",
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_C": "54bf4a92f4608ef149d73c7bb8ebdc927ef4c5aaa5bc54bc6bf52c44cec7c734",
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_fortran": "5e91cfec080ae7169f5c9ee5c35f728e43d56c1b8aa65fe6698200c4199a0e09",
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_non_contiguous": "2cf244735c42fe17473d3c82052219e4f46a79fe4258363be73771f73245378f",
+        "bench_iterating.MonoArrayIterators.time_flat_iter_1d": "8337e998541e2b10c16e119da431671bcd4804e27c6f54b41a8c4f232db83bf7",
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_C": "06e96407434bd4f3fd579dc94a6fd87187327702b9d4809b2b15cba0cbeeeb38",
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_fortran": "38ac6b00833d808327fc6d569f3ac3adab20c02afa5cd4619221e014524e382e",
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_non_contiguous": "7c602cc257568b80d8d1f65f1548b5d2681839adbc8847a83d1150a839ec44a5",
+        "bench_iterating.MonoArrayIterators.time_ndindex_1d": "b2ae77fc8cd6358c0dfc04beec2e3c8d022b0e1b9902a321ca2c079935611569",
+        "bench_iterating.MonoArrayIterators.time_ndindex_2d": "d9b8205974d4155aee3e3805ae90cdfd23d4b04a32dd159d3cba73e35e2cb7b9",
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_1d": "259812336d8205b39158019bb9319313d854044173fb3526d6323e4ebb8ed1ba",
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C": "d65c58298e884c062baa6dd8e43e5ad3a9e1549d734b653b45bc0de93bf5bf4b",
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C_small_inner_dim": "dd15d3f06446b7d69d6837ec3c86f48997f0ff7223aea7bb7c17178dfdd4e5e9",
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_fortran": "0c1fb4d1bf42c972132d876a3d5acdcb2494c11cb8b02db86a9011b2704ba215",
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_non_contiguous": "e57997336e771943463fa9dc52ef16b2ced0f6e5f4bb0af605af451dd6c0775d",
+        "bench_iterating.MonoArrayIterators.time_range_index_1d": "cc998099978a81bbc27d9a2dfc00a512f2b4de24babcdb8ea45d90ceb1a0fde9",
+        "bench_iterating.MonoArrayIterators.time_range_index_2d": "8a5c201eeec20d2e6c7b2f3ca84c04ec65cf2136684c9938e3ceadb860e4e37d",
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_A_A_A": "500acd1a2bf9004f8fdd1bbc4b1653e0d0923cdd9af6e838b6d19121e5ff036c",
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_C_C_C": "b64fb51f315fb643a50ba15dcaac8a8e56036a75d7a497f9b6bd785a60791456",
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_F_F_F": "d3f6b711e8406cc33c4c2daf83e0e05a14bfc6a26f9de88a0adc3e2800d3f4ec",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_1d": "0db3b960fd73f966b3dc771c16a684e00f5d82c7bf00e25bb87d0c67bb6cdb8f",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_A_A": "8a9132f23bf7d3342050e1c0ef971f789e62fb475b8771a4b92a2aa1341f4aca",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A": "96d5cd0cc60500faa10579ea02cb6fc65b877d47e6be6e2430040064081b190a",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A_small_inner_dim": "01af8198dd1889e45c57b1b57f276240c40e737a3e8f729ff499bda7735a3772",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C": "32641ad7bb229f55e4241e740d0176addf1fd1df283690649a9cd5d27965f465",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C_small_inner_dim": "c90b2f273702b28d0312124e6a50d5e6a7f5c3c39abe3bb6caf980983f62ac97",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C": "2a6cbd3a3d226079ccf5bdab974477fd4545f001290ff8d81a3d33644f77c418",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C_small_inner_dim": "66ddef4117fa4a5d309043ff39c0305c9acbf2ffaa57549096cc0e28cd286ff3",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F": "38a118ff40e72c337261400c611aaa3af7fdd15b1ed0089c2b8a3ee439e59873",
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F_small_inner_dim": "9568435aff383beae902fa954118cad34628e2606e91f7b2df6e56f66538acc6",
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_1d": "5ad5436ab7daa9365d272659a23a717617f544890049cf97cf78804086ccd56c",
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_A_A": "3073d1a41dbb236c2b40b58d5438b0c0b98dd5325627dcea3f14f078ed14d630",
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C": "7a868ddea995431da1f84d5686b1871019ba27bde1091b16b78b42cb820ed852",
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C_small_inner_dim": "9e071fa202331aee5a78b25f55f2522a1976f22c552fb0eb3d61ab153c5ea7c2",
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_F_F": "f4b6a2bcd6789acd6256e9e999566be64e5b4ecc960b658626a1732cb7a76d3e",
+        "bench_iterating.MultiArrayIterators.time_zip_iter_two_1d": "93bb77ccc5fe86a4494de9bc6852bdeaafb572d9beb4868b016bcdd04e7107da",
+        "bench_laplace.Laplace.time_laplace": "1c3e45673c275288aa44b7f493d4e5a82cc91cc7ac51da06b3c2cb49bd972c06",
+        "bench_lists.ListConstruction.time_list_append": "81d1e85460ae03989565b3a1efdeefa7d1e2a722e896c0b2769a51fa4bf40c0c",
+        "bench_lists.ListConstruction.time_list_call": "41b04d1cb2f5f74679d1dec5b320f33ebce22e06b9969b2d36f8ed6fc89bcd25",
+        "bench_lists.ListConstruction.time_list_extend": "0cc0f1deb7209a8752f2f939afdd2542486552bddb23b7b3407e7f7c23ea6128",
+        "bench_lists.ListMutation.time_list_insert": "63ce87c4b4a71a10593c6bc5b3ef7b531fc14d57313c35c8634feecb795826d9",
+        "bench_lists.ListMutation.time_list_pop": "9c7c06605e394adeda4f053accb71ec123fb5ac0f5abfa3d991094203f7f4ff4",
+        "bench_lists.ListReturn.time_list_return": "8f0521aa8ff4ee06f39b72cea9dc63bd6d51ad2ad0aa8a67e738f8a16b427069",
+        "bench_misc.IndirectIndexing.time_signed_indirect_indexing": "c848c77d33aab0b9b9bb79e1844666967f106f8943626b9e847f24f3839fcce2",
+        "bench_misc.IndirectIndexing.time_unsigned_indirect_indexing": "5a5fd45d00e6fd6e84f37c783f31fa82354a40613500cafea33317e71eb8ed8c",
+        "bench_misc.InitializationTime.time_new_process_import_numba": "bce9fa53e164c1ce7493b320e141d2f1e9ee6b7785f68cad3656962726992b4e",
+        "bench_nbody.NBody.time_numba_nbody": "e43286be859ba1f38e7569048bc725b5eb72156a4ea458361d8b27f24b1f6d68",
+        "bench_numbagg.Numbagg.time_move_nanmean": "7c3ce09b1d7140d12d3b89e7c9b4ae0f62405ba1b8d40e936914f53502878bb5",
+        "bench_numbagg.Numbagg.time_move_nanmean_2d": "9127f5a63a112bd27ed69d021e9875e9dfde44475e963ed382178fd36fa134a5",
+        "bench_numbagg.Numbagg.time_nanmean_gufunc": "b4b856c084a01b144074378186f27cd92845d0e7a0f36ed890bf53dfe616ba13",
+        "bench_numbagg.Numbagg.time_nanmean_jit_1d": "9deb090b8969c471dcdbed8d23d1a3fe9562af667973290c88625433a45c23da",
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d": "67abe608cfcd4166f2e1c37f0f254d34b18fd9521fbdf1d13d99d32762726efc",
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d_reversed": "485ad96473144c1690a1975b21c7b159b1a96080adc9b9b15b86100e9ee70b70",
+        "bench_random.RandomIntegers.time_py_getrandbits": "ca0d32ce1f58b2169f647c1f3360c34b836dd8e09a124aab8eb9e4ad0ef7fa56",
+        "bench_sets.IntegerSets.time_setops": "810664299484441ef9d0bd4f2b51beaa27379f428d37260e7d6554809f69d369",
+        "bench_sets.IntegerSets.time_unique": "8aa4862ecb96c398d19ff83a1f3ea8b49116bf1c349397fd6f09593680007584",
+        "bench_sorting.ArrayMedian.time_median_duplicates_array": "7c55a6ddcbdcf4e4351d85f1021e222398898e9212806612eff8ea58d346dae7",
+        "bench_sorting.ArrayMedian.time_median_random_array_even": "d6aaca5f4788a019faac395aafa223252501c6870fc6a8ac2b1e23d30dfc3977",
+        "bench_sorting.ArrayMedian.time_median_random_array_odd": "52af579d33d02db32c27cd13bcf51e6642de38d3f6ae5f77b2afbf4caa48da66",
+        "bench_sorting.ArrayMedian.time_median_sorted_array": "38180194e8239497e7b3c9f0d5c0c4f5c7dfa27c3e7873d6d570cd9818fbfe03",
+        "bench_sorting.ArrayMedian.time_median_triangle_array": "cfda6aceb4c5764c6c53e7a0a2619ec9470d9cc913ee8e0ae70143d0ca9f1d7a",
+        "bench_sorting.ArraySorting.time_argsort_random_array": "b00a8d924025676739ee661c08a5f49f91ce9d1f3b42e5ccad383247c8cd3664",
+        "bench_sorting.ArraySorting.time_sort_duplicates_array": "6219a390b08997066efe5e3d40607bc50ef45b877d526d1f793a7eea4d72ac4a",
+        "bench_sorting.ArraySorting.time_sort_random_array": "b9b7668f705e26583a4fcfaabca4d0dd1f5dadb69001699777113d5f4d311731",
+        "bench_sorting.ArraySorting.time_sort_sorted_array": "1d688918ae012b6ef28b45ba2d08c6a1a23102d1df5c7e443b423b63ca09db35",
+        "bench_sorting.ArraySorting.time_sort_triangle_array": "51453ec5e519d7276da22b4e98d6b5bc1ce8f16c1fc99769713d008ea570ea34",
+        "bench_vectorize.Vectorize.time_mul_complex128": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079",
+        "bench_vectorize.Vectorize.time_mul_complex64": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079",
+        "bench_vectorize.Vectorize.time_mul_float32": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079",
+        "bench_vectorize.Vectorize.time_mul_float64": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079",
+        "bench_vectorize.Vectorize.time_rel_diff_float32": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079",
+        "bench_vectorize.Vectorize.time_rel_diff_float64": "5fa667beeb57515700d2b77e2ce9f6439ff228b071091fa11ea71b68ada86079"
+    },
+    "commit_hash": "4c286137f7e1c3de12532cc633264f292da34fe8",
+    "date": 1515439892000,
+    "ended_at": {
+        "bench_arrayexprs.ArrayExpressions.time_cube_float32": 1534584692000,
+        "bench_arrayexprs.ArrayExpressions.time_cube_float64": 1534584693000,
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float32": 1534584694000,
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float64": 1534584695000,
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float32": 1534584696000,
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float64": 1534584696000,
+        "bench_arrayexprs.ArrayExpressions.time_square_float32": 1534584697000,
+        "bench_arrayexprs.ArrayExpressions.time_square_float64": 1534584698000,
+        "bench_arrayexprs.ArrayExpressions.time_sum_float32": 1534584699000,
+        "bench_arrayexprs.ArrayExpressions.time_sum_float64": 1534584700000,
+        "bench_blackscholes.BlackScholes.time_blackscholes": 1534584702000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_1d": 1534584703000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_C": 1534584704000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_fortran": 1534584705000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_non_contiguous": 1534584707000,
+        "bench_compiling.CachedCompilation.time_jit_mandel": 1534584917000,
+        "bench_compiling.CachedCompilation.time_jit_noop": 1534584918000,
+        "bench_compiling.LoopLiftedCompilation.time_lift": 1534584708000,
+        "bench_compiling.NoPythonCompilation.time_jit_mandel": 1534584709000,
+        "bench_compiling.NoPythonCompilation.time_jit_noop": 1534584710000,
+        "bench_compiling.PyObjectCompilation.time_jit_mandel_forceobj": 1534584711000,
+        "bench_compiling.PyObjectCompilation.time_jit_noop_fallback": 1534584712000,
+        "bench_compiling.PyObjectCompilation.time_jit_noop_forceobj": 1534584713000,
+        "bench_cuda.BlackScholes.time_blackscholes": 1534584714000,
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_large": 1534584715000,
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_small": 1534584716000,
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_large": 1534584717000,
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_small": 1534584718000,
+        "bench_cuda.NBody.time_cpu_nbody": 1534584724000,
+        "bench_cuda.NBody.time_cuda_nbody": 1534584728000,
+        "bench_cuda.Synthetic.time_addmul_f32": 1534584729000,
+        "bench_cuda.Synthetic.time_addmul_f64": 1534584731000,
+        "bench_cuda.Synthetic.time_reduce_f32": 1534584734000,
+        "bench_cuda.Synthetic.time_reduce_f64": 1534584737000,
+        "bench_cuda.Synthetic.time_run_empty_kernel": 1534584739000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_1d": 1534584741000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_3d": 1534584744000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_records": 1534584746000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bool": 1534584749000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bytearray": 1534584752000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_complex": 1534584754000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_defaults": 1534584757000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_float": 1534584759000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_int": 1534584762000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_recarray": 1534584764000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_record": 1534584767000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_tuple": 1534584770000,
+        "bench_dispatch.PyObjectDispatch.time_dispatch_pyobject": 1534584772000,
+        "bench_gameoflife.GameOfLife.time_gameoflife": 1534584775000,
+        "bench_ising.IsingModel.time_ising": 1534584777000,
+        "bench_iterating.MonoArrayIterators.time_array_iter_1d": 1534584778000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_1d": 1534584780000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_C": 1534584781000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_fortran": 1534584782000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_non_contiguous": 1534584783000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_1d": 1534584784000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_C": 1534584785000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_fortran": 1534584787000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_non_contiguous": 1534584788000,
+        "bench_iterating.MonoArrayIterators.time_ndindex_1d": 1534584789000,
+        "bench_iterating.MonoArrayIterators.time_ndindex_2d": 1534584791000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_1d": 1534584791000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C": 1534584792000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C_small_inner_dim": 1534584793000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_fortran": 1534584794000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_non_contiguous": 1534584794000,
+        "bench_iterating.MonoArrayIterators.time_range_index_1d": 1534584796000,
+        "bench_iterating.MonoArrayIterators.time_range_index_2d": 1534584797000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_A_A_A": 1534584798000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_C_C_C": 1534584799000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_F_F_F": 1534584800000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_1d": 1534584801000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_A_A": 1534584802000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A": 1534584803000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A_small_inner_dim": 1534584804000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C": 1534584805000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C_small_inner_dim": 1534584806000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C": 1534584806000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C_small_inner_dim": 1534584807000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F": 1534584808000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F_small_inner_dim": 1534584809000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_1d": 1534584810000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_A_A": 1534584811000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C": 1534584812000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C_small_inner_dim": 1534584813000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_F_F": 1534584814000,
+        "bench_iterating.MultiArrayIterators.time_zip_iter_two_1d": 1534584814000,
+        "bench_laplace.Laplace.time_laplace": 1534584817000,
+        "bench_lists.ListConstruction.time_list_append": 1534584819000,
+        "bench_lists.ListConstruction.time_list_call": 1534584822000,
+        "bench_lists.ListConstruction.time_list_extend": 1534584824000,
+        "bench_lists.ListMutation.time_list_insert": 1534584826000,
+        "bench_lists.ListMutation.time_list_pop": 1534584827000,
+        "bench_lists.ListReturn.time_list_return": 1534584829000,
+        "bench_misc.IndirectIndexing.time_signed_indirect_indexing": 1534584831000,
+        "bench_misc.IndirectIndexing.time_unsigned_indirect_indexing": 1534584832000,
+        "bench_misc.InitializationTime.time_new_process_import_numba": 1534584835000,
+        "bench_nbody.NBody.time_numba_nbody": 1534584837000,
+        "bench_numbagg.Numbagg.time_move_nanmean": 1534584840000,
+        "bench_numbagg.Numbagg.time_move_nanmean_2d": 1534584842000,
+        "bench_numbagg.Numbagg.time_nanmean_gufunc": 1534584845000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_1d": 1534584848000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d": 1534584851000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d_reversed": 1534584854000,
+        "bench_random.RandomIntegers.time_py_getrandbits": 1534584855000,
+        "bench_sets.IntegerSets.time_setops": 1534584861000,
+        "bench_sets.IntegerSets.time_unique": 1534584867000,
+        "bench_sorting.ArrayMedian.time_median_duplicates_array": 1534584869000,
+        "bench_sorting.ArrayMedian.time_median_random_array_even": 1534584872000,
+        "bench_sorting.ArrayMedian.time_median_random_array_odd": 1534584874000,
+        "bench_sorting.ArrayMedian.time_median_sorted_array": 1534584876000,
+        "bench_sorting.ArrayMedian.time_median_triangle_array": 1534584878000,
+        "bench_sorting.ArraySorting.time_argsort_random_array": 1534584881000,
+        "bench_sorting.ArraySorting.time_sort_duplicates_array": 1534584884000,
+        "bench_sorting.ArraySorting.time_sort_random_array": 1534584888000,
+        "bench_sorting.ArraySorting.time_sort_sorted_array": 1534584891000,
+        "bench_sorting.ArraySorting.time_sort_triangle_array": 1534584895000,
+        "bench_vectorize.Vectorize.time_mul_complex128": 1534584898000,
+        "bench_vectorize.Vectorize.time_mul_complex64": 1534584902000,
+        "bench_vectorize.Vectorize.time_mul_float32": 1534584905000,
+        "bench_vectorize.Vectorize.time_mul_float64": 1534584909000,
+        "bench_vectorize.Vectorize.time_rel_diff_float32": 1534584912000,
+        "bench_vectorize.Vectorize.time_rel_diff_float64": 1534584916000
+    },
+    "env_name": "conda-py3.6-cudatoolkit-llvmlite-numpy",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Core(TM) i7-4820K CPU @ 3.70GHz",
+        "cudatoolkit": "",
+        "llvmlite": "",
+        "machine": "nvidia1",
+        "numpy": "",
+        "os": "Linux 3.13.0-54-generic",
+        "python": "3.6",
+        "ram": "32886064"
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "cudatoolkit": "",
+        "llvmlite": "",
+        "numpy": ""
+    },
+    "results": {
+        "bench_arrayexprs.ArrayExpressions.time_cube_float32": {
+            "result": [
+                0.07186937649999997
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07091803000000002,
+                        0.07235755599999993
+                    ],
+                    "max": 0.07235755599999993,
+                    "mean": 0.07175907449999999,
+                    "min": 0.07091803000000002,
+                    "number": 1,
+                    "q_25": 0.07139054150000003,
+                    "q_75": 0.07201689474999998,
+                    "repeat": 10,
+                    "std": 0.0004466342534215644
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_cube_float64": {
+            "result": [
+                0.07157273550000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07124018599999993,
+                        0.072675076
+                    ],
+                    "max": 0.072675076,
+                    "mean": 0.07171539789999999,
+                    "min": 0.07124018599999993,
+                    "number": 1,
+                    "q_25": 0.07143950450000006,
+                    "q_75": 0.07182843974999994,
+                    "repeat": 10,
+                    "std": 0.00042802094532124786
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float32": {
+            "result": [
+                0.09868077450000007
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09827442000000003,
+                        0.10830610799999996
+                    ],
+                    "max": 0.10830610799999996,
+                    "mean": 0.09992182170000004,
+                    "min": 0.09827442000000003,
+                    "number": 1,
+                    "q_25": 0.09860594725000002,
+                    "q_75": 0.09994477875000003,
+                    "repeat": 10,
+                    "std": 0.002880477533958193
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float64": {
+            "result": [
+                0.09866607950000006
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09758890600000003,
+                        0.09946673500000003
+                    ],
+                    "max": 0.09946673500000003,
+                    "mean": 0.09864949930000001,
+                    "min": 0.09758890600000003,
+                    "number": 1,
+                    "q_25": 0.09833081675,
+                    "q_75": 0.09905815249999994,
+                    "repeat": 10,
+                    "std": 0.0005343104911369551
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float32": {
+            "result": [
+                0.09515941950000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09416579700000005,
+                        0.09725609499999999
+                    ],
+                    "max": 0.09725609499999999,
+                    "mean": 0.09526866990000002,
+                    "min": 0.09416579700000005,
+                    "number": 1,
+                    "q_25": 0.09473201800000003,
+                    "q_75": 0.09558396375000003,
+                    "repeat": 10,
+                    "std": 0.0008688692095455272
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float64": {
+            "result": [
+                0.09433740200000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09374786599999996,
+                        0.096069238
+                    ],
+                    "max": 0.096069238,
+                    "mean": 0.0944738778,
+                    "min": 0.09374786599999996,
+                    "number": 1,
+                    "q_25": 0.09408354774999998,
+                    "q_75": 0.0945359865,
+                    "repeat": 10,
+                    "std": 0.0006180675914606458
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_square_float32": {
+            "result": [
+                0.08094309400000002
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.080122998,
+                        0.09031999099999999
+                    ],
+                    "max": 0.09031999099999999,
+                    "mean": 0.08206743630000002,
+                    "min": 0.080122998,
+                    "number": 1,
+                    "q_25": 0.08051501950000005,
+                    "q_75": 0.08141273350000003,
+                    "repeat": 10,
+                    "std": 0.002979972978310498
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_square_float64": {
+            "result": [
+                0.08077730750000003
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08042419,
+                        0.08227616699999996
+                    ],
+                    "max": 0.08227616699999996,
+                    "mean": 0.0811672877,
+                    "min": 0.08042419,
+                    "number": 1,
+                    "q_25": 0.08060261999999997,
+                    "q_75": 0.08180247599999996,
+                    "repeat": 10,
+                    "std": 0.0006904172137884487
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_sum_float32": {
+            "result": [
+                0.095869751
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09522538999999997,
+                        0.096726906
+                    ],
+                    "max": 0.096726906,
+                    "mean": 0.0958221093,
+                    "min": 0.09522538999999997,
+                    "number": 1,
+                    "q_25": 0.09543556624999998,
+                    "q_75": 0.09607855050000005,
+                    "repeat": 10,
+                    "std": 0.0004540964493809819
+                }
+            ]
+        },
+        "bench_arrayexprs.ArrayExpressions.time_sum_float64": {
+            "result": [
+                0.09600557500000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09536054900000002,
+                        0.09715964099999996
+                    ],
+                    "max": 0.09715964099999996,
+                    "mean": 0.0961825106,
+                    "min": 0.09536054900000002,
+                    "number": 1,
+                    "q_25": 0.09578539000000001,
+                    "q_75": 0.09659380474999998,
+                    "repeat": 10,
+                    "std": 0.0005607794874194531
+                }
+            ]
+        },
+        "bench_blackscholes.BlackScholes.time_blackscholes": {
+            "result": [
+                0.01804144508333335
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.017982249000000006,
+                        0.01810881400000001
+                    ],
+                    "max": 0.01810881400000001,
+                    "mean": 0.01803576756666666,
+                    "min": 0.017982249000000006,
+                    "number": 6,
+                    "q_25": 0.017986543041666636,
+                    "q_75": 0.01806138204166663,
+                    "repeat": 10,
+                    "std": 4.634698366262652e-05
+                }
+            ]
+        },
+        "bench_centdiff.CenteredDifference.time_centered_difference_1d": {
+            "result": [
+                0.08262781800000002
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08196885600000003,
+                        0.08560544400000003
+                    ],
+                    "max": 0.08560544400000003,
+                    "mean": 0.08334953280000001,
+                    "min": 0.08196885600000003,
+                    "number": 1,
+                    "q_25": 0.08235828800000002,
+                    "q_75": 0.08458923275000002,
+                    "repeat": 10,
+                    "std": 0.001364361713830454
+                }
+            ]
+        },
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_C": {
+            "result": [
+                0.14291584350000003
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.14248796100000005,
+                        0.1454350729999998
+                    ],
+                    "max": 0.1454350729999998,
+                    "mean": 0.14334808829999998,
+                    "min": 0.14248796100000005,
+                    "number": 1,
+                    "q_25": 0.1427787555,
+                    "q_75": 0.14371358599999995,
+                    "repeat": 10,
+                    "std": 0.0009142869174682006
+                }
+            ]
+        },
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_fortran": {
+            "result": [
+                0.13668436049999994
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.136022851,
+                        0.139781151
+                    ],
+                    "max": 0.139781151,
+                    "mean": 0.1374609939,
+                    "min": 0.136022851,
+                    "number": 1,
+                    "q_25": 0.13612741499999997,
+                    "q_75": 0.13900968675000003,
+                    "repeat": 10,
+                    "std": 0.0014728942820649799
+                }
+            ]
+        },
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_non_contiguous": {
+            "result": [
+                0.11981487600000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.11786737000000003,
+                        0.12156193899999995
+                    ],
+                    "max": 0.12156193899999995,
+                    "mean": 0.11948365359999999,
+                    "min": 0.11786737000000003,
+                    "number": 1,
+                    "q_25": 0.1180398825,
+                    "q_75": 0.12055364050000006,
+                    "repeat": 10,
+                    "std": 0.001319398481809962
+                }
+            ]
+        },
+        "bench_compiling.CachedCompilation.time_jit_mandel": {
+            "result": [
+                0.0015845269565217394
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0014592724927536239,
+                        0.0016742566521739143
+                    ],
+                    "max": 0.0016742566521739143,
+                    "mean": 0.0015757385000000003,
+                    "min": 0.0014592724927536239,
+                    "number": 69,
+                    "q_25": 0.001539464235507246,
+                    "q_75": 0.0016229533949275365,
+                    "repeat": 10,
+                    "std": 6.341051506589836e-05
+                }
+            ]
+        },
+        "bench_compiling.CachedCompilation.time_jit_noop": {
+            "result": [
+                0.0014031266794871798
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001312460641025641,
+                        0.0015128460128205133
+                    ],
+                    "max": 0.0015128460128205133,
+                    "mean": 0.0014069452692307691,
+                    "min": 0.001312460641025641,
+                    "number": 78,
+                    "q_25": 0.0013668670032051288,
+                    "q_75": 0.001453933314102564,
+                    "repeat": 10,
+                    "std": 6.314024211769998e-05
+                }
+            ]
+        },
+        "bench_compiling.LoopLiftedCompilation.time_lift": {
+            "result": [
+                0.1884572535000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.18746086899999992,
+                        0.18956396100000006
+                    ],
+                    "max": 0.18956396100000006,
+                    "mean": 0.1884218221,
+                    "min": 0.18746086899999992,
+                    "number": 1,
+                    "q_25": 0.18774390125,
+                    "q_75": 0.18884216275000001,
+                    "repeat": 10,
+                    "std": 0.0007112379330931899
+                }
+            ]
+        },
+        "bench_compiling.NoPythonCompilation.time_jit_mandel": {
+            "result": [
+                0.049899029500000025
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.04912731600000003,
+                        0.05035706699999998
+                    ],
+                    "max": 0.05035706699999998,
+                    "mean": 0.049758816800000015,
+                    "min": 0.04912731600000003,
+                    "number": 1,
+                    "q_25": 0.04923484774999999,
+                    "q_75": 0.050168497500000006,
+                    "repeat": 10,
+                    "std": 0.0004753738150777333
+                }
+            ]
+        },
+        "bench_compiling.NoPythonCompilation.time_jit_noop": {
+            "result": [
+                0.01617838192857143
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.016040798285714284,
+                        0.016637315000000003
+                    ],
+                    "max": 0.016637315000000003,
+                    "mean": 0.016234011985714288,
+                    "min": 0.016040798285714284,
+                    "number": 7,
+                    "q_25": 0.016121821892857144,
+                    "q_75": 0.016304686249999995,
+                    "repeat": 10,
+                    "std": 0.0001777295539216158
+                }
+            ]
+        },
+        "bench_compiling.PyObjectCompilation.time_jit_mandel_forceobj": {
+            "result": [
+                0.11836679200000003
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.11687429199999999,
+                        0.12191893400000009
+                    ],
+                    "max": 0.12191893400000009,
+                    "mean": 0.1187507051,
+                    "min": 0.11687429199999999,
+                    "number": 1,
+                    "q_25": 0.11734403349999997,
+                    "q_75": 0.11996911225000007,
+                    "repeat": 10,
+                    "std": 0.001610994428564521
+                }
+            ]
+        },
+        "bench_compiling.PyObjectCompilation.time_jit_noop_fallback": {
+            "result": [
+                0.030754064250000004
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.03052618600000001,
+                        0.03115472575
+                    ],
+                    "max": 0.03115472575,
+                    "mean": 0.030737089774999997,
+                    "min": 0.03052618600000001,
+                    "number": 4,
+                    "q_25": 0.030611139437500004,
+                    "q_75": 0.030789944249999972,
+                    "repeat": 10,
+                    "std": 0.00017221655210799657
+                }
+            ]
+        },
+        "bench_compiling.PyObjectCompilation.time_jit_noop_forceobj": {
+            "result": [
+                0.029850707874999993
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0295647275,
+                        0.03087045925000001
+                    ],
+                    "max": 0.03087045925000001,
+                    "mean": 0.029959181874999997,
+                    "min": 0.0295647275,
+                    "number": 4,
+                    "q_25": 0.029598438250000015,
+                    "q_75": 0.03023431793749999,
+                    "repeat": 10,
+                    "std": 0.00042251993555962825
+                }
+            ]
+        },
+        "bench_cuda.BlackScholes.time_blackscholes": {
+            "result": [
+                0.18030146800000002
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.17960545299999997,
+                        0.18072560000000004
+                    ],
+                    "max": 0.18072560000000004,
+                    "mean": 0.1803004296,
+                    "min": 0.17960545299999997,
+                    "number": 1,
+                    "q_25": 0.18019739075,
+                    "q_75": 0.18058645949999994,
+                    "repeat": 10,
+                    "std": 0.00034206981370274957
+                }
+            ]
+        },
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_large": {
+            "result": [
+                0.006536863093749994
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.006496455125000002,
+                        0.006616174750000002
+                    ],
+                    "max": 0.006616174750000002,
+                    "mean": 0.006541672481249998,
+                    "min": 0.006496455125000002,
+                    "number": 16,
+                    "q_25": 0.006520504953125,
+                    "q_75": 0.006557417124999992,
+                    "repeat": 10,
+                    "std": 3.462817191169802e-05
+                }
+            ]
+        },
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_small": {
+            "result": [
+                0.0002624109717948717
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0002598929179487179,
+                        0.000264290282051282
+                    ],
+                    "max": 0.000264290282051282,
+                    "mean": 0.0002624162956410256,
+                    "min": 0.0002598929179487179,
+                    "number": 390,
+                    "q_25": 0.00026150505769230773,
+                    "q_75": 0.00026360262051282064,
+                    "repeat": 10,
+                    "std": 1.38737475217991e-06
+                }
+            ]
+        },
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_large": {
+            "result": [
+                0.00961885504166667
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.008650876833333335,
+                        0.009882498833333336
+                    ],
+                    "max": 0.009882498833333336,
+                    "mean": 0.00929962819166667,
+                    "min": 0.008650876833333335,
+                    "number": 12,
+                    "q_25": 0.008689893437500004,
+                    "q_75": 0.009718356083333338,
+                    "repeat": 10,
+                    "std": 0.000510697484399819
+                }
+            ]
+        },
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_small": {
+            "result": [
+                0.0013651120886075956
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001356505784810127,
+                        0.0013728090632911397
+                    ],
+                    "max": 0.0013728090632911397,
+                    "mean": 0.0013646104430379753,
+                    "min": 0.001356505784810127,
+                    "number": 79,
+                    "q_25": 0.0013620704050632914,
+                    "q_75": 0.0013673241487341778,
+                    "repeat": 10,
+                    "std": 4.392950521197014e-06
+                }
+            ]
+        },
+        "bench_cuda.NBody.time_cpu_nbody": {
+            "result": [
+                0.45877962799999994
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.44936933099999976,
+                        0.47205977300000024
+                    ],
+                    "max": 0.47205977300000024,
+                    "mean": 0.4586199181,
+                    "min": 0.44936933099999976,
+                    "number": 1,
+                    "q_25": 0.4532371182500001,
+                    "q_75": 0.4621971897500001,
+                    "repeat": 10,
+                    "std": 0.0064665255409719095
+                }
+            ]
+        },
+        "bench_cuda.NBody.time_cuda_nbody": {
+            "result": [
+                0.0014930276796874982
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001281535031250003,
+                        0.0015212664531249961
+                    ],
+                    "max": 0.0015212664531249961,
+                    "mean": 0.0014649693124999994,
+                    "min": 0.001281535031250003,
+                    "number": 64,
+                    "q_25": 0.0014641238164062494,
+                    "q_75": 0.0015183966523437484,
+                    "repeat": 10,
+                    "std": 7.445498162809885e-05
+                }
+            ]
+        },
+        "bench_cuda.Synthetic.time_addmul_f32": {
+            "result": [
+                0.095264978
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09461494000000004,
+                        0.09980251099999993
+                    ],
+                    "max": 0.09980251099999993,
+                    "mean": 0.09570610579999998,
+                    "min": 0.09461494000000004,
+                    "number": 1,
+                    "q_25": 0.09502210950000006,
+                    "q_75": 0.09544828999999996,
+                    "repeat": 10,
+                    "std": 0.0014301586043359894
+                }
+            ]
+        },
+        "bench_cuda.Synthetic.time_addmul_f64": {
+            "result": [
+                0.09607364649999994
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09539099200000001,
+                        0.09761674499999984
+                    ],
+                    "max": 0.09761674499999984,
+                    "mean": 0.09615087169999997,
+                    "min": 0.09539099200000001,
+                    "number": 1,
+                    "q_25": 0.09576092524999999,
+                    "q_75": 0.09634957924999998,
+                    "repeat": 10,
+                    "std": 0.000581858808256062
+                }
+            ]
+        },
+        "bench_cuda.Synthetic.time_reduce_f32": {
+            "result": [
+                0.4022908585
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.4002871510000001,
+                        0.40899398899999984
+                    ],
+                    "max": 0.40899398899999984,
+                    "mean": 0.4027691951,
+                    "min": 0.4002871510000001,
+                    "number": 1,
+                    "q_25": 0.40091274999999993,
+                    "q_75": 0.4030424982500001,
+                    "repeat": 10,
+                    "std": 0.002478001927512098
+                }
+            ]
+        },
+        "bench_cuda.Synthetic.time_reduce_f64": {
+            "result": [
+                0.4043292394999999
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.40041138600000004,
+                        0.4060765970000002
+                    ],
+                    "max": 0.4060765970000002,
+                    "mean": 0.40371011240000004,
+                    "min": 0.40041138600000004,
+                    "number": 1,
+                    "q_25": 0.4031613507499999,
+                    "q_75": 0.40454389800000023,
+                    "repeat": 10,
+                    "std": 0.0017218118016368096
+                }
+            ]
+        },
+        "bench_cuda.Synthetic.time_run_empty_kernel": {
+            "result": [
+                4.421418013401656e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        4.384620457232953e-05,
+                        4.500417579818692e-05
+                    ],
+                    "max": 4.500417579818692e-05,
+                    "mean": 4.427738604651163e-05,
+                    "min": 4.384620457232953e-05,
+                    "number": 2537,
+                    "q_25": 4.3955036953094225e-05,
+                    "q_75": 4.448844856129287e-05,
+                    "repeat": 10,
+                    "std": 3.600204103244831e-07
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_1d": {
+            "result": [
+                0.000462320596774193
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00045468128110598904,
+                        0.00047884423041474644
+                    ],
+                    "max": 0.00047884423041474644,
+                    "mean": 0.00046409507926267236,
+                    "min": 0.00045468128110598904,
+                    "number": 217,
+                    "q_25": 0.00045576494124423955,
+                    "q_75": 0.0004703311140552992,
+                    "repeat": 10,
+                    "std": 8.898912936122324e-06
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_3d": {
+            "result": [
+                0.0005004691717948714
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0004965319948717959,
+                        0.0005304213846153849
+                    ],
+                    "max": 0.0005304213846153849,
+                    "mean": 0.0005060697461538463,
+                    "min": 0.0004965319948717959,
+                    "number": 195,
+                    "q_25": 0.0004994516243589742,
+                    "q_75": 0.0005026672435897446,
+                    "repeat": 10,
+                    "std": 1.216914165426064e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_records": {
+            "result": [
+                0.000626973193641617
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0006130444450867045,
+                        0.0006514982138728323
+                    ],
+                    "max": 0.0006514982138728323,
+                    "mean": 0.0006295485132947977,
+                    "min": 0.0006130444450867045,
+                    "number": 173,
+                    "q_25": 0.0006178195332369948,
+                    "q_75": 0.000639009202312139,
+                    "repeat": 10,
+                    "std": 1.2641315741092608e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bool": {
+            "result": [
+                0.00039981405421686783
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00039114116465863434,
+                        0.000422995931726907
+                    ],
+                    "max": 0.000422995931726907,
+                    "mean": 0.00040253589156626486,
+                    "min": 0.00039114116465863434,
+                    "number": 249,
+                    "q_25": 0.000392817843373494,
+                    "q_75": 0.0004080542038152602,
+                    "repeat": 10,
+                    "std": 1.1093569652274118e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bytearray": {
+            "result": [
+                0.0005410775165745855
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0005201646574585616,
+                        0.0005619627679558014
+                    ],
+                    "max": 0.0005619627679558014,
+                    "mean": 0.0005415581220994474,
+                    "min": 0.0005201646574585616,
+                    "number": 181,
+                    "q_25": 0.000531870444751381,
+                    "q_75": 0.0005520760994475139,
+                    "repeat": 10,
+                    "std": 1.2255662305533017e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_complex": {
+            "result": [
+                0.0003026558138888888
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00029414603055555506,
+                        0.00031664564166666604
+                    ],
+                    "max": 0.00031664564166666604,
+                    "mean": 0.0003041052508333332,
+                    "min": 0.00029414603055555506,
+                    "number": 360,
+                    "q_25": 0.000294611209027778,
+                    "q_75": 0.00031412750277777756,
+                    "repeat": 10,
+                    "std": 9.480829338989013e-06
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_defaults": {
+            "result": [
+                2.984403281081854e-07
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        2.919798293708622e-07,
+                        3.0776002426057553e-07
+                    ],
+                    "max": 3.0776002426057553e-07,
+                    "mean": 2.991549330284659e-07,
+                    "min": 2.919798293708622e-07,
+                    "number": 372621,
+                    "q_25": 2.930087481650257e-07,
+                    "q_75": 3.042903922484239e-07,
+                    "repeat": 10,
+                    "std": 6.377015033396565e-09
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_float": {
+            "result": [
+                0.0003137710702247194
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.000312758205056179,
+                        0.0003272899269662918
+                    ],
+                    "max": 0.0003272899269662918,
+                    "mean": 0.00031615518904494407,
+                    "min": 0.000312758205056179,
+                    "number": 356,
+                    "q_25": 0.0003132794845505624,
+                    "q_75": 0.00031510221418539386,
+                    "repeat": 10,
+                    "std": 5.073894154998963e-06
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_int": {
+            "result": [
+                0.00033182239999999966
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0003307354089552235,
+                        0.00037414500000000004
+                    ],
+                    "max": 0.00037414500000000004,
+                    "mean": 0.0003399365289552237,
+                    "min": 0.0003307354089552235,
+                    "number": 335,
+                    "q_25": 0.00033110616417910435,
+                    "q_75": 0.0003332455716417909,
+                    "repeat": 10,
+                    "std": 1.6557327200519924e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_recarray": {
+            "result": [
+                0.0006916912548387107
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0006597953032258057,
+                        0.0007138653419354849
+                    ],
+                    "max": 0.0007138653419354849,
+                    "mean": 0.0006892027464516132,
+                    "min": 0.0006597953032258057,
+                    "number": 155,
+                    "q_25": 0.0006713303967741943,
+                    "q_75": 0.0007100347709677429,
+                    "repeat": 10,
+                    "std": 2.1878705670404113e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_record": {
+            "result": [
+                0.0017751743362068957
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001683190517241379,
+                        0.0019190895172413783
+                    ],
+                    "max": 0.0019190895172413783,
+                    "mean": 0.0017770883551724132,
+                    "min": 0.001683190517241379,
+                    "number": 58,
+                    "q_25": 0.0017120711681034493,
+                    "q_75": 0.0018199071939655179,
+                    "repeat": 10,
+                    "std": 7.124953621682285e-05
+                }
+            ]
+        },
+        "bench_dispatch.NoPythonDispatch.time_dispatch_tuple": {
+            "result": [
+                0.0005328618864734283
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0005206273429951696,
+                        0.0005635691545893724
+                    ],
+                    "max": 0.0005635691545893724,
+                    "mean": 0.0005388031927536228,
+                    "min": 0.0005206273429951696,
+                    "number": 207,
+                    "q_25": 0.000528953390096618,
+                    "q_75": 0.0005531797620772938,
+                    "repeat": 10,
+                    "std": 1.5118195940528732e-05
+                }
+            ]
+        },
+        "bench_dispatch.PyObjectDispatch.time_dispatch_pyobject": {
+            "result": [
+                0.02617019325000003
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.02574795499999999,
+                        0.02752357124999999
+                    ],
+                    "max": 0.02752357124999999,
+                    "mean": 0.026393575225,
+                    "min": 0.02574795499999999,
+                    "number": 4,
+                    "q_25": 0.025896567312499952,
+                    "q_75": 0.026822384874999994,
+                    "repeat": 10,
+                    "std": 0.0006128136966675057
+                }
+            ]
+        },
+        "bench_gameoflife.GameOfLife.time_gameoflife": {
+            "result": [
+                0.005399842342105268
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.005365224263157897,
+                        0.005409022894736828
+                    ],
+                    "max": 0.005409022894736828,
+                    "mean": 0.005391649163157893,
+                    "min": 0.005365224263157897,
+                    "number": 19,
+                    "q_25": 0.005380095315789467,
+                    "q_75": 0.005402893894736831,
+                    "repeat": 10,
+                    "std": 1.4994664224045926e-05
+                }
+            ]
+        },
+        "bench_ising.IsingModel.time_ising": {
+            "result": [
+                0.2898775335
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.28757801000000005,
+                        0.2922225789999999
+                    ],
+                    "max": 0.2922225789999999,
+                    "mean": 0.29010573089999997,
+                    "min": 0.28757801000000005,
+                    "number": 1,
+                    "q_25": 0.28928707575000007,
+                    "q_75": 0.2910809960000001,
+                    "repeat": 10,
+                    "std": 0.0013365905295186775
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_array_iter_1d": {
+            "result": [
+                0.0002856639483430801
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0002597943372319688,
+                        0.00031664983040935696
+                    ],
+                    "max": 0.00031664983040935696,
+                    "mean": 0.0002859673058479533,
+                    "min": 0.0002597943372319688,
+                    "number": 513,
+                    "q_25": 0.00026048111842105266,
+                    "q_75": 0.00031036528411306055,
+                    "repeat": 10,
+                    "std": 2.46449622572605e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_index_1d": {
+            "result": [
+                0.0003149884197651664
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0002924560900195692,
+                        0.0003290685479452055
+                    ],
+                    "max": 0.0003290685479452055,
+                    "mean": 0.00031442224990215276,
+                    "min": 0.0002924560900195692,
+                    "number": 511,
+                    "q_25": 0.00031354218346379677,
+                    "q_75": 0.00032301429647749527,
+                    "repeat": 10,
+                    "std": 1.1668020666449611e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_C": {
+            "result": [
+                0.00031656553607214413
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00028322932264529077,
+                        0.00032929519238476953
+                    ],
+                    "max": 0.00032929519238476953,
+                    "mean": 0.00031454144248497,
+                    "min": 0.00028322932264529077,
+                    "number": 499,
+                    "q_25": 0.0003138347184368737,
+                    "q_75": 0.0003220389699398798,
+                    "repeat": 10,
+                    "std": 1.2427209522333587e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_fortran": {
+            "result": [
+                0.010435024566666666
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.010321901466666656,
+                        0.011622631533333339
+                    ],
+                    "max": 0.011622631533333339,
+                    "mean": 0.010557349959999998,
+                    "min": 0.010321901466666656,
+                    "number": 15,
+                    "q_25": 0.010399054583333331,
+                    "q_75": 0.010495398883333326,
+                    "repeat": 10,
+                    "std": 0.0003633784363848337
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_non_contiguous": {
+            "result": [
+                0.058826404000000054
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.058353918000000116,
+                        0.06135572899999997
+                    ],
+                    "max": 0.06135572899999997,
+                    "mean": 0.059029854400000026,
+                    "min": 0.058353918000000116,
+                    "number": 1,
+                    "q_25": 0.05864322074999995,
+                    "q_75": 0.05902556725000005,
+                    "repeat": 10,
+                    "std": 0.0008149990717615679
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_iter_1d": {
+            "result": [
+                0.00035773077149321274
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0003168908484162895,
+                        0.0003723242307692303
+                    ],
+                    "max": 0.0003723242307692303,
+                    "mean": 0.00035277350271493215,
+                    "min": 0.0003168908484162895,
+                    "number": 442,
+                    "q_25": 0.00034555191572398203,
+                    "q_75": 0.00036312367420814485,
+                    "repeat": 10,
+                    "std": 1.508725283415288e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_C": {
+            "result": [
+                0.0003212499634615385
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0003137749423076921,
+                        0.00033706116730769254
+                    ],
+                    "max": 0.00033706116730769254,
+                    "mean": 0.00032218951903846153,
+                    "min": 0.0003137749423076921,
+                    "number": 520,
+                    "q_25": 0.00031785519663461525,
+                    "q_75": 0.0003232638567307696,
+                    "repeat": 10,
+                    "std": 6.889446038344224e-06
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_fortran": {
+            "result": [
+                0.0009821632484662572
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0009706228466257678,
+                        0.0010130642822085882
+                    ],
+                    "max": 0.0010130642822085882,
+                    "mean": 0.0009847704472392637,
+                    "min": 0.0009706228466257678,
+                    "number": 163,
+                    "q_25": 0.0009802609785276076,
+                    "q_75": 0.0009862009141104293,
+                    "repeat": 10,
+                    "std": 1.0469825052796972e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_non_contiguous": {
+            "result": [
+                0.0008736538284883723
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0008703243895348848,
+                        0.0008770605406976745
+                    ],
+                    "max": 0.0008770605406976745,
+                    "mean": 0.0008735001912790702,
+                    "min": 0.0008703243895348848,
+                    "number": 172,
+                    "q_25": 0.0008711881424418613,
+                    "q_75": 0.0008753104607558143,
+                    "repeat": 10,
+                    "std": 2.2809182847652124e-06
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_ndindex_1d": {
+            "result": [
+                0.0003196771066037736
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0002718869943396224,
+                        0.0003464840509433964
+                    ],
+                    "max": 0.0003464840509433964,
+                    "mean": 0.0003142750309433963,
+                    "min": 0.0002718869943396224,
+                    "number": 530,
+                    "q_25": 0.0002909101575471698,
+                    "q_75": 0.0003395685221698115,
+                    "repeat": 10,
+                    "std": 2.7265673558462102e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_ndindex_2d": {
+            "result": [
+                0.002020822693333333
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0020072898533333326,
+                        0.00204071828
+                    ],
+                    "max": 0.00204071828,
+                    "mean": 0.0020231300013333325,
+                    "min": 0.0020072898533333326,
+                    "number": 75,
+                    "q_25": 0.0020132198066666663,
+                    "q_75": 0.002035030543333333,
+                    "repeat": 10,
+                    "std": 1.1747696267577542e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_1d": {
+            "result": [
+                0.055986892499999996
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.05564134400000009,
+                        0.0575215790000001
+                    ],
+                    "max": 0.0575215790000001,
+                    "mean": 0.05626086669999998,
+                    "min": 0.05564134400000009,
+                    "number": 1,
+                    "q_25": 0.055913334249999946,
+                    "q_75": 0.056339936249999945,
+                    "repeat": 10,
+                    "std": 0.0005845885417553341
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C": {
+            "result": [
+                0.057957121499999986
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.05736767899999995,
+                        0.05850895100000009
+                    ],
+                    "max": 0.05850895100000009,
+                    "mean": 0.0578804682,
+                    "min": 0.05736767899999995,
+                    "number": 1,
+                    "q_25": 0.05750481624999995,
+                    "q_75": 0.058150639750000066,
+                    "repeat": 10,
+                    "std": 0.00036976753009288247
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C_small_inner_dim": {
+            "result": [
+                0.05674740750000007
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.05650481800000007,
+                        0.058228105999999946
+                    ],
+                    "max": 0.058228105999999946,
+                    "mean": 0.05688978930000003,
+                    "min": 0.05650481800000007,
+                    "number": 1,
+                    "q_25": 0.05658674749999998,
+                    "q_75": 0.056928190000000045,
+                    "repeat": 10,
+                    "std": 0.0004890708353931749
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_fortran": {
+            "result": [
+                0.05735451349999998
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.056287266999999974,
+                        0.05967923599999991
+                    ],
+                    "max": 0.05967923599999991,
+                    "mean": 0.057351402599999976,
+                    "min": 0.056287266999999974,
+                    "number": 1,
+                    "q_25": 0.05641462250000007,
+                    "q_75": 0.05783376224999992,
+                    "repeat": 10,
+                    "std": 0.0010090029623155007
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_non_contiguous": {
+            "result": [
+                0.06133346350000002
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.06019360500000004,
+                        0.06285738399999996
+                    ],
+                    "max": 0.06285738399999996,
+                    "mean": 0.061398412199999974,
+                    "min": 0.06019360500000004,
+                    "number": 1,
+                    "q_25": 0.06092981324999988,
+                    "q_75": 0.0618329715,
+                    "repeat": 10,
+                    "std": 0.00075551616304602
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_range_index_1d": {
+            "result": [
+                0.00033376645674044266
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00031713760764587534,
+                        0.00035513093762575487
+                    ],
+                    "max": 0.00035513093762575487,
+                    "mean": 0.00033527836438631794,
+                    "min": 0.00031713760764587534,
+                    "number": 497,
+                    "q_25": 0.0003267354939637825,
+                    "q_75": 0.00034479332595573455,
+                    "repeat": 10,
+                    "std": 1.1746081720252963e-05
+                }
+            ]
+        },
+        "bench_iterating.MonoArrayIterators.time_range_index_2d": {
+            "result": [
+                0.10303769099999993
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.10225437500000001,
+                        0.10605848600000001
+                    ],
+                    "max": 0.10605848600000001,
+                    "mean": 0.10329202809999996,
+                    "min": 0.10225437500000001,
+                    "number": 1,
+                    "q_25": 0.10282394599999989,
+                    "q_75": 0.10343774874999995,
+                    "repeat": 10,
+                    "std": 0.0010279279620508072
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_A_A_A": {
+            "result": [
+                0.11569355450000007
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.11332075799999997,
+                        0.11710820199999983
+                    ],
+                    "max": 0.11710820199999983,
+                    "mean": 0.11557140319999996,
+                    "min": 0.11332075799999997,
+                    "number": 1,
+                    "q_25": 0.11546543949999999,
+                    "q_75": 0.11627884624999996,
+                    "repeat": 10,
+                    "std": 0.0011991764049122946
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_C_C_C": {
+            "result": [
+                0.11139975550000014
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.10970605999999994,
+                        0.11309421300000011
+                    ],
+                    "max": 0.11309421300000011,
+                    "mean": 0.11142099850000006,
+                    "min": 0.10970605999999994,
+                    "number": 1,
+                    "q_25": 0.11062671825000003,
+                    "q_75": 0.1121955065000001,
+                    "repeat": 10,
+                    "std": 0.000978338074892263
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_F_F_F": {
+            "result": [
+                0.11155482400000005
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.11008790400000001,
+                        0.11935060699999989
+                    ],
+                    "max": 0.11935060699999989,
+                    "mean": 0.11228489719999997,
+                    "min": 0.11008790400000001,
+                    "number": 1,
+                    "q_25": 0.11071513024999996,
+                    "q_75": 0.11281233300000001,
+                    "repeat": 10,
+                    "std": 0.0026058190078603145
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_1d": {
+            "result": [
+                0.08687790650000005
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08471810299999993,
+                        0.09263404599999991
+                    ],
+                    "max": 0.09263404599999991,
+                    "mean": 0.08695582880000002,
+                    "min": 0.08471810299999993,
+                    "number": 1,
+                    "q_25": 0.08563540550000001,
+                    "q_75": 0.08720750225000012,
+                    "repeat": 10,
+                    "std": 0.0021273863248477713
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_A_A": {
+            "result": [
+                0.09245103599999993
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09103154599999996,
+                        0.096867496
+                    ],
+                    "max": 0.096867496,
+                    "mean": 0.09291465279999997,
+                    "min": 0.09103154599999996,
+                    "number": 1,
+                    "q_25": 0.09221326600000007,
+                    "q_75": 0.09323239574999992,
+                    "repeat": 10,
+                    "std": 0.0014735928315578184
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A": {
+            "result": [
+                0.09198567000000013
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09152034400000009,
+                        0.09267914600000005
+                    ],
+                    "max": 0.09267914600000005,
+                    "mean": 0.09210738780000002,
+                    "min": 0.09152034400000009,
+                    "number": 1,
+                    "q_25": 0.09190277575000003,
+                    "q_75": 0.09233814449999989,
+                    "repeat": 10,
+                    "std": 0.000351320660728262
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A_small_inner_dim": {
+            "result": [
+                0.09382153699999995
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09270346699999998,
+                        0.0947587459999999
+                    ],
+                    "max": 0.0947587459999999,
+                    "mean": 0.0937630875,
+                    "min": 0.09270346699999998,
+                    "number": 1,
+                    "q_25": 0.09322044850000011,
+                    "q_75": 0.09433822575000006,
+                    "repeat": 10,
+                    "std": 0.0006884648730064606
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C": {
+            "result": [
+                0.08951408700000008
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08865471699999983,
+                        0.09018086099999989
+                    ],
+                    "max": 0.09018086099999989,
+                    "mean": 0.08946238409999999,
+                    "min": 0.08865471699999983,
+                    "number": 1,
+                    "q_25": 0.08935283274999994,
+                    "q_75": 0.08965753050000003,
+                    "repeat": 10,
+                    "std": 0.0004455752609848391
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C_small_inner_dim": {
+            "result": [
+                0.08890128799999997
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08796500200000001,
+                        0.09230277099999995
+                    ],
+                    "max": 0.09230277099999995,
+                    "mean": 0.08935747339999997,
+                    "min": 0.08796500200000001,
+                    "number": 1,
+                    "q_25": 0.0881762754999999,
+                    "q_75": 0.08998248250000007,
+                    "repeat": 10,
+                    "std": 0.001391248581696785
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C": {
+            "result": [
+                0.0923639825
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.091813068,
+                        0.09487865399999995
+                    ],
+                    "max": 0.09487865399999995,
+                    "mean": 0.09267753999999996,
+                    "min": 0.091813068,
+                    "number": 1,
+                    "q_25": 0.09220006774999986,
+                    "q_75": 0.09293222450000005,
+                    "repeat": 10,
+                    "std": 0.0008293687751754458
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C_small_inner_dim": {
+            "result": [
+                0.09216758150000004
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.09054554700000006,
+                        0.09416084300000005
+                    ],
+                    "max": 0.09416084300000005,
+                    "mean": 0.09198513579999996,
+                    "min": 0.09054554700000006,
+                    "number": 1,
+                    "q_25": 0.09117360499999982,
+                    "q_75": 0.09225580350000001,
+                    "repeat": 10,
+                    "std": 0.0009840587234404242
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F": {
+            "result": [
+                0.08891141300000005
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08783308100000009,
+                        0.08998719199999994
+                    ],
+                    "max": 0.08998719199999994,
+                    "mean": 0.08891344230000005,
+                    "min": 0.08783308100000009,
+                    "number": 1,
+                    "q_25": 0.08853017275000008,
+                    "q_75": 0.08925530450000013,
+                    "repeat": 10,
+                    "std": 0.0005868902061767348
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F_small_inner_dim": {
+            "result": [
+                0.08888930049999988
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.08813237100000015,
+                        0.09668345499999997
+                    ],
+                    "max": 0.09668345499999997,
+                    "mean": 0.08975594070000001,
+                    "min": 0.08813237100000015,
+                    "number": 1,
+                    "q_25": 0.08842297800000004,
+                    "q_75": 0.08953850350000003,
+                    "repeat": 10,
+                    "std": 0.0024199278714882267
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_1d": {
+            "result": [
+                0.07641520599999996
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0753699790000002,
+                        0.08212512699999985
+                    ],
+                    "max": 0.08212512699999985,
+                    "mean": 0.07700852459999999,
+                    "min": 0.0753699790000002,
+                    "number": 1,
+                    "q_25": 0.07627098275,
+                    "q_75": 0.07728138149999994,
+                    "repeat": 10,
+                    "std": 0.0018390870301453442
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_A_A": {
+            "result": [
+                0.07840830249999997
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07746327600000003,
+                        0.08182484099999987
+                    ],
+                    "max": 0.08182484099999987,
+                    "mean": 0.07865780870000003,
+                    "min": 0.07746327600000003,
+                    "number": 1,
+                    "q_25": 0.07803298675000003,
+                    "q_75": 0.0788973455,
+                    "repeat": 10,
+                    "std": 0.0011579267611892847
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C": {
+            "result": [
+                0.07838319999999999
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07651813400000007,
+                        0.080791069
+                    ],
+                    "max": 0.080791069,
+                    "mean": 0.0782087764,
+                    "min": 0.07651813400000007,
+                    "number": 1,
+                    "q_25": 0.07723299200000003,
+                    "q_75": 0.07877701000000004,
+                    "repeat": 10,
+                    "std": 0.0011946086553771419
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C_small_inner_dim": {
+            "result": [
+                0.07711421699999998
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07654385399999997,
+                        0.07879413299999993
+                    ],
+                    "max": 0.07879413299999993,
+                    "mean": 0.07731455879999999,
+                    "min": 0.07654385399999997,
+                    "number": 1,
+                    "q_25": 0.07699005200000003,
+                    "q_75": 0.07724605325000006,
+                    "repeat": 10,
+                    "std": 0.0006363272047405536
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_F_F": {
+            "result": [
+                0.07901992899999999
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07842964199999991,
+                        0.08086020799999982
+                    ],
+                    "max": 0.08086020799999982,
+                    "mean": 0.07911536339999996,
+                    "min": 0.07842964199999991,
+                    "number": 1,
+                    "q_25": 0.07883441375,
+                    "q_75": 0.07913153200000006,
+                    "repeat": 10,
+                    "std": 0.000629588696777183
+                }
+            ]
+        },
+        "bench_iterating.MultiArrayIterators.time_zip_iter_two_1d": {
+            "result": [
+                0.07253081750000001
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07134288599999994,
+                        0.07447745800000005
+                    ],
+                    "max": 0.07447745800000005,
+                    "mean": 0.07261323329999998,
+                    "min": 0.07134288599999994,
+                    "number": 1,
+                    "q_25": 0.07238232949999998,
+                    "q_75": 0.07267664574999994,
+                    "repeat": 10,
+                    "std": 0.000730075823720563
+                }
+            ]
+        },
+        "bench_laplace.Laplace.time_laplace": {
+            "result": [
+                0.021353914500000015
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.021222027800000022,
+                        0.021694381000000006
+                    ],
+                    "max": 0.021694381000000006,
+                    "mean": 0.021368131440000014,
+                    "min": 0.021222027800000022,
+                    "number": 5,
+                    "q_25": 0.02128107345000001,
+                    "q_75": 0.021400488750000012,
+                    "repeat": 10,
+                    "std": 0.00012435035766889273
+                }
+            ]
+        },
+        "bench_lists.ListConstruction.time_list_append": {
+            "result": [
+                0.0014353930666666658
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0014264569599999946,
+                        0.0014424820800000048
+                    ],
+                    "max": 0.0014424820800000048,
+                    "mean": 0.0014359866506666666,
+                    "min": 0.0014264569599999946,
+                    "number": 75,
+                    "q_25": 0.0014338829533333348,
+                    "q_75": 0.0014397171099999999,
+                    "repeat": 10,
+                    "std": 4.451271731182632e-06
+                }
+            ]
+        },
+        "bench_lists.ListConstruction.time_list_call": {
+            "result": [
+                0.00020471512686567168
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00019354054477611926,
+                        0.00020963738059701542
+                    ],
+                    "max": 0.00020963738059701542,
+                    "mean": 0.00020257073712686568,
+                    "min": 0.00019354054477611926,
+                    "number": 536,
+                    "q_25": 0.00019649235261194029,
+                    "q_75": 0.00020646353031716395,
+                    "repeat": 10,
+                    "std": 5.907732813166086e-06
+                }
+            ]
+        },
+        "bench_lists.ListConstruction.time_list_extend": {
+            "result": [
+                0.00019741556764168178
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00018953979341864726,
+                        0.00021263144972577704
+                    ],
+                    "max": 0.00021263144972577704,
+                    "mean": 0.0001981822669104205,
+                    "min": 0.00018953979341864726,
+                    "number": 547,
+                    "q_25": 0.00019369269469835464,
+                    "q_75": 0.0002003756508226693,
+                    "repeat": 10,
+                    "std": 6.574971550804884e-06
+                }
+            ]
+        },
+        "bench_lists.ListMutation.time_list_insert": {
+            "result": [
+                0.010687783549999996
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.01063218920000002,
+                        0.010773165299999998
+                    ],
+                    "max": 0.010773165299999998,
+                    "mean": 0.010699009430000002,
+                    "min": 0.01063218920000002,
+                    "number": 10,
+                    "q_25": 0.01066159437499999,
+                    "q_75": 0.010739749225000017,
+                    "repeat": 10,
+                    "std": 4.510090882809598e-05
+                }
+            ]
+        },
+        "bench_lists.ListMutation.time_list_pop": {
+            "result": [
+                0.0015916285289855072
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001575521144927537,
+                        0.0018006426956521725
+                    ],
+                    "max": 0.0018006426956521725,
+                    "mean": 0.0016671767304347826,
+                    "min": 0.001575521144927537,
+                    "number": 69,
+                    "q_25": 0.0015815342644927518,
+                    "q_75": 0.0017903375579710157,
+                    "repeat": 10,
+                    "std": 0.00010289977103183097
+                }
+            ]
+        },
+        "bench_lists.ListReturn.time_list_return": {
+            "result": [
+                0.0009812279363636367
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0009787803090909098,
+                        0.0009891936090909103
+                    ],
+                    "max": 0.0009891936090909103,
+                    "mean": 0.0009821336236363637,
+                    "min": 0.0009787803090909098,
+                    "number": 110,
+                    "q_25": 0.0009799149954545453,
+                    "q_75": 0.0009829408386363633,
+                    "repeat": 10,
+                    "std": 3.1040797769851327e-06
+                }
+            ]
+        },
+        "bench_misc.IndirectIndexing.time_signed_indirect_indexing": {
+            "result": [
+                0.00022600944029850745
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0002241235479744138,
+                        0.00024024782729211092
+                    ],
+                    "max": 0.00024024782729211092,
+                    "mean": 0.00022744524562899794,
+                    "min": 0.0002241235479744138,
+                    "number": 469,
+                    "q_25": 0.00022554403304904044,
+                    "q_75": 0.00022714747654584247,
+                    "repeat": 10,
+                    "std": 4.407556535868221e-06
+                }
+            ]
+        },
+        "bench_misc.IndirectIndexing.time_unsigned_indirect_indexing": {
+            "result": [
+                0.00017581705948553053
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0001564293279742768,
+                        0.00017639438906752404
+                    ],
+                    "max": 0.00017639438906752404,
+                    "mean": 0.0001738505138263666,
+                    "min": 0.0001564293279742768,
+                    "number": 622,
+                    "q_25": 0.00017551966197749193,
+                    "q_75": 0.0001759813223472669,
+                    "repeat": 10,
+                    "std": 5.820330431551101e-06
+                }
+            ]
+        },
+        "bench_misc.InitializationTime.time_new_process_import_numba": {
+            "result": [
+                0.23029851913452148
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.2276294231414795,
+                        0.23507070541381836
+                    ],
+                    "max": 0.25397777557373047,
+                    "mean": 0.2322225570678711,
+                    "min": 0.22581124305725098,
+                    "number": 1,
+                    "q_25": 0.22821044921875,
+                    "q_75": 0.233606219291687,
+                    "repeat": 20,
+                    "std": 0.00629488154024032
+                }
+            ]
+        },
+        "bench_nbody.NBody.time_numba_nbody": {
+            "result": [
+                0.07744191225000002
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.07706244299999998,
+                        0.08018725199999999
+                    ],
+                    "max": 0.08018725199999999,
+                    "mean": 0.07771526324999997,
+                    "min": 0.07706244299999998,
+                    "number": 2,
+                    "q_25": 0.07728750687500002,
+                    "q_75": 0.07763783487499992,
+                    "repeat": 10,
+                    "std": 0.0008700085749920858
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_move_nanmean": {
+            "result": [
+                5.135846938294852e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        5.0861810645313e-05,
+                        5.199965708902491e-05
+                    ],
+                    "max": 5.199965708902491e-05,
+                    "mean": 5.140831771078657e-05,
+                    "min": 5.0861810645313e-05,
+                    "number": 2123,
+                    "q_25": 5.111091886481391e-05,
+                    "q_75": 5.1673898728214785e-05,
+                    "repeat": 10,
+                    "std": 3.755831401065987e-07
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_move_nanmean_2d": {
+            "result": [
+                4.929174987303202e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        4.885015388522092e-05,
+                        5.027198171660738e-05
+                    ],
+                    "max": 5.027198171660738e-05,
+                    "mean": 4.949769019807008e-05,
+                    "min": 4.885015388522092e-05,
+                    "number": 1969,
+                    "q_25": 4.9146775266632785e-05,
+                    "q_75": 4.988359179786693e-05,
+                    "repeat": 10,
+                    "std": 4.767207893912225e-07
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_nanmean_gufunc": {
+            "result": [
+                1.5936305821371622e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        1.5911920574162687e-05,
+                        1.6008668102073397e-05
+                    ],
+                    "max": 1.6008668102073397e-05,
+                    "mean": 1.594354346092505e-05,
+                    "min": 1.5911920574162687e-05,
+                    "number": 6270,
+                    "q_25": 1.5924511084529514e-05,
+                    "q_75": 1.5939245972886764e-05,
+                    "repeat": 10,
+                    "std": 3.197352074819907e-08
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_nanmean_jit_1d": {
+            "result": [
+                1.3950917606909017e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        1.391146803175931e-05,
+                        1.3981537122161822e-05
+                    ],
+                    "max": 1.3981537122161822e-05,
+                    "mean": 1.3945441607466215e-05,
+                    "min": 1.391146803175931e-05,
+                    "number": 7179,
+                    "q_25": 1.3918919835631693e-05,
+                    "q_75": 1.3967295967404927e-05,
+                    "repeat": 10,
+                    "std": 2.5019164589605146e-08
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d": {
+            "result": [
+                2.2334988290562343e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        2.2275056934511318e-05,
+                        2.2762563455335842e-05
+                    ],
+                    "max": 2.2762563455335842e-05,
+                    "mean": 2.239186965362502e-05,
+                    "min": 2.2275056934511318e-05,
+                    "number": 7131,
+                    "q_25": 2.232753288458842e-05,
+                    "q_75": 2.23695670663301e-05,
+                    "repeat": 10,
+                    "std": 1.3798460453264255e-07
+                }
+            ]
+        },
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d_reversed": {
+            "result": [
+                2.2526984972858464e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        2.2392600423672727e-05,
+                        2.2596742486429244e-05
+                    ],
+                    "max": 2.2596742486429244e-05,
+                    "mean": 2.2518703429101016e-05,
+                    "min": 2.2392600423672727e-05,
+                    "number": 7553,
+                    "q_25": 2.2477389613398644e-05,
+                    "q_75": 2.2563459982788266e-05,
+                    "repeat": 10,
+                    "std": 6.197153359628326e-08
+                }
+            ]
+        },
+        "bench_random.RandomIntegers.time_py_getrandbits": {
+            "result": [
+                0.0002157422879684418
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00021480029783037507,
+                        0.0002170969743589744
+                    ],
+                    "max": 0.0002170969743589744,
+                    "mean": 0.00021581613254437873,
+                    "min": 0.00021480029783037507,
+                    "number": 507,
+                    "q_25": 0.00021524003254437876,
+                    "q_75": 0.00021630659861932947,
+                    "repeat": 10,
+                    "std": 7.120731408766447e-07
+                }
+            ]
+        },
+        "bench_sets.IntegerSets.time_setops": {
+            "result": [
+                0.022951458999999994
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.02239495680000001,
+                        0.026201247599999977
+                    ],
+                    "max": 0.026201247599999977,
+                    "mean": 0.023314281760000003,
+                    "min": 0.02239495680000001,
+                    "number": 5,
+                    "q_25": 0.022599346999999992,
+                    "q_75": 0.02363298525000004,
+                    "repeat": 10,
+                    "std": 0.0010637509745902495
+                }
+            ]
+        },
+        "bench_sets.IntegerSets.time_unique": {
+            "result": [
+                0.0018032871000000024
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0018003578166666755,
+                        0.0018081061000000027
+                    ],
+                    "max": 0.0018081061000000027,
+                    "mean": 0.0018032455400000043,
+                    "min": 0.0018003578166666755,
+                    "number": 60,
+                    "q_25": 0.0018014253916666723,
+                    "q_75": 0.0018044065708333408,
+                    "repeat": 10,
+                    "std": 2.229992286063135e-06
+                }
+            ]
+        },
+        "bench_sorting.ArrayMedian.time_median_duplicates_array": {
+            "result": [
+                0.0010329514086538467
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0010309700192307693,
+                        0.0010382836442307702
+                    ],
+                    "max": 0.0010382836442307702,
+                    "mean": 0.0010335247355769237,
+                    "min": 0.0010309700192307693,
+                    "number": 104,
+                    "q_25": 0.0010315665625000008,
+                    "q_75": 0.0010347993293269232,
+                    "repeat": 10,
+                    "std": 2.3676079524764933e-06
+                }
+            ]
+        },
+        "bench_sorting.ArrayMedian.time_median_random_array_even": {
+            "result": [
+                0.001180530811111111
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001172481433333335,
+                        0.001184250344444441
+                    ],
+                    "max": 0.001184250344444441,
+                    "mean": 0.001179632525555556,
+                    "min": 0.001172481433333335,
+                    "number": 90,
+                    "q_25": 0.001177550816666669,
+                    "q_75": 0.0011829394888888908,
+                    "repeat": 10,
+                    "std": 4.032790749708459e-06
+                }
+            ]
+        },
+        "bench_sorting.ArrayMedian.time_median_random_array_odd": {
+            "result": [
+                0.00106399679787234
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0010540962553191474,
+                        0.0010694123297872343
+                    ],
+                    "max": 0.0010694123297872343,
+                    "mean": 0.0010619602382978721,
+                    "min": 0.0010540962553191474,
+                    "number": 94,
+                    "q_25": 0.0010558606382978727,
+                    "q_75": 0.0010669217234042557,
+                    "repeat": 10,
+                    "std": 5.80537279539302e-06
+                }
+            ]
+        },
+        "bench_sorting.ArrayMedian.time_median_sorted_array": {
+            "result": [
+                0.00021703978007889558
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.00021655054043392507,
+                        0.00021927460552268247
+                    ],
+                    "max": 0.00021927460552268247,
+                    "mean": 0.00021766075009861937,
+                    "min": 0.00021655054043392507,
+                    "number": 507,
+                    "q_25": 0.00021675381410256374,
+                    "q_75": 0.0002189170882642997,
+                    "repeat": 10,
+                    "std": 1.1086368422991006e-06
+                }
+            ]
+        },
+        "bench_sorting.ArrayMedian.time_median_triangle_array": {
+            "result": [
+                0.0012030202674418611
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.001196509930232557,
+                        0.001219707941860463
+                    ],
+                    "max": 0.001219707941860463,
+                    "mean": 0.0012045617825581392,
+                    "min": 0.001196509930232557,
+                    "number": 86,
+                    "q_25": 0.0011974044738372093,
+                    "q_75": 0.0012101447732558149,
+                    "repeat": 10,
+                    "std": 7.637569612994967e-06
+                }
+            ]
+        },
+        "bench_sorting.ArraySorting.time_argsort_random_array": {
+            "result": [
+                0.010116766449999991
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.010074414000000021,
+                        0.0101725611
+                    ],
+                    "max": 0.0101725611,
+                    "mean": 0.010115137029999997,
+                    "min": 0.010074414000000021,
+                    "number": 10,
+                    "q_25": 0.010091832200000012,
+                    "q_75": 0.010123006849999982,
+                    "repeat": 10,
+                    "std": 2.9226720547395117e-05
+                }
+            ]
+        },
+        "bench_sorting.ArraySorting.time_sort_duplicates_array": {
+            "result": [
+                0.00503373869999999
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.005028827649999989,
+                        0.005058326000000002
+                    ],
+                    "max": 0.005058326000000002,
+                    "mean": 0.005036948395,
+                    "min": 0.005028827649999989,
+                    "number": 20,
+                    "q_25": 0.00503067817500002,
+                    "q_75": 0.005037435150000008,
+                    "repeat": 10,
+                    "std": 8.896994191310396e-06
+                }
+            ]
+        },
+        "bench_sorting.ArraySorting.time_sort_random_array": {
+            "result": [
+                0.007606602692307703
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.007583472230769221,
+                        0.007653022076923071
+                    ],
+                    "max": 0.007653022076923071,
+                    "mean": 0.007611387561538468,
+                    "min": 0.007583472230769221,
+                    "number": 13,
+                    "q_25": 0.007590147134615401,
+                    "q_75": 0.007627591192307706,
+                    "repeat": 10,
+                    "std": 2.440494671747333e-05
+                }
+            ]
+        },
+        "bench_sorting.ArraySorting.time_sort_sorted_array": {
+            "result": [
+                0.001633733999999996
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.0016291849701492536,
+                        0.0016684748507462689
+                    ],
+                    "max": 0.0016684748507462689,
+                    "mean": 0.0016406388507462684,
+                    "min": 0.0016291849701492536,
+                    "number": 67,
+                    "q_25": 0.0016305934067164219,
+                    "q_75": 0.0016458136380596987,
+                    "repeat": 10,
+                    "std": 1.3093098619856318e-05
+                }
+            ]
+        },
+        "bench_sorting.ArraySorting.time_sort_triangle_array": {
+            "result": [
+                0.004817092000000003
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.004800859000000016,
+                        0.004843257272727275
+                    ],
+                    "max": 0.004843257272727275,
+                    "mean": 0.004817982759090908,
+                    "min": 0.004800859000000016,
+                    "number": 22,
+                    "q_25": 0.004804409318181826,
+                    "q_75": 0.004826427136363625,
+                    "repeat": 10,
+                    "std": 1.4491849540569723e-05
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_mul_complex128": {
+            "result": [
+                2.28210040829146e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        2.2727743718593015e-05,
+                        2.3281619765494157e-05
+                    ],
+                    "max": 2.3281619765494157e-05,
+                    "mean": 2.2876300188442218e-05,
+                    "min": 2.2727743718593015e-05,
+                    "number": 4776,
+                    "q_25": 2.2792675041876036e-05,
+                    "q_75": 2.2914275701423793e-05,
+                    "repeat": 10,
+                    "std": 1.4844014166765104e-07
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_mul_complex64": {
+            "result": [
+                1.1726491130169186e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        1.1613554981202984e-05,
+                        1.189142810150374e-05
+                    ],
+                    "max": 1.189142810150374e-05,
+                    "mean": 1.1717259844924813e-05,
+                    "min": 1.1613554981202984e-05,
+                    "number": 8512,
+                    "q_25": 1.1671501409774432e-05,
+                    "q_75": 1.1746043497415431e-05,
+                    "repeat": 10,
+                    "std": 7.450801077726796e-08
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_mul_float32": {
+            "result": [
+                2.568499329758717e-06
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        2.542952130661785e-06,
+                        2.711777409341059e-06
+                    ],
+                    "max": 2.711777409341059e-06,
+                    "mean": 2.592481748271483e-06,
+                    "min": 2.542952130661785e-06,
+                    "number": 28348,
+                    "q_25": 2.5653532877098904e-06,
+                    "q_75": 2.5957803195992572e-06,
+                    "repeat": 10,
+                    "std": 5.265918918664608e-08
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_mul_float64": {
+            "result": [
+                4.631262845694542e-06
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        4.3202041954745585e-06,
+                        7.986530169704597e-06
+                    ],
+                    "max": 7.986530169704597e-06,
+                    "mean": 5.61246229572596e-06,
+                    "min": 4.3202041954745585e-06,
+                    "number": 12728,
+                    "q_25": 4.4871669154619535e-06,
+                    "q_75": 7.0227427914833335e-06,
+                    "repeat": 10,
+                    "std": 1.3812551799411895e-06
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_rel_diff_float32": {
+            "result": [
+                1.2130434467095061e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        1.1845575448703705e-05,
+                        1.2262524484821617e-05
+                    ],
+                    "max": 1.2262524484821617e-05,
+                    "mean": 1.209452681143363e-05,
+                    "min": 1.1845575448703705e-05,
+                    "number": 9026,
+                    "q_25": 1.2041026091291825e-05,
+                    "q_75": 1.2166152891646351e-05,
+                    "repeat": 10,
+                    "std": 1.1430762742919022e-07
+                }
+            ]
+        },
+        "bench_vectorize.Vectorize.time_rel_diff_float64": {
+            "result": [
+                1.1947492938523617e-05
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        1.192048967481604e-05,
+                        1.1976499643959162e-05
+                    ],
+                    "max": 1.1976499643959162e-05,
+                    "mean": 1.1947574436268691e-05,
+                    "min": 1.192048967481604e-05,
+                    "number": 8426,
+                    "q_25": 1.193498976382626e-05,
+                    "q_75": 1.1958900931640173e-05,
+                    "repeat": 10,
+                    "std": 1.631916491502061e-08
+                }
+            ]
+        }
+    },
+    "started_at": {
+        "bench_arrayexprs.ArrayExpressions.time_cube_float32": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_cube_float64": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float32": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_rel_diff_float64": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float32": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_sq_diff_float64": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_square_float32": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_square_float64": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_sum_float32": 1534584457000,
+        "bench_arrayexprs.ArrayExpressions.time_sum_float64": 1534584457000,
+        "bench_blackscholes.BlackScholes.time_blackscholes": 1534584457000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_1d": 1534584457000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_C": 1534584457000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_fortran": 1534584457000,
+        "bench_centdiff.CenteredDifference.time_centered_difference_2d_non_contiguous": 1534584457000,
+        "bench_compiling.CachedCompilation.time_jit_mandel": 1534584457000,
+        "bench_compiling.CachedCompilation.time_jit_noop": 1534584457000,
+        "bench_compiling.LoopLiftedCompilation.time_lift": 1534584457000,
+        "bench_compiling.NoPythonCompilation.time_jit_mandel": 1534584457000,
+        "bench_compiling.NoPythonCompilation.time_jit_noop": 1534584457000,
+        "bench_compiling.PyObjectCompilation.time_jit_mandel_forceobj": 1534584457000,
+        "bench_compiling.PyObjectCompilation.time_jit_noop_fallback": 1534584457000,
+        "bench_compiling.PyObjectCompilation.time_jit_noop_forceobj": 1534584457000,
+        "bench_cuda.BlackScholes.time_blackscholes": 1534584457000,
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_large": 1534584457000,
+        "bench_cuda.DataTransfer.time_transfer_from_gpu_small": 1534584457000,
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_large": 1534584457000,
+        "bench_cuda.DataTransfer.time_transfer_to_gpu_small": 1534584457000,
+        "bench_cuda.NBody.time_cpu_nbody": 1534584457000,
+        "bench_cuda.NBody.time_cuda_nbody": 1534584457000,
+        "bench_cuda.Synthetic.time_addmul_f32": 1534584457000,
+        "bench_cuda.Synthetic.time_addmul_f64": 1534584457000,
+        "bench_cuda.Synthetic.time_reduce_f32": 1534584457000,
+        "bench_cuda.Synthetic.time_reduce_f64": 1534584457000,
+        "bench_cuda.Synthetic.time_run_empty_kernel": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_1d": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_3d": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_array_records": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bool": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_bytearray": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_complex": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_defaults": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_float": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_int": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_recarray": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_record": 1534584457000,
+        "bench_dispatch.NoPythonDispatch.time_dispatch_tuple": 1534584457000,
+        "bench_dispatch.PyObjectDispatch.time_dispatch_pyobject": 1534584457000,
+        "bench_gameoflife.GameOfLife.time_gameoflife": 1534584457000,
+        "bench_ising.IsingModel.time_ising": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_array_iter_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_C": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_fortran": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_index_2d_non_contiguous": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_C": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_fortran": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_flat_iter_2d_non_contiguous": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_ndindex_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_ndindex_2d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_C_small_inner_dim": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_fortran": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_nditer_iter_2d_non_contiguous": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_range_index_1d": 1534584457000,
+        "bench_iterating.MonoArrayIterators.time_range_index_2d": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_A_A_A": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_C_C_C": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_three_2d_F_F_F": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_1d": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_A_A": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_A_small_inner_dim": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_C_C_small_inner_dim": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_C_small_inner_dim": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_nditer_two_2d_F_F_small_inner_dim": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_1d": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_A_A": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_C_C_small_inner_dim": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_flat_two_2d_F_F": 1534584457000,
+        "bench_iterating.MultiArrayIterators.time_zip_iter_two_1d": 1534584457000,
+        "bench_laplace.Laplace.time_laplace": 1534584457000,
+        "bench_lists.ListConstruction.time_list_append": 1534584457000,
+        "bench_lists.ListConstruction.time_list_call": 1534584457000,
+        "bench_lists.ListConstruction.time_list_extend": 1534584457000,
+        "bench_lists.ListMutation.time_list_insert": 1534584457000,
+        "bench_lists.ListMutation.time_list_pop": 1534584457000,
+        "bench_lists.ListReturn.time_list_return": 1534584457000,
+        "bench_misc.IndirectIndexing.time_signed_indirect_indexing": 1534584457000,
+        "bench_misc.IndirectIndexing.time_unsigned_indirect_indexing": 1534584457000,
+        "bench_misc.InitializationTime.time_new_process_import_numba": 1534584457000,
+        "bench_nbody.NBody.time_numba_nbody": 1534584457000,
+        "bench_numbagg.Numbagg.time_move_nanmean": 1534584457000,
+        "bench_numbagg.Numbagg.time_move_nanmean_2d": 1534584457000,
+        "bench_numbagg.Numbagg.time_nanmean_gufunc": 1534584457000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_1d": 1534584457000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d": 1534584457000,
+        "bench_numbagg.Numbagg.time_nanmean_jit_2d_reversed": 1534584457000,
+        "bench_random.RandomIntegers.time_py_getrandbits": 1534584457000,
+        "bench_sets.IntegerSets.time_setops": 1534584457000,
+        "bench_sets.IntegerSets.time_unique": 1534584457000,
+        "bench_sorting.ArrayMedian.time_median_duplicates_array": 1534584457000,
+        "bench_sorting.ArrayMedian.time_median_random_array_even": 1534584457000,
+        "bench_sorting.ArrayMedian.time_median_random_array_odd": 1534584457000,
+        "bench_sorting.ArrayMedian.time_median_sorted_array": 1534584457000,
+        "bench_sorting.ArrayMedian.time_median_triangle_array": 1534584457000,
+        "bench_sorting.ArraySorting.time_argsort_random_array": 1534584457000,
+        "bench_sorting.ArraySorting.time_sort_duplicates_array": 1534584457000,
+        "bench_sorting.ArraySorting.time_sort_random_array": 1534584457000,
+        "bench_sorting.ArraySorting.time_sort_sorted_array": 1534584457000,
+        "bench_sorting.ArraySorting.time_sort_triangle_array": 1534584457000,
+        "bench_vectorize.Vectorize.time_mul_complex128": 1534584457000,
+        "bench_vectorize.Vectorize.time_mul_complex64": 1534584457000,
+        "bench_vectorize.Vectorize.time_mul_float32": 1534584457000,
+        "bench_vectorize.Vectorize.time_mul_float64": 1534584457000,
+        "bench_vectorize.Vectorize.time_rel_diff_float32": 1534584457000,
+        "bench_vectorize.Vectorize.time_rel_diff_float64": 1534584457000
+    },
+    "version": 1
+}
