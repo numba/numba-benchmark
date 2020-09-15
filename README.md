@@ -13,7 +13,7 @@ submodule under `./asv`
 ## Setup
 
 ```bash
-conda create -c conda-forge -n numba-benchmark python=3.8 asv
+conda create -n numba-benchmark python=3.8 conda-forge::asv
 conda activate numba-benchmark
 # Get benchmark repo
 git clone https://github.com/numba/numba-benchmark
