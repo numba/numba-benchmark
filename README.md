@@ -13,13 +13,11 @@ submodule under `./asv`
 ## Setup
 
 ```bash
-conda create -n numba-benchmark python=3.6
+conda create -c conda-forge -n numba-benchmark python=3.8 asv
 conda activate numba-benchmark
 # Get benchmark repo
 git clone https://github.com/numba/numba-benchmark
 cd numba-benchmark
-git submodule update --init
-pip install ./asv
 ```
 
 ## Run
