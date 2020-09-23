@@ -5,6 +5,10 @@ Benchmarks for numba.typed.List
 import numpy as np
 from numba import njit
 from numba.typed import List
+from numba.typed.typedlist import _sort
+from numba.core.registry import dispatcher_registry
+from numba.core.typing import Signature
+from numba.core.types import ListType, int64, none, boolean
 
 SIZE = 10**5
 SEED = 23
@@ -32,9 +36,16 @@ class SortSuite:
     def setup(self):
         self.tl = make_random_typed_list(SIZE)
         self.tl.sort()
+        self.dispatcher = dispatcher_registry['cpu'](_sort.py_func)
+        self.signature = Signature(none,
+                                   [ListType(int64), none, boolean],
+                                   None)
 
-    def time_sort(self):
+    def time_execute_sort(self):
         self.tl.sort()
+
+    def time_compile_sort(self):
+        self.dispatcher.compile(self.signature)
 
 
 class ConstructionSuite:
