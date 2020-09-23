@@ -72,8 +72,14 @@ class ReductionSuite:
                 agg += i
             return agg
 
-        self.reduction_sum = njit(reduction_sum)
-        self.reduction_sum(self.tl)
+        self.reduction_sum_fastmath = njit(reduction_sum, fastmath=True)
+        self.reduction_sum_no_fastmath = njit(reduction_sum)
 
-    def time_reduction_sum(self):
-        self.reduction_sum(self.tl)
+        self.reduction_sum_fastmath(self.tl)
+        self.reduction_sum_no_fastmath(self.tl)
+
+    def time_reduction_sum_fastmath(self):
+        self.reduction_sum_fastmath(self.tl)
+
+    def time_reduction_sum_no_fastmath(self):
+        self.reduction_sum_no_fastmath(self.tl)
