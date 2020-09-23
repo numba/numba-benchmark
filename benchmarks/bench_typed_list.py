@@ -7,11 +7,13 @@ from numba import njit
 from numba.typed import List
 
 SIZE = 10**5
+SEED = 23
 
 
 @njit
 def make_random_typed_list(n):
     tl = List()
+    np.random.seed(SEED)
     for i in range(n):
         tl.append(np.random.randint(0, 100))
     return tl
@@ -19,6 +21,7 @@ def make_random_typed_list(n):
 
 def make_random_python_list(n):
     pl = list()
+    np.random.seed(SEED)
     for i in range(n):
         pl.append(np.random.randint(0, 100))
     return pl
