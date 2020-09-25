@@ -31,7 +31,11 @@ def make_random_python_list(n):
     return pl
 
 
-class SortSuite:
+class BaseSuite:
+    min_run_count = 5
+
+
+class SortSuite(BaseSuite):
 
     def setup(self):
         self.tl = make_random_typed_list(SIZE)
@@ -55,7 +59,7 @@ class SortSuite:
         self.dispatcher.compile(self.signature)
 
 
-class ConstructionSuite:
+class ConstructionSuite(BaseSuite):
 
     def setup(self):
         self.pl = make_random_python_list(SIZE)
@@ -68,7 +72,7 @@ class ConstructionSuite:
         make_random_typed_list(SIZE)
 
 
-class ReductionSuite:
+class ReductionSuite(BaseSuite):
 
     def setup(self):
         self.tl = make_random_typed_list(SIZE)
