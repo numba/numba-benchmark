@@ -31,6 +31,13 @@ def make_random_python_list(n):
     return pl
 
 
+def clear_dispatcher(dispatcher):
+    dispatcher._make_finalizer()()
+    dispatcher._reset_overloads()
+    dispatcher._cache.flush()
+    dispatcher._can_compile = True
+
+
 class BaseSuite:
     min_run_count = 5
 
@@ -44,13 +51,7 @@ class SortSuite(BaseSuite):
         self.signature = Signature(none,
                                    [ListType(int64), none, boolean],
                                    None)
-        self.clear_dispatcher()
-
-    def clear_dispatcher(self):
-        self.dispatcher._make_finalizer()()
-        self.dispatcher._reset_overloads()
-        self.dispatcher._cache.flush()
-        self.dispatcher._can_compile = True
+        clear_dispatcher(self.dispatcher)
 
     def time_execute_sort(self):
         self.tl.sort()
