@@ -40,6 +40,13 @@ class SortSuite:
         self.signature = Signature(none,
                                    [ListType(int64), none, boolean],
                                    None)
+        self.clear_dispatcher()
+
+    def clear_dispatcher(self):
+        self.dispatcher._make_finalizer()()
+        self.dispatcher._reset_overloads()
+        self.dispatcher._cache.flush()
+        self.dispatcher._can_compile = True
 
     def time_execute_sort(self):
         self.tl.sort()
