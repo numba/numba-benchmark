@@ -90,8 +90,26 @@ class ReductionSuite(BaseSuite):
         self.reduction_sum_fastmath(self.tl)
         self.reduction_sum_no_fastmath(self.tl)
 
-    def time_reduction_sum_fastmath(self):
+        self.fastmath_dispatcher = dispatcher_registry['cpu'](
+            self.reduction_sum_fastmath.py_func)
+        self.fastmath_dispatcher.targetoptions['fastmath'] = True
+
+        self.no_fastmath_dispatcher = dispatcher_registry['cpu'](
+            self.reduction_sum_no_fastmath.py_func)
+
+        self.signature = Signature(int64, [ListType(int64)], None)
+
+        clear_dispatcher(self.fastmath_dispatcher)
+        clear_dispatcher(self.no_fastmath_dispatcher)
+
+    def time_execute_reduction_sum_fastmath(self):
         self.reduction_sum_fastmath(self.tl)
 
-    def time_reduction_sum_no_fastmath(self):
+    def time_compile_reduction_sum_fastmath(self):
+        self.fastmath_dispatcher.compile(self.signature)
+
+    def time_execute_reduction_sum_no_fastmath(self):
         self.reduction_sum_no_fastmath(self.tl)
+
+    def time_compile_reduction_sum_no_fastmath(self):
+        self.no_fastmath_dispatcher.compile(self.signature)
