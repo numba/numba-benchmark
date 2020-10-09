@@ -15,11 +15,19 @@ SEED = 23
 
 
 @njit
-def make_random_typed_list(n):
+def make_random_typed_list_int(n):
     tl = List()
     np.random.seed(SEED)
     for i in range(n):
         tl.append(np.random.randint(0, 100))
+    return tl
+
+@njit
+def make_random_typed_list_float(n):
+    tl = List()
+    np.random.seed(SEED)
+    for i in range(n):
+        tl.append(np.random.randn())
     return tl
 
 
@@ -45,7 +53,7 @@ class BaseSuite:
 class SortSuite(BaseSuite):
 
     def setup(self):
-        self.tl = make_random_typed_list(SIZE)
+        self.tl = make_random_typed_list_int(SIZE)
         self.tl.sort()
         self.dispatcher = dispatcher_registry['cpu'](_sort.py_func)
         self.signature = Signature(none,
@@ -70,22 +78,20 @@ class ConstructionSuite(BaseSuite):
         List(self.pl)
 
     def time_construct_in_njit_function(self):
-        make_random_typed_list(SIZE)
+        make_random_typed_list_int(SIZE)
 
 
 class ReductionSuite(BaseSuite):
 
     def setup(self):
-        self.tl = make_random_typed_list(SIZE)
+        raise NotImplementedError
 
-        def reduction_sum(tl):
-            agg = 0
-            for i in tl:
-                agg += i
-            return agg
+    def post_setup(self):
 
-        self.reduction_sum_fastmath = njit(reduction_sum, fastmath=True)
-        self.reduction_sum_no_fastmath = njit(reduction_sum)
+        self.reduction_sum = self.define_function()
+
+        self.reduction_sum_fastmath = njit(self.reduction_sum, fastmath=True)
+        self.reduction_sum_no_fastmath = njit(self.reduction_sum)
 
         self.reduction_sum_fastmath(self.tl)
         self.reduction_sum_no_fastmath(self.tl)
@@ -113,3 +119,74 @@ class ReductionSuite(BaseSuite):
 
     def time_compile_reduction_sum_no_fastmath(self):
         self.no_fastmath_dispatcher.compile(self.signature)
+
+
+class IteratorReductionSuiteInt(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_int(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum(tl):
+            agg = 0
+            for i in tl:
+                agg += i
+            return agg
+
+        return reduction_sum
+
+class IteratorReductionSuiteFloat(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_float(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum(tl):
+            agg = 0.0
+            for i in tl:
+                agg += i
+            return agg
+
+        return reduction_sum
+
+class ForLoopReductionSuiteInt(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_int(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum(tl):
+            agg = 0
+            length = len(tl)
+            for i in range(length):
+                agg += tl[i]
+            return agg
+
+        return reduction_sum
+
+class ForLoopReductionSuiteFloat(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_float(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum(tl):
+            agg = 0.0
+            length = len(tl)
+            for i in range(length):
+                agg += tl[i]
+            return agg
+
+        return reduction_sum
