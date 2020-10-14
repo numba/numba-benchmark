@@ -13,6 +13,23 @@ from numba.core.types import ListType, int64, none, boolean
 SIZE = 10**5
 SEED = 23
 
+def check_getitem_unchecked():
+
+    @njit
+    def use_getitem_unchecked():
+        tl = List((1, 2, 3, 4))
+        return tl.getitem_unchecked(0)
+
+    try:
+        use_getitem_unchecked()
+    except Exception:
+        return False
+    else:
+        return True
+
+
+have_getitem_unchecked = check_getitem_unchecked()
+
 
 @njit
 def make_random_typed_list_int(n):
@@ -190,3 +207,54 @@ class ForLoopReductionSuiteFloat(ReductionSuite):
             return agg
 
         return reduction_sum
+
+
+class GetitemUncheckedLoopReductionSuiteInt(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_int(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum_regular(tl):
+            agg = 0
+            length = len(tl)
+            for i in range(length):
+                agg += tl[i]
+            return agg
+
+        def reduction_sum_unchecked(tl):
+            agg = 0
+            length = len(tl)
+            for i in range(length):
+                agg += tl.getitem_unchecked(i)
+            return agg
+
+        return reduction_sum_unchecked if have_getitem_unchecked else reduction_sum_regular
+
+class GetitemUncheckedReductionSuiteFloat(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_float(SIZE)
+        self.post_setup()
+
+    def define_function(self):
+
+        def reduction_sum_regular(tl):
+            agg = 0.0
+            length = len(tl)
+            for i in range(length):
+                agg += tl[i]
+            return agg
+
+        def reduction_sum_unchecked(tl):
+            agg = 0.0
+            length = len(tl)
+            for i in range(length):
+                agg += tl.getitem_unchecked(i)
+            return agg
+
+        return reduction_sum_unchecked if have_getitem_unchecked else reduction_sum_regular
