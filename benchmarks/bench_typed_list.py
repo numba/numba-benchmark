@@ -52,7 +52,7 @@ def make_random_typed_list_array(n):
     tl = List()
     np.random.seed(SEED)
     for i in range(n):
-        tl.append(np.random.randn(100, 100))
+        tl.append(np.zeros(4,))
     return tl
 
 def make_random_python_list(n):
@@ -279,7 +279,7 @@ class ArrayListSuite(ReductionSuite):
 
     def setup(self):
 
-        self.tl = make_random_typed_list_array(SIZE/100)
+        self.tl = make_random_typed_list_array(SIZE)
         self.signature = Signature(float64, [ListType(Array(float64, 1, 'C'))], None)
         self.post_setup()
 
