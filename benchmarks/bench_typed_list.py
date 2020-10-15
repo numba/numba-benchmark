@@ -130,7 +130,6 @@ class ReductionSuite(BaseSuite):
         self.no_fastmath_dispatcher = dispatcher_registry['cpu'](
             self.reduction_sum_no_fastmath.py_func)
 
-        self.signature = Signature(int64, [ListType(int64)], None)
 
         clear_dispatcher(self.fastmath_dispatcher)
         clear_dispatcher(self.no_fastmath_dispatcher)
@@ -153,6 +152,7 @@ class IteratorReductionSuiteInt(ReductionSuite):
     def setup(self):
 
         self.tl = make_random_typed_list_int(SIZE)
+        self.signature = Signature(int64, [ListType(int64)], None)
         self.post_setup()
 
     def define_function(self):
@@ -170,6 +170,7 @@ class IteratorReductionSuiteFloat(ReductionSuite):
     def setup(self):
 
         self.tl = make_random_typed_list_float(SIZE)
+        self.signature = Signature(float64, [ListType(float64)], None)
         self.post_setup()
 
     def define_function(self):
@@ -187,6 +188,7 @@ class ForLoopReductionSuiteInt(ReductionSuite):
     def setup(self):
 
         self.tl = make_random_typed_list_int(SIZE)
+        self.signature = Signature(int64, [ListType(int64)], None)
         self.post_setup()
 
     def define_function(self):
@@ -205,6 +207,7 @@ class ForLoopReductionSuiteFloat(ReductionSuite):
     def setup(self):
 
         self.tl = make_random_typed_list_float(SIZE)
+        self.signature = Signature(float64, [ListType(float64)], None)
         self.post_setup()
 
     def define_function(self):
@@ -219,11 +222,12 @@ class ForLoopReductionSuiteFloat(ReductionSuite):
         return reduction_sum
 
 
-class GetitemUncheckedLoopReductionSuiteInt(ReductionSuite):
+class GetitemUncheckedReductionSuiteInt(ReductionSuite):
 
     def setup(self):
 
         self.tl = make_random_typed_list_int(SIZE)
+        self.signature = Signature(int64, [ListType(int64)], None)
         self.post_setup()
 
     def define_function(self):
@@ -249,6 +253,7 @@ class GetitemUncheckedReductionSuiteFloat(ReductionSuite):
     def setup(self):
 
         self.tl = make_random_typed_list_float(SIZE)
+        self.signature = Signature(float64, [ListType(float64)], None)
         self.post_setup()
 
     def define_function(self):
