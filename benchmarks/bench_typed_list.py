@@ -8,7 +8,7 @@ from numba.typed import List
 from numba.typed.typedlist import _sort
 from numba.core.registry import dispatcher_registry
 from numba.core.typing import Signature
-from numba.core.types import ListType, int64, none, boolean
+from numba.core.types import ListType, int64, float64, none, boolean, Array
 
 SIZE = 10**5
 SEED = 23
@@ -47,6 +47,13 @@ def make_random_typed_list_float(n):
         tl.append(np.random.randn())
     return tl
 
+@njit
+def make_random_typed_list_array(n):
+    tl = List()
+    np.random.seed(SEED)
+    for i in range(n):
+        tl.append(np.random.randn(100, 100))
+    return tl
 
 def make_random_python_list(n):
     pl = list()
@@ -258,3 +265,22 @@ class GetitemUncheckedReductionSuiteFloat(ReductionSuite):
             return agg
 
         return reduction_sum_unchecked if have_getitem_unchecked else reduction_sum_regular
+
+
+class ArrayListSuite(ReductionSuite):
+
+    def setup(self):
+
+        self.tl = make_random_typed_list_array(SIZE/100)
+        self.signature = Signature(float64, [ListType(Array(float64, 1, 'C'))], None)
+        self.post_setup()
+
+    def define_function(self):
+
+        def array_reduction(tl):
+            agg = 0.0
+            for i in tl:
+                agg += i.sum()
+            return agg
+
+        return array_reduction
