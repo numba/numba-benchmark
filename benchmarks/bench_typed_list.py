@@ -72,6 +72,9 @@ def clear_dispatcher(dispatcher):
 
 class BaseSuite:
     min_run_count = 5
+    warmup_time = 0.0
+    number = 1
+    repeat = 5
 
 
 class SortSuite(BaseSuite):
