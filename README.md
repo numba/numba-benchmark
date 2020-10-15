@@ -25,3 +25,33 @@ cd numba-benchmark
 ```bash
 asv run
 ```
+
+## Comparing two commits
+
+Run `asv` on the first commit:
+
+```bash
+asv run "-1 abcdefg
+```
+
+Run `asv`  on the second commit:
+
+```bash
+asv run "-1 1235567
+```
+
+Compare them:
+
+```bash
+asv compare "abcdefg" "1234567"
+```
+
+Useful options to consider:
+
+```bash
+asv run --verbose --show-stderr  -b 'bench_typed_list' "-1 abcdefg"
+```
+
+```bash
+asv compare --machine machine.local "abcdefg" "1234567"
+```
