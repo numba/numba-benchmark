@@ -2,8 +2,8 @@
 # Numba benchmark suite
 
 This is a series of benchmarks designed to measure and record the various
-performance aspects of [Numba](http://numba.pydata.org). The results are
-published at http://numba.pydata.org/numba-benchmark/
+performance aspects of [Numba](https://numba.pydata.org). The results are
+published at https://numba.pydata.org/numba-benchmark/
 
 The benchmarks can be run with the [`asv`](https://github.com/spacetelescope/asv)
 utility.
