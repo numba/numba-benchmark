@@ -8,7 +8,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from cases import ENVIRONMENTS
+from env_matrix import ENVIRONMENTS
 
 REPO = os.environ.get("NUMBA_REPO", "https://github.com/numba/numba.git")
 
@@ -71,12 +71,7 @@ def plan():
     from_ref = (os.environ.get("DISPATCH_FROM") or "").strip()
     to_ref = (os.environ.get("DISPATCH_TO") or "").strip()
     ref = (os.environ.get("DISPATCH_REF") or "main").strip()
-    call_ref = (os.environ.get("CALL_REF") or "").strip()
 
-    if event == "workflow_call":
-        if not call_ref:
-            raise SystemExit("workflow_call requires numba-ref")
-        return [remote_sha(call_ref)]
     if event == "workflow_dispatch" and from_ref and to_ref:
         limit = max(1, min(int(os.environ.get("DISPATCH_LIMIT") or 10), 50))
         return historic_range(from_ref, to_ref, ref, limit)

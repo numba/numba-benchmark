@@ -16,7 +16,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from cases import CASES, ENVIRONMENT_KEYS
+from env_matrix import CASES, ENVIRONMENT_KEYS
 
 
 def utcnow():

@@ -19,17 +19,14 @@ on:
         description: 'Numba branch to benchmark when from/to are empty'
         required: false
         default: 'main'
-  workflow_call:
-    inputs:
-      numba-ref:
-        description: 'Numba commit SHA, branch, or tag to benchmark'
-        required: true
-        type: string
 
 permissions:
   contents: write
   pages: write
   id-token: write
+
+env:
+  WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
 
 jobs:
   prepare:
@@ -48,7 +45,6 @@ jobs:
           DISPATCH_TO: ${{ inputs.to }}
           DISPATCH_LIMIT: ${{ inputs.limit }}
           DISPATCH_REF: ${{ inputs.ref }}
-          CALL_REF: ${{ inputs['numba-ref'] }}
         run: python ci.py plan >> "$GITHUB_OUTPUT"
 
   bench:
@@ -67,8 +63,11 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install NumPy and SciPy
-        run: python -m pip install --upgrade pip '${{ matrix.spec }}' scipy
+      - name: Install NumPy, SciPy, and llvmlite
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install '${{ matrix.spec }}' scipy
+          python -m pip install --no-cache-dir --pre -i "$WHEELS_INDEX_URL" llvmlite
 
       - name: Install Numba from ${{ matrix.commit }}
         run: python -m pip install 'git+https://github.com/numba/numba.git@${{ matrix.commit }}'
