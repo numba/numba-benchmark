@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Numba benchmarks</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 28px 56px;
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f6f7f9; color: #111827;
+  }
+  header { max-width: 1440px; margin: 0 auto 24px; }
+  h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -0.02em; }
+  .meta { color: #6b7280; }
+  .grid {
+    max-width: 1440px; margin: 0 auto;
+    display: grid; gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  }
+  .card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 16px 18px 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  }
+  .card h2 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+  .plot { position: relative; height: 250px; }
+  .empty { max-width: 1440px; margin: 40px auto; color: #6b7280; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Numba benchmarks</h1>
+  <div class="meta">__SUMMARY__</div>
+</header>
+<div id="charts" class="grid"></div>
+<p id="empty" class="empty" hidden>No results yet.</p>
+<script>
+const DATA = __DATA__;
+const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed", "#0891b2"];
+const container = document.getElementById("charts");
+
+function ms(ns) {
+  return (ns / 1e6).toFixed(3);
+}
+
+if (!DATA.labels.length) {
+  document.getElementById("empty").hidden = false;
+}
+
+if (DATA.labels.length) DATA.cases.forEach((caseId) => {
+  const card = document.createElement("section");
+  card.className = "card";
+  const title = document.createElement("h2");
+  title.textContent = caseId;
+  const plot = document.createElement("div");
+  plot.className = "plot";
+  const canvas = document.createElement("canvas");
+  plot.appendChild(canvas);
+  card.append(title, plot);
+  container.appendChild(card);
+
+  const datasets = DATA.envs
+    .map((env, index) => ({ env, index }))
+    .filter(({ env }) => DATA.data[env][caseId].some((point) => point))
+    .map(({ env, index }) => ({
+      label: env,
+      data: DATA.data[env][caseId].map((point) => (point ? point.speedup : null)),
+      times: DATA.data[env][caseId],
+      borderColor: COLORS[index % COLORS.length],
+      backgroundColor: COLORS[index % COLORS.length],
+      borderWidth: 2,
+      pointRadius: 2,
+      tension: 0.2,
+      spanGaps: false,
+    }));
+
+  new Chart(canvas, {
+    type: "line",
+    data: { labels: DATA.labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { position: "bottom", labels: { boxWidth: 10, usePointStyle: true } },
+        tooltip: {
+          callbacks: {
+            title(items) {
+              if (!items.length) return "";
+              const i = items[0].dataIndex;
+              return `${DATA.labels[i]} (${DATA.dates[i].slice(0, 10)})`;
+            },
+            label(context) {
+              const point = context.dataset.times[context.dataIndex];
+              if (!point) return `${context.dataset.label}: no data`;
+              return `${context.dataset.label}: ${point.speedup.toFixed(2)}x ` +
+                `(NumPy ${ms(point.numpy_ns)} ms, Numba ${ms(point.numba_ns)} ms)`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          title: { display: true, text: "Speedup (NumPy / Numba)" },
+          grid: { color: "#eef0f3" },
+        },
+        x: {
+          grid: { display: false },
+          ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+        },
+      },
+    },
+  });
+});
+</script>
+</body>
+</html>
