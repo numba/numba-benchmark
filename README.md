@@ -74,6 +74,10 @@ editing the repo.
   environments and stops if `results/<sha>.json` already exists.
 - **Historic**: run *benchmarks* from the Actions tab with `from`, `to`,
   `limit` (default 10, max 50), and `ref` to backfill first-parent commits.
+  `from` is exclusive and `to` is inclusive; leave `from` empty to backfill the
+  last `limit` commits ending at `to` (or at `ref`'s head). Results record each
+  commit's first-parent `position`, so backfilled commits keep history order on
+  the chart even though they are measured concurrently.
 
 Results are committed to the default branch. The report deploys through GitHub
 Pages, so set the Pages source to "GitHub Actions".

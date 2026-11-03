@@ -77,6 +77,7 @@ jobs:
           mkdir -p bench-out
           python bench.py run \
             --commit "${{ matrix.commit }}" \
+            --position "${{ matrix.position }}" \
             --os "${{ matrix.os }}" \
             --python "${{ matrix.python }}" \
             --numpy "${{ matrix.numpy }}" \
@@ -119,11 +120,13 @@ jobs:
 
       - name: Add comparisons to the run summary
         run: |
-          if [ -z "$(git status --porcelain -- results)" ]; then
+          changed=$(git status --porcelain --untracked-files=all -- results |
+            awk '{print $2}' | grep -E '^results/[0-9a-f]{40}\.json$' || true)
+          if [ -z "$changed" ]; then
             echo 'No new results.' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          for file in $(git status --porcelain -- results | awk '{print $2}'); do
+          for file in $changed; do
             sha=$(basename "$file" .json)
             {
               echo "## ${sha:0:10}"
@@ -133,12 +136,14 @@ jobs:
 
       - name: Commit results
         run: |
-          if [ -z "$(git status --porcelain -- results)" ]; then
+          changed=$(git status --porcelain --untracked-files=all -- results |
+            awk '{print $2}' | grep -E '^results/[0-9a-f]{40}\.json$' || true)
+          if [ -z "$changed" ]; then
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          shas=$(git status --porcelain -- results | awk '{print $2}' | xargs -n1 basename | sed 's/\.json$//' | tr '\n' ' ')
+          shas=$(echo "$changed" | xargs -n1 basename | sed 's/\.json$//' | tr '\n' ' ')
           git add results
           git commit -m 'Add benchmark results' -m "$shas"
           git push

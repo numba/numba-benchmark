@@ -61,11 +61,21 @@ def cmd_run(args):
             }
         },
     }
+    if args.position is not None:
+        document["position"] = args.position
     write_json(args.out, document)
     print(
         f"wrote {args.out} ({len(rows)} case(s), {len(skipped)} skipped)",
         file=sys.stderr,
     )
+
+
+def document_order(document):
+    """Numba history order, not benchmark run time, so backfills sort right."""
+    position = document.get("position")
+    if position is None:
+        return (1, 0, document.get("date", ""), document["commit"])
+    return (0, position, document.get("date", ""), document["commit"])
 
 
 def load_results(directory):
@@ -77,7 +87,7 @@ def load_results(directory):
         document = json.loads(path.read_text())
         if "commit" in document and "measurements" in document:
             documents.append(document)
-    documents.sort(key=lambda document: (document.get("date", ""), document["commit"]))
+    documents.sort(key=document_order)
     return documents
 
 
@@ -91,6 +101,8 @@ def merge_documents(documents):
         )
         if date and (not target["date"] or date < target["date"]):
             target["date"] = date
+        if document.get("position") is not None:
+            target.setdefault("position", document["position"])
         for key, entry in document["measurements"].items():
             current = target["measurements"].get(key)
             if current is None or entry.get("timestamp", "") >= current.get(
@@ -337,6 +349,12 @@ def main(argv=None):
     run.add_argument("--os", dest="os_name", required=True)
     run.add_argument("--python", dest="python_minor", required=True)
     run.add_argument("--numpy", dest="numpy_minor", required=True)
+    run.add_argument(
+        "--position",
+        type=int,
+        default=None,
+        help="first-parent position of the commit in Numba history",
+    )
     run.add_argument("--out", required=True)
     run.set_defaults(func=cmd_run)
 

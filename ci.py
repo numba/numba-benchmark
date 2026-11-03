@@ -33,37 +33,56 @@ def remote_sha(rev):
     raise SystemExit(f"cannot resolve {rev!r} to a single Numba commit")
 
 
+def clone_history(ref, directory):
+    """Bare commit-only clone of the Numba history ending at ref."""
+    if re.fullmatch(r"[0-9a-f]{40}", ref):
+        subprocess.run(
+            ["git", "clone", "--bare", "--filter=tree:0", REPO, directory],
+            check=True,
+        )
+        subprocess.run(["git", "fetch", "origin", ref], cwd=directory, check=True)
+    else:
+        subprocess.run(
+            [
+                "git",
+                "clone",
+                "--bare",
+                "--filter=tree:0",
+                "--single-branch",
+                "--branch",
+                ref,
+                REPO,
+                directory,
+            ],
+            check=True,
+        )
+
+
+def commit_position(commit, cwd):
+    """First-parent position of a commit, which orders results across runs."""
+    return int(git("rev-list", "--count", "--first-parent", commit, cwd=cwd))
+
+
+def pending(commits):
+    return [commit for commit in commits if not Path(f"results/{commit}.json").exists()]
+
+
 def historic_range(from_ref, to_ref, ref, limit):
     with tempfile.TemporaryDirectory() as clone:
-        if re.fullmatch(r"[0-9a-f]{40}", ref):
-            subprocess.run(
-                ["git", "clone", "--bare", "--filter=blob:none", REPO, clone],
-                check=True,
-            )
-            subprocess.run(["git", "fetch", "origin", ref], cwd=clone, check=True)
+        clone_history(ref, clone)
+        end = git("rev-parse", "--verify", f"{to_ref or ref}^{{commit}}", cwd=clone)
+        if from_ref:
+            start = git("rev-parse", "--verify", f"{from_ref}^{{commit}}", cwd=clone)
+            commits = git(
+                "rev-list", "--first-parent", "--reverse", f"{start}..{end}", cwd=clone
+            ).splitlines()
+            commits = pending(commits)[:limit]
         else:
-            subprocess.run(
-                [
-                    "git",
-                    "clone",
-                    "--bare",
-                    "--filter=blob:none",
-                    "--single-branch",
-                    "--branch",
-                    ref,
-                    REPO,
-                    clone,
-                ],
-                check=True,
-            )
-        start = git("rev-parse", "--verify", f"{from_ref}^{{commit}}", cwd=clone)
-        end = git("rev-parse", "--verify", f"{to_ref}^{{commit}}", cwd=clone)
-        commits = git(
-            "rev-list", "--first-parent", "--reverse", f"{start}..{end}", cwd=clone
-        ).splitlines()
-    return [
-        commit for commit in commits if not Path(f"results/{commit}.json").exists()
-    ][:limit]
+            commits = git(
+                "rev-list", "--first-parent", "--reverse", end, cwd=clone
+            ).splitlines()
+            commits = pending(commits)[-limit:]
+        return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
 
 
 def plan():
@@ -72,12 +91,18 @@ def plan():
     to_ref = (os.environ.get("DISPATCH_TO") or "").strip()
     ref = (os.environ.get("DISPATCH_REF") or "main").strip()
 
-    if event == "workflow_dispatch" and from_ref and to_ref:
+    if event == "workflow_dispatch" and (from_ref or to_ref):
         limit = max(1, min(int(os.environ.get("DISPATCH_LIMIT") or 10), 50))
         return historic_range(from_ref, to_ref, ref, limit)
 
     sha = remote_sha(ref)
-    return [] if Path(f"results/{sha}.json").exists() else [sha]
+    if Path(f"results/{sha}.json").exists():
+        return []
+    with tempfile.TemporaryDirectory() as clone:
+        clone_history(ref, clone)
+        sha = git("rev-parse", "--verify", f"{sha}^{{commit}}", cwd=clone)
+        position = commit_position(sha, cwd=clone)
+    return [(sha, position)]
 
 
 def main():
@@ -87,14 +112,14 @@ def main():
     commits = plan()
     matrix = {
         "include": [
-            {"commit": commit, **environment}
-            for commit in commits
+            {"commit": commit, "position": position, **environment}
+            for commit, position in commits
             for environment in ENVIRONMENTS
         ]
     }
     print(f"matrix={json.dumps(matrix, separators=(',', ':'))}")
     print(f"has_work={'true' if commits else 'false'}")
-    print(f"commits={','.join(commits)}")
+    print(f"commits={','.join(commit for commit, _ in commits)}")
 
 
 if __name__ == "__main__":
