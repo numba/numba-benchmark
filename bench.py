@@ -5,12 +5,14 @@ Usage:
     python bench.py merge DIR --out results/
     python bench.py compare --results results/ --commit SHA
     python bench.py report --results results/ --out site/index.html
+    python bench.py summary --results results/ [--commits SHA[,SHA...]]
+                            [--artifact-url URL] [--out FILE]
     python bench.py cases
     python bench.py backfill-order --results results/
 
 Numba's BLAS-backed np.dot needs scipy in the environment being measured.
 The registry is imported lazily by `cases` and `backfill-order` only, so
-`merge`, `compare`, and `report` run without numpy or numba.
+`merge`, `compare`, `report`, and `summary` run without numpy or numba.
 """
 
 import argparse
@@ -168,72 +170,22 @@ def percent_change(current, base):
     return f"{(current - base) / base * 100:+.1f}%"
 
 
-def cmd_compare(args):
-    documents = load_results(args.results)
-    index = next(
-        (
-            i
-            for i, document in enumerate(documents)
-            if document["commit"] == args.commit
-        ),
-        None,
-    )
-    if index is None:
-        sys.exit(f"no results for {args.commit} in {args.results}")
-
-    document = documents[index]
-    orders = case_orders(documents)
-    keys = sorted(document["measurements"], key=env_order)
-    if not keys:
-        print("no measurements")
-        return
-
-    for key in keys:
-        entry = document["measurements"][key]
-        baseline = None
-        for previous in reversed(documents[:index]):
-            if key in previous["measurements"]:
-                baseline = previous
-                break
-
-        print(f"### {key}")
-        if baseline is None:
-            print("No earlier result for this environment.\n")
-            continue
-
-        print(f"Baseline: `{baseline['commit'][:10]}`\n")
-        previous_cases = {
-            case["id"]: case for case in baseline["measurements"][key]["cases"]
-        }
-        print("| Case | NumPy ms | Numba ms | Speedup | Numba change |")
-        print("|---|---:|---:|---:|---:|")
-        for case in sorted(
-            entry["cases"], key=lambda case: case_key(case["id"], orders)
-        ):
-            case_id = case["id"]
-            old = previous_cases.get(case_id)
-            change = percent_change(case["numba_ns"], old["numba_ns"]) if old else "new"
-            print(
-                f"| {case_id} | {milliseconds(case['numpy_ns'])} | "
-                f"{milliseconds(case['numba_ns'])} | {case['speedup']:.2f}x | {change} |"
-            )
-        print()
-
-        skipped = entry.get("skipped") or []
-        if skipped:
-            print("Skipped:")
-            for skip in sorted(skipped, key=lambda skip: case_key(skip["id"], orders)):
-                reason = skip.get("reason") or (
-                    f"requires numba {skip['requires_numba']}"
-                )
-                print(f"- `{skip['id']}`: {reason}")
-            print()
+def sort_key(text):
+    return (text.lower(), text)
 
 
-def cmd_report(args):
-    documents = load_results(args.results)
-    orders = case_orders(documents)
+def case_sections(case_ids):
+    groups = {}
+    for case_id in case_ids:
+        name = case_id.split("/", 1)[0] or "other"
+        groups.setdefault(name, []).append(case_id)
+    return [
+        {"name": name, "cases": sorted(ids, key=sort_key)}
+        for name, ids in sorted(groups.items(), key=lambda item: sort_key(item[0]))
+    ]
 
+
+def report_payload(documents):
     environments = list(ENVIRONMENT_KEYS)
     cases = []
     skips = {}
@@ -255,7 +207,7 @@ def cmd_report(args):
                 for skip in skipped
             }
     environments.sort(key=env_order)
-    cases.sort(key=lambda case: case_key(case, orders))
+    cases.sort(key=sort_key)
 
     data = {env: {case: [] for case in cases} for env in environments}
     for document in documents:
@@ -275,16 +227,89 @@ def cmd_report(args):
                     }
                 )
 
-    payload = {
+    return {
         "labels": [document["commit"][:10] for document in documents],
         "dates": [document["date"] for document in documents],
         "envs": environments,
         "cases": cases,
+        "sections": case_sections(cases),
         "data": data,
         "skips": skips,
     }
+
+
+def comparison_markdown(documents, commit, heading_level=3):
+    index = next(
+        (i for i, document in enumerate(documents) if document["commit"] == commit),
+        None,
+    )
+    if index is None:
+        return f"No results for {commit}."
+
+    document = documents[index]
+    orders = case_orders(documents)
+    keys = sorted(document["measurements"], key=env_order)
+    if not keys:
+        return "No measurements."
+
+    heading = "#" * heading_level
+    lines = []
+    for key in keys:
+        entry = document["measurements"][key]
+        baseline = None
+        for previous in reversed(documents[:index]):
+            if key in previous["measurements"]:
+                baseline = previous
+                break
+
+        lines.append(f"{heading} {key}")
+        if baseline is None:
+            lines.append("No earlier result for this environment.\n")
+            continue
+
+        lines.append(f"Baseline: `{baseline['commit'][:10]}`\n")
+        previous_cases = {
+            case["id"]: case for case in baseline["measurements"][key]["cases"]
+        }
+        lines.append("| Case | NumPy ms | Numba ms | Speedup | Numba change |")
+        lines.append("|---|---:|---:|---:|---:|")
+        for case in sorted(
+            entry["cases"], key=lambda case: case_key(case["id"], orders)
+        ):
+            case_id = case["id"]
+            old = previous_cases.get(case_id)
+            change = percent_change(case["numba_ns"], old["numba_ns"]) if old else "new"
+            lines.append(
+                f"| {case_id} | {milliseconds(case['numpy_ns'])} | "
+                f"{milliseconds(case['numba_ns'])} | {case['speedup']:.2f}x | {change} |"
+            )
+        lines.append("")
+
+        skipped = entry.get("skipped") or []
+        if skipped:
+            lines.append("Skipped:")
+            for skip in sorted(skipped, key=lambda skip: case_key(skip["id"], orders)):
+                reason = skip.get("reason") or (
+                    f"requires numba {skip['requires_numba']}"
+                )
+                lines.append(f"- `{skip['id']}`: {reason}")
+            lines.append("")
+
+    return "\n".join(lines).rstrip("\n")
+
+
+def cmd_compare(args):
+    documents = load_results(args.results)
+    if not any(document["commit"] == args.commit for document in documents):
+        sys.exit(f"no results for {args.commit} in {args.results}")
+    print(comparison_markdown(documents, args.commit))
+
+
+def cmd_report(args):
+    documents = load_results(args.results)
+    payload = report_payload(documents)
     summary = (
-        f"{len(documents)} commit(s) &middot; {len(environments)} environment(s) "
+        f"{len(documents)} commit(s) &middot; {len(payload['envs'])} environment(s) "
         f"&middot; generated {utcnow()}"
     )
     template = Path(__file__).with_name("template.html").read_text()
@@ -295,7 +320,204 @@ def cmd_report(args):
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
-    print(f"{out}: {len(documents)} commit(s), {len(cases)} case(s)")
+    print(f"{out}: {len(documents)} commit(s), {len(payload['cases'])} case(s)")
+
+
+MAX_CHART_POINTS = 20
+
+
+def summary_text(text):
+    return (
+        str(text)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("`", "'")
+    )
+
+
+def mermaid_text(text):
+    return " ".join(str(text).replace('"', "'").split())
+
+
+def environment_label(key):
+    return mermaid_text(key.replace("|", " "))
+
+
+def speedup_text(value):
+    return f"{round(value, 2)}"
+
+
+def case_chart(payload, case_id):
+    """Mermaid chart lines and notes for one case, or skip bullets."""
+    envs = payload["envs"]
+    data = payload["data"]
+    labels = payload["labels"]
+
+    def point(env, index):
+        return data[env][case_id][index]
+
+    skipped = {
+        env: payload["skips"][env][case_id]
+        for env in envs
+        if case_id in payload["skips"].get(env, {})
+    }
+    skip_notes = [f"- {env}: {summary_text(reason)}" for env, reason in skipped.items()]
+    chart_envs = [
+        env
+        for env in envs
+        if env not in skipped and any(point(env, index) for index in range(len(labels)))
+    ]
+    indexes = sorted(
+        {
+            index
+            for env in chart_envs
+            for index in range(len(labels))
+            if point(env, index)
+        }
+    )
+
+    if not indexes:
+        return skip_notes or ["No measurements."]
+
+    title = mermaid_text(f"{summary_text(case_id)} — speedup")
+    chart = ["```mermaid", "xychart-beta", f'  title "{title}"']
+    lines = []
+    notes = []
+
+    if len(indexes) == 1:
+        index = indexes[0]
+        bar_envs = [env for env in chart_envs if point(env, index)]
+        chart.append(
+            "  x-axis ["
+            + ", ".join(json.dumps(environment_label(env)) for env in bar_envs)
+            + "]"
+        )
+        chart.append('  y-axis "Speedup (NumPy / Numba)"')
+        chart.append(
+            "  bar ["
+            + ", ".join(speedup_text(point(env, index)["speedup"]) for env in bar_envs)
+            + "]"
+        )
+        lines = [environment_label(env) for env in bar_envs]
+    else:
+        axis = indexes[-MAX_CHART_POINTS:]
+        chart.append(
+            "  x-axis [" + ", ".join(json.dumps(labels[index]) for index in axis) + "]"
+        )
+        chart.append('  y-axis "Speedup (NumPy / Numba)"')
+        for env in chart_envs:
+            missing = [index for index in indexes if not point(env, index)]
+            if missing:
+                notes.append(
+                    f"- not measured: {environment_label(env)} at "
+                    + ", ".join(labels[index] for index in missing)
+                )
+                continue
+            chart.append(
+                f'  line "{environment_label(env)}" ['
+                + ", ".join(
+                    speedup_text(point(env, index)["speedup"]) for index in axis
+                )
+                + "]"
+            )
+            lines.append(environment_label(env))
+        if not lines:
+            return skip_notes + notes or ["No measurements."]
+
+    chart.append("```")
+    caption = "Lines: " + ", ".join(lines)
+    if len(indexes) > MAX_CHART_POINTS:
+        caption += f" — showing last {MAX_CHART_POINTS} of {len(indexes)} commits"
+    result = ["\n".join(chart)]
+    if skip_notes or notes:
+        result += [""] + skip_notes + notes
+    result += ["", summary_text(caption)]
+    return result
+
+
+def summary_markdown(documents, planned=None, artifact_url=""):
+    planned = planned or []
+    selected = (
+        [document for document in documents if document["commit"] in planned]
+        if planned
+        else documents
+    )
+    payload = report_payload(selected)
+    count = (
+        f"{len(selected)} of {len(planned)} commit(s)"
+        if planned
+        else f"{len(selected)} commit(s)"
+    )
+    lines = [f"## Numba benchmarks — {count}", ""]
+
+    active = [
+        env
+        for env in payload["envs"]
+        if any(
+            point for case in payload["cases"] for point in payload["data"][env][case]
+        )
+    ]
+    lines.append(f"{len(active)} environment(s) · generated {utcnow()}")
+    if artifact_url:
+        lines.append(
+            f"[Full interactive report]({artifact_url}) "
+            "(download and open `index.html`)"
+        )
+
+    missing_envs = [key for key in ENVIRONMENT_KEYS if key not in active]
+    if missing_envs:
+        lines.append(
+            "Not measured: " + ", ".join(key.replace("|", " ") for key in missing_envs)
+        )
+    missing = [sha for sha in planned if sha not in {d["commit"] for d in documents}]
+    if missing:
+        lines.append(
+            "Missing from results/: " + ", ".join(f"`{sha}`" for sha in missing)
+        )
+    lines.append("")
+
+    for section in payload["sections"]:
+        lines.append("<details open>")
+        lines.append(
+            f"<summary><b>{summary_text(section['name'])}</b> — "
+            f"{len(section['cases'])} benchmark(s)</summary>"
+        )
+        lines.append("")
+        for case_id in section["cases"]:
+            lines.append(f"### {summary_text(case_id)}")
+            lines.extend(case_chart(payload, case_id))
+            lines.append("")
+        lines.append("</details>")
+        lines.append("")
+
+    if selected:
+        lines.append("<details><summary>Changes vs previous commit</summary>")
+        lines.append("")
+        for document in selected:
+            lines.append(f"### {document['commit'][:10]}")
+            lines.append(comparison_markdown(documents, document["commit"], 4))
+            lines.append("")
+        lines.append("</details>")
+
+    return "\n".join(lines).rstrip("\n") + "\n"
+
+
+def cmd_summary(args):
+    documents = load_results(args.results)
+    if not documents:
+        text = "No results yet.\n"
+    else:
+        planned = [
+            sha.strip() for sha in (args.commits or "").split(",") if sha.strip()
+        ]
+        text = summary_markdown(documents, planned, args.artifact_url)
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
+    else:
+        print(text, end="")
 
 
 def cmd_cases(args):
@@ -374,6 +596,15 @@ def main(argv=None):
     report.add_argument("--results", default="results/")
     report.add_argument("--out", default="site/index.html")
     report.set_defaults(func=cmd_report)
+
+    summary = subparsers.add_parser("summary", help="write a Markdown run summary")
+    summary.add_argument("--results", default="results/")
+    summary.add_argument(
+        "--commits", default="", help="comma-separated SHAs the run planned"
+    )
+    summary.add_argument("--artifact-url", default="")
+    summary.add_argument("--out", default="")
+    summary.set_defaults(func=cmd_summary)
 
     cases = subparsers.add_parser("cases", help="list registered cases")
     cases.set_defaults(func=cmd_cases)

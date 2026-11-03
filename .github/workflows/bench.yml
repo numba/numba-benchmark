@@ -22,8 +22,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 env:
   WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
@@ -34,6 +32,7 @@ jobs:
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
       has_work: ${{ steps.plan.outputs.has_work }}
+      commits: ${{ steps.plan.outputs.commits }}
     steps:
       - uses: actions/checkout@v4
 
@@ -94,8 +93,6 @@ jobs:
     needs: [prepare, bench]
     if: always() && needs.prepare.outputs.has_work == 'true' && needs.bench.result != 'cancelled'
     runs-on: ubuntu-latest
-    outputs:
-      has_results: ${{ steps.merge.outputs.has_results }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -109,69 +106,49 @@ jobs:
           path: artifacts
 
       - name: Merge results
-        id: merge
-        run: |
-          python bench.py merge artifacts --out results/
-          if ls results/*.json >/dev/null 2>&1; then
-            echo 'has_results=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'has_results=false' >> "$GITHUB_OUTPUT"
-          fi
+        run: python bench.py merge artifacts --out results/
 
-      - name: Add comparisons to the run summary
+      - name: Check for new results
+        id: new
         run: |
           changed=$(git status --porcelain --untracked-files=all -- results |
             awk '{print $2}' | grep -E '^results/[0-9a-f]{40}\.json$' || true)
-          if [ -z "$changed" ]; then
+          if [ -n "$changed" ]; then
+            echo 'any=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'any=false' >> "$GITHUB_OUTPUT"
             echo 'No new results.' >> "$GITHUB_STEP_SUMMARY"
-            exit 0
           fi
-          for file in $changed; do
-            sha=$(basename "$file" .json)
-            {
-              echo "## ${sha:0:10}"
-              python bench.py compare --results results/ --commit "$sha"
-            } >> "$GITHUB_STEP_SUMMARY"
-          done
 
       - name: Commit results
+        if: steps.new.outputs.any == 'true'
         run: |
-          changed=$(git status --porcelain --untracked-files=all -- results |
-            awk '{print $2}' | grep -E '^results/[0-9a-f]{40}\.json$' || true)
-          if [ -z "$changed" ]; then
-            exit 0
-          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          changed=$(git status --porcelain --untracked-files=all -- results |
+            awk '{print $2}' | grep -E '^results/[0-9a-f]{40}\.json$')
           shas=$(echo "$changed" | xargs -n1 basename | sed 's/\.json$//' | tr '\n' ' ')
           git add results
           git commit -m 'Add benchmark results' -m "$shas"
           git push
 
-  report:
-    needs: [prepare, bench, publish]
-    if: always() && needs.publish.result == 'success' && needs.publish.outputs.has_results == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-
       - name: Build page
+        if: steps.new.outputs.any == 'true'
         run: python bench.py report --results results/ --out site/index.html
 
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
+      - id: upload-report
+        if: steps.new.outputs.any == 'true'
+        uses: actions/upload-artifact@v4
         with:
+          name: benchmark-report
           path: site
+          if-no-files-found: error
 
-      - id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Add summary to the run
+        if: steps.new.outputs.any == 'true'
+        env:
+          ARTIFACT_URL: ${{ steps.upload-report.outputs.artifact-url }}
+        run: |
+          python bench.py summary --results results/ \
+            --commits "${{ needs.prepare.outputs.commits }}" \
+            --artifact-url "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"

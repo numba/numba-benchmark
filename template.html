@@ -25,7 +25,10 @@
     background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
     padding: 16px 18px 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
   }
-  .card h2 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+  .card h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+  .section-title {
+    max-width: 1440px; margin: 28px auto 10px; font-size: 18px;
+  }
   .skip {
     margin-left: 6px; padding: 0 6px; font-size: 11px; font-weight: 500;
     color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 999px;
@@ -41,12 +44,12 @@
   <h1>Numba benchmarks</h1>
   <div class="meta">__SUMMARY__</div>
 </header>
-<div id="charts" class="grid"></div>
+<main id="report"></main>
 <p id="empty" class="empty" hidden>No results yet.</p>
 <script>
 const DATA = __DATA__;
 const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed", "#0891b2"];
-const container = document.getElementById("charts");
+const report = document.getElementById("report");
 
 function ms(ns) {
   return (ns / 1e6).toFixed(3);
@@ -56,10 +59,10 @@ if (!DATA.labels.length) {
   document.getElementById("empty").hidden = false;
 }
 
-if (DATA.labels.length) DATA.cases.forEach((caseId) => {
+function renderCard(container, caseId) {
   const card = document.createElement("section");
   card.className = "card";
-  const title = document.createElement("h2");
+  const title = document.createElement("h3");
   title.textContent = caseId;
 
   const reasons = Object.entries(DATA.skips || {})
@@ -141,6 +144,20 @@ if (DATA.labels.length) DATA.cases.forEach((caseId) => {
       },
     },
   });
+}
+
+if (DATA.labels.length) DATA.sections.forEach((section) => {
+  const heading = document.createElement("h2");
+  heading.className = "section-title";
+  heading.id = `section-${section.name}`;
+  heading.textContent = section.name;
+  report.appendChild(heading);
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  report.appendChild(grid);
+
+  section.cases.forEach((caseId) => renderCard(grid, caseId));
 });
 </script>
 </body>
