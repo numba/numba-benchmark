@@ -1,6 +1,26 @@
 name: benchmarks
 
 on:
+  push:
+    paths:
+      - 'bench.py'
+      - 'benchmark.py'
+      - 'cases/**'
+      - 'ci.py'
+      - 'env_matrix.py'
+      - 'tests/**'
+      - 'template.html'
+      - '.github/workflows/bench.yml'
+  pull_request:
+    paths:
+      - 'bench.py'
+      - 'benchmark.py'
+      - 'cases/**'
+      - 'ci.py'
+      - 'env_matrix.py'
+      - 'tests/**'
+      - 'template.html'
+      - '.github/workflows/bench.yml'
   schedule:
     - cron: '17 4 * * *'
   workflow_dispatch:
@@ -29,7 +49,21 @@ env:
   WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run registry tests without numpy or numba
+        run: python -m unittest discover -s tests -v
+
   prepare:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}

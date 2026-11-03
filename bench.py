@@ -5,8 +5,12 @@ Usage:
     python bench.py merge DIR --out results/
     python bench.py compare --results results/ --commit SHA
     python bench.py report --results results/ --out site/index.html
+    python bench.py cases
+    python bench.py backfill-order --results results/
 
 Numba's BLAS-backed np.dot needs scipy in the environment being measured.
+The registry is imported lazily by `cases` and `backfill-order` only, so
+`merge`, `compare`, and `report` run without numpy or numba.
 """
 
 import argparse
@@ -16,7 +20,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from env_matrix import CASES, ENVIRONMENT_KEYS
+from env_matrix import ENVIRONMENT_KEYS
 
 
 def utcnow():
@@ -41,7 +45,7 @@ def cmd_run(args):
 
     key = env_key(args.os_name, args.python_minor, args.numpy_minor)
     print(f"measuring {key}", file=sys.stderr)
-    rows, environment = run_benchmarks()
+    rows, skipped, environment = run_benchmarks()
 
     timestamp = utcnow()
     document = {
@@ -53,11 +57,15 @@ def cmd_run(args):
                 **environment,
                 "timestamp": timestamp,
                 "cases": rows,
+                "skipped": skipped,
             }
         },
     }
     write_json(args.out, document)
-    print(f"wrote {args.out}", file=sys.stderr)
+    print(
+        f"wrote {args.out} ({len(rows)} case(s), {len(skipped)} skipped)",
+        file=sys.stderr,
+    )
 
 
 def load_results(directory):
@@ -112,8 +120,26 @@ def cmd_merge(args):
         print(f"{path}: {len(document['measurements'])} measurement(s)")
 
 
-def case_order(case_id):
-    return CASES.index(case_id) if case_id in CASES else len(CASES)
+def case_orders(documents):
+    """Smallest order seen per case id across measured and skipped rows."""
+    orders = {}
+    for document in documents:
+        for entry in document["measurements"].values():
+            for case in entry.get("cases", []):
+                if "order" in case:
+                    orders[case["id"]] = min(
+                        orders.get(case["id"], case["order"]), case["order"]
+                    )
+            for skip in entry.get("skipped", []):
+                if "order" in skip:
+                    orders[skip["id"]] = min(
+                        orders.get(skip["id"], skip["order"]), skip["order"]
+                    )
+    return orders
+
+
+def case_key(case_id, orders):
+    return (orders.get(case_id, sys.maxsize), case_id)
 
 
 def env_order(key):
@@ -144,6 +170,7 @@ def cmd_compare(args):
         sys.exit(f"no results for {args.commit} in {args.results}")
 
     document = documents[index]
+    orders = case_orders(documents)
     keys = sorted(document["measurements"], key=env_order)
     if not keys:
         print("no measurements")
@@ -168,7 +195,9 @@ def cmd_compare(args):
         }
         print("| Case | NumPy ms | Numba ms | Speedup | Numba change |")
         print("|---|---:|---:|---:|---:|")
-        for case in sorted(entry["cases"], key=lambda case: case_order(case["id"])):
+        for case in sorted(
+            entry["cases"], key=lambda case: case_key(case["id"], orders)
+        ):
             case_id = case["id"]
             old = previous_cases.get(case_id)
             change = percent_change(case["numba_ns"], old["numba_ns"]) if old else "new"
@@ -178,12 +207,24 @@ def cmd_compare(args):
             )
         print()
 
+        skipped = entry.get("skipped") or []
+        if skipped:
+            print("Skipped:")
+            for skip in sorted(skipped, key=lambda skip: case_key(skip["id"], orders)):
+                reason = skip.get("reason") or (
+                    f"requires numba {skip['requires_numba']}"
+                )
+                print(f"- `{skip['id']}`: {reason}")
+            print()
+
 
 def cmd_report(args):
     documents = load_results(args.results)
+    orders = case_orders(documents)
 
     environments = list(ENVIRONMENT_KEYS)
-    cases = list(CASES)
+    cases = []
+    skips = {}
     for document in documents:
         for key, entry in document["measurements"].items():
             if key not in environments:
@@ -191,8 +232,18 @@ def cmd_report(args):
             for case in entry["cases"]:
                 if case["id"] not in cases:
                     cases.append(case["id"])
+            skipped = entry.get("skipped", [])
+            for skip in skipped:
+                if skip["id"] not in cases:
+                    cases.append(skip["id"])
+            # The newest measurement for an environment decides its skips.
+            skips[key] = {
+                skip["id"]: skip.get("reason")
+                or f"requires numba {skip['requires_numba']}"
+                for skip in skipped
+            }
     environments.sort(key=env_order)
-    cases.sort(key=case_order)
+    cases.sort(key=lambda case: case_key(case, orders))
 
     data = {env: {case: [] for case in cases} for env in environments}
     for document in documents:
@@ -218,6 +269,7 @@ def cmd_report(args):
         "envs": environments,
         "cases": cases,
         "data": data,
+        "skips": skips,
     }
     summary = (
         f"{len(documents)} commit(s) &middot; {len(environments)} environment(s) "
@@ -232,6 +284,48 @@ def cmd_report(args):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     print(f"{out}: {len(documents)} commit(s), {len(cases)} case(s)")
+
+
+def cmd_cases(args):
+    from cases import iter_cases, select_cases
+
+    cases = iter_cases()
+    try:
+        import numba
+    except ImportError:
+        status = {case.id: "unknown" for case in cases}
+    else:
+        runnable, skipped = select_cases(numba.__version__)
+        status = {case.id: "ok" for case in runnable}
+        status.update({skip["id"]: "skipped" for skip in skipped})
+
+    print("order | id | requires_numba | status")
+    for case in cases:
+        print(
+            f"{case.order} | {case.id} | "
+            f"{case.requires_numba or '-'} | {status[case.id]}"
+        )
+
+
+def cmd_backfill_order(args):
+    from cases import iter_cases
+
+    orders = {case.id: case.order for case in iter_cases()}
+    changed = 0
+    for path in sorted(Path(args.results).rglob("*.json")):
+        document = json.loads(path.read_text())
+        if "commit" not in document or "measurements" not in document:
+            continue
+        touched = False
+        for entry in document["measurements"].values():
+            for case in entry.get("cases", []):
+                if "order" not in case and case.get("id") in orders:
+                    case["order"] = orders[case["id"]]
+                    touched = True
+        if touched:
+            write_json(path, document)
+            changed += 1
+    print(f"backfilled {changed} result file(s)")
 
 
 def main(argv=None):
@@ -262,6 +356,15 @@ def main(argv=None):
     report.add_argument("--results", default="results/")
     report.add_argument("--out", default="site/index.html")
     report.set_defaults(func=cmd_report)
+
+    cases = subparsers.add_parser("cases", help="list registered cases")
+    cases.set_defaults(func=cmd_cases)
+
+    backfill = subparsers.add_parser(
+        "backfill-order", help="write case order into existing results"
+    )
+    backfill.add_argument("--results", default="results/")
+    backfill.set_defaults(func=cmd_backfill_order)
 
     args = parser.parse_args(argv)
     args.func(args)

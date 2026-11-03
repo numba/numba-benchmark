@@ -26,6 +26,12 @@
     padding: 16px 18px 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
   }
   .card h2 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+  .skip {
+    margin-left: 6px; padding: 0 6px; font-size: 11px; font-weight: 500;
+    color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 999px;
+    cursor: help;
+  }
+  .empty-note { margin: 0; color: #9ca3af; }
   .plot { position: relative; height: 250px; }
   .empty { max-width: 1440px; margin: 40px auto; color: #6b7280; }
 </style>
@@ -55,11 +61,18 @@ if (DATA.labels.length) DATA.cases.forEach((caseId) => {
   card.className = "card";
   const title = document.createElement("h2");
   title.textContent = caseId;
-  const plot = document.createElement("div");
-  plot.className = "plot";
-  const canvas = document.createElement("canvas");
-  plot.appendChild(canvas);
-  card.append(title, plot);
+
+  const reasons = Object.entries(DATA.skips || {})
+    .filter(([, byCase]) => byCase[caseId])
+    .map(([env, byCase]) => `${env}: ${byCase[caseId]}`);
+  if (reasons.length) {
+    const badge = document.createElement("span");
+    badge.className = "skip";
+    badge.textContent = "skipped";
+    badge.title = reasons.join("\n");
+    title.append(" ", badge);
+  }
+  card.appendChild(title);
   container.appendChild(card);
 
   const datasets = DATA.envs
@@ -76,6 +89,20 @@ if (DATA.labels.length) DATA.cases.forEach((caseId) => {
       tension: 0.2,
       spanGaps: false,
     }));
+
+  if (!datasets.length) {
+    const note = document.createElement("p");
+    note.className = "empty-note";
+    note.textContent = "No measurements.";
+    card.appendChild(note);
+    return;
+  }
+
+  const plot = document.createElement("div");
+  plot.className = "plot";
+  const canvas = document.createElement("canvas");
+  plot.appendChild(canvas);
+  card.appendChild(plot);
 
   new Chart(canvas, {
     type: "line",
