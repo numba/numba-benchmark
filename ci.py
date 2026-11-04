@@ -1,5 +1,6 @@
 """CI planning: resolve Numba commits and emit the benchmark matrix."""
 
+import argparse
 import json
 import os
 import re
@@ -85,6 +86,21 @@ def historic_range(from_ref, to_ref, ref, limit):
         return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
 
 
+def cover(count, ref):
+    with tempfile.TemporaryDirectory() as clone:
+        clone_history(ref, clone)
+        head = git("rev-parse", "--verify", f"{ref}^{{commit}}", cwd=clone)
+        commits = git(
+            "rev-list", "--first-parent", f"--max-count={count}", head, cwd=clone
+        ).splitlines()
+        oldest = commits[-1]
+        try:
+            parent = git("rev-parse", "--verify", f"{oldest}^", cwd=clone)
+        except subprocess.CalledProcessError:
+            parent = ""
+    return head, parent, commits, pending(commits)
+
+
 def plan():
     event = os.environ["EVENT"]
     from_ref = (os.environ.get("DISPATCH_FROM") or "").strip()
@@ -106,8 +122,26 @@ def plan():
 
 
 def main():
+    if len(sys.argv) < 2:
+        raise SystemExit("usage: python ci.py plan | cover --count N --ref REF")
+
+    if sys.argv[1] == "cover":
+        parser = argparse.ArgumentParser(prog="python ci.py cover")
+        parser.add_argument("--count", type=int, default=30)
+        parser.add_argument("--ref", default="main")
+        args = parser.parse_args(sys.argv[2:])
+        head, parent, commits, missing = cover(args.count, args.ref)
+        print(f"to={head}")
+        print(f"from={parent}")
+        print(f"count={len(commits)}")
+        print(f"present={len(commits) - len(missing)}")
+        print(f"missing_count={len(missing)}")
+        print(f"commits={','.join(commits)}")
+        print(f"missing={','.join(missing)}")
+        return
+
     if len(sys.argv) != 2 or sys.argv[1] != "plan":
-        raise SystemExit("usage: python ci.py plan")
+        raise SystemExit("usage: python ci.py plan | cover --count N --ref REF")
 
     commits = plan()
     matrix = {

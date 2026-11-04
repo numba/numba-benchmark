@@ -1,0 +1,79 @@
+name: pages
+
+on:
+  workflow_run:
+    workflows: ["benchmarks"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency: pages
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      to: ${{ steps.cover.outputs.to }}
+      from: ${{ steps.cover.outputs.from }}
+      count: ${{ steps.cover.outputs.count }}
+      present: ${{ steps.cover.outputs.present }}
+      missing_count: ${{ steps.cover.outputs.missing_count }}
+      commits: ${{ steps.cover.outputs.commits }}
+      missing: ${{ steps.cover.outputs.missing }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Check the last 30 merges
+        id: cover
+        run: python ci.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
+
+  backfill:
+    needs: check
+    if: >-
+      needs.check.outputs.missing_count != '0' &&
+      !endsWith(github.event.workflow_run.display_title, 'backfill')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Dispatch historic benchmark run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          FROM: ${{ needs.check.outputs.from }}
+          TO: ${{ needs.check.outputs.to }}
+        run: gh workflow run benchmarks -f from="$FROM" -f to="$TO" -f limit=50
+
+  build:
+    needs: check
+    if: >-
+      needs.check.outputs.missing_count == '0' ||
+      endsWith(github.event.workflow_run.display_title, 'backfill')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Build page
+        env:
+          COMMITS: ${{ needs.check.outputs.commits }}
+        run: |
+          python bench.py report --results results/ \
+            --commits "$COMMITS" --out site/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

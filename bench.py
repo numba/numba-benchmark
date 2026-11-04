@@ -307,6 +307,9 @@ def cmd_compare(args):
 
 def cmd_report(args):
     documents = load_results(args.results)
+    if args.commits:
+        wanted = {sha.strip() for sha in args.commits.split(",") if sha.strip()}
+        documents = [document for document in documents if document["commit"] in wanted]
     payload = report_payload(documents)
     summary = (
         f"{len(documents)} commit(s) &middot; {len(payload['envs'])} environment(s) "
@@ -594,6 +597,7 @@ def main(argv=None):
 
     report = subparsers.add_parser("report", help="build the Chart.js page")
     report.add_argument("--results", default="results/")
+    report.add_argument("--commits", default="", help="comma-separated SHAs to include")
     report.add_argument("--out", default="site/index.html")
     report.set_defaults(func=cmd_report)
 
