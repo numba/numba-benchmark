@@ -73,12 +73,14 @@ editing the repo.
   `python -m unittest discover -s tests` without numpy or numba.
 - **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` on four
   environments and stops if `results/<sha>.json` already exists.
-- **Historic**: run *benchmarks* from the Actions tab with `from`, `to`,
+- **Historic**: run *benchmarks* from the Actions tab with `last`, `from`, `to`,
   `limit` (default 10, max 50), and `ref` to backfill first-parent commits.
-  `from` is exclusive and `to` is inclusive; leave `from` empty to backfill the
-  last `limit` commits ending at `to` (or at `ref`'s head). Results record each
-  commit's first-parent `position`, so backfilled commits keep history order on
-  the chart even though they are measured concurrently.
+  `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
+  hash and takes precedence over `from`/`to`; `from` is exclusive and `to` is
+  inclusive. Leave `from` empty to backfill the last `limit` commits ending at
+  `to` (or at `ref`'s head). Results record each commit's first-parent
+  `position`, so backfilled commits keep history order on the chart even though
+  they are measured concurrently.
 
 Results are committed to the default branch. When a run adds results, the
 workflow uploads the generated page as the `benchmark-report` artifact and

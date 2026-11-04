@@ -5,6 +5,9 @@ on:
     - cron: '17 4 * * *'
   workflow_dispatch:
     inputs:
+      last:
+        description: 'Benchmark the last N commits of ref (overrides from/to)'
+        required: false
       from:
         description: 'First Numba commit (exclusive) for a historic backfill'
         required: false
@@ -42,6 +45,7 @@ jobs:
           EVENT: ${{ github.event_name }}
           DISPATCH_FROM: ${{ inputs.from }}
           DISPATCH_TO: ${{ inputs.to }}
+          DISPATCH_LAST: ${{ inputs.last }}
           DISPATCH_LIMIT: ${{ inputs.limit }}
           DISPATCH_REF: ${{ inputs.ref }}
         run: python ci.py plan >> "$GITHUB_OUTPUT"

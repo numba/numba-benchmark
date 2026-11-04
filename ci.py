@@ -68,6 +68,14 @@ def pending(commits):
     return [commit for commit in commits if not Path(f"results/{commit}.json").exists()]
 
 
+def bounded_count(value, name, maximum=50):
+    try:
+        count = int(value)
+    except ValueError:
+        raise SystemExit(f"{name} must be an integer, got {value!r}")
+    return max(1, min(count, maximum))
+
+
 def historic_range(from_ref, to_ref, ref, limit):
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
@@ -105,10 +113,15 @@ def plan():
     event = os.environ["EVENT"]
     from_ref = (os.environ.get("DISPATCH_FROM") or "").strip()
     to_ref = (os.environ.get("DISPATCH_TO") or "").strip()
+    last = (os.environ.get("DISPATCH_LAST") or "").strip()
     ref = (os.environ.get("DISPATCH_REF") or "main").strip()
 
-    if event == "workflow_dispatch" and (from_ref or to_ref):
-        limit = max(1, min(int(os.environ.get("DISPATCH_LIMIT") or 10), 50))
+    if event == "workflow_dispatch" and (last or from_ref or to_ref):
+        if last:
+            limit = bounded_count(last, "last")
+            from_ref = ""
+        else:
+            limit = bounded_count(os.environ.get("DISPATCH_LIMIT") or 10, "limit")
         return historic_range(from_ref, to_ref, ref, limit)
 
     sha = remote_sha(ref)
