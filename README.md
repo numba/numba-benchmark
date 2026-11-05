@@ -11,10 +11,12 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
 | `bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
 | `ci.py` | Resolves Numba commits and emits the CI matrix. |
+| `scripts/results_readme.py` | Incrementally updates `results/README.md`, the commit index. |
 | `template.html` | Chart.js report page template, one section per case prefix. |
 | `tests/` | Stdlib-only report and CLI tests; no numpy or numba required. |
 | `.github/workflows/bench.yml` | Tests on push/PR, nightly and historic benchmark runs. |
 | `results/<sha>.json` | One result file per Numba commit (generated). |
+| `results/README.md` | Commit index table (generated). |
 | `site/index.html` | Report page (generated). |
 
 ## Local
@@ -85,4 +87,6 @@ editing the repo.
 Results are committed to the default branch. When a run adds results, the
 workflow uploads the generated page as the `benchmark-report` artifact and
 writes the `summary` output to the run summary, which links the artifact; the
-link expires with it. Runs that add no results write no summary.
+link expires with it. The same run refreshes `results/README.md`, reusing
+existing rows and inserting new commits in Numba first-parent order. Runs that
+add no results write no summary.

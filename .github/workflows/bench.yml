@@ -124,6 +124,13 @@ jobs:
             echo 'No new results.' >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      - name: Update results README
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/results_readme.py \
+            --results results/ --out results/README.md
+
       - name: Commit results
         if: steps.new.outputs.any == 'true'
         run: |
