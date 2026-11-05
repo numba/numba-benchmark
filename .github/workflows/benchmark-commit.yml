@@ -33,9 +33,6 @@ on:
 permissions:
   contents: read
 
-env:
-  WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
-
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -58,49 +55,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.repository || github.repository }}
-          ref: ${{ inputs.ref || github.ref }}
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Install NumPy, SciPy, and llvmlite
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install '${{ matrix.spec }}' scipy
-          python -m pip install --no-cache-dir --pre -i "$WHEELS_INDEX_URL" llvmlite
-
-      - name: Install Numba from ${{ inputs.commit }}
-        run: python -m pip install 'git+https://github.com/numba/numba.git@${{ inputs.commit }}'
-
-      - name: Run benchmarks
-        env:
-          COMMIT: ${{ inputs.commit }}
-          POSITION: ${{ inputs.position }}
-        run: |
-          args=()
-          if [ "$POSITION" -gt 0 ]; then args+=(--position "$POSITION"); fi
-          mkdir -p bench-out
-          python bench.py run \
-            --commit "$COMMIT" \
-            "${args[@]}" \
-            --os "${{ matrix.os }}" \
-            --python "${{ matrix.python }}" \
-            --numpy "${{ matrix.numpy }}" \
-            --out "bench-out/$COMMIT.${{ matrix.os }}-${{ matrix.python }}-${{ matrix.numpy }}.json"
-
-      - name: Upload environment result
-        uses: actions/upload-artifact@v4
-        with:
-          name: bench-env-${{ inputs.commit }}-${{ matrix.os }}-${{ matrix.python }}-${{ matrix.numpy }}
-          path: bench-out/*.json
-          if-no-files-found: error
+    uses: ./.github/workflows/benchmark-environment.yml
+    with:
+      commit: ${{ inputs.commit }}
+      position: ${{ inputs.position }}
+      repository: ${{ inputs.repository || github.repository }}
+      ref: ${{ inputs.ref || github.ref }}
+      runner: ${{ matrix.runner }}
+      os: ${{ matrix.os }}
+      python: ${{ matrix.python }}
+      numpy: ${{ matrix.numpy }}
+      spec: ${{ matrix.spec }}
 
   collect:
     needs: benchmark

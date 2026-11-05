@@ -1,0 +1,94 @@
+name: benchmark environment
+
+on:
+  workflow_call:
+    inputs:
+      commit:
+        description: Full 40-character Numba commit SHA to benchmark
+        required: true
+        type: string
+      position:
+        description: First-parent position of the commit in Numba history
+        required: false
+        type: number
+        default: 0
+      repository:
+        description: Repository holding the benchmark code
+        required: true
+        type: string
+      ref:
+        description: Ref of the benchmark repository
+        required: true
+        type: string
+      runner:
+        description: Runner label for this environment
+        required: true
+        type: string
+      os:
+        description: Environment OS label
+        required: true
+        type: string
+      python:
+        description: Python version to install
+        required: true
+        type: string
+      numpy:
+        description: NumPy minor version label recorded in the result
+        required: true
+        type: string
+      spec:
+        description: pip requirement specifier for NumPy
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
+
+jobs:
+  benchmark:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python }}
+
+      - name: Install NumPy, SciPy, and llvmlite
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install '${{ inputs.spec }}' scipy
+          python -m pip install --no-cache-dir --pre -i "$WHEELS_INDEX_URL" llvmlite
+
+      - name: Install Numba from ${{ inputs.commit }}
+        run: python -m pip install 'git+https://github.com/numba/numba.git@${{ inputs.commit }}'
+
+      - name: Run benchmarks
+        env:
+          COMMIT: ${{ inputs.commit }}
+          POSITION: ${{ inputs.position }}
+        run: |
+          args=()
+          if [ "$POSITION" -gt 0 ]; then args+=(--position "$POSITION"); fi
+          mkdir -p bench-out
+          python bench.py run \
+            --commit "$COMMIT" \
+            "${args[@]}" \
+            --os "${{ inputs.os }}" \
+            --python "${{ inputs.python }}" \
+            --numpy "${{ inputs.numpy }}" \
+            --out "bench-out/$COMMIT.${{ inputs.os }}-${{ inputs.python }}-${{ inputs.numpy }}.json"
+
+      - name: Upload environment result
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-env-${{ inputs.commit }}-${{ inputs.os }}-${{ inputs.python }}-${{ inputs.numpy }}
+          path: bench-out/*.json
+          if-no-files-found: error

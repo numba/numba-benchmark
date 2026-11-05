@@ -14,7 +14,8 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `scripts/results_readme.py` | Incrementally updates `results/README.md`, the commit index. |
 | `template.html` | Chart.js report page template, one section per case prefix. |
 | `tests/` | Stdlib-only report and CLI tests; no numpy or numba required. |
-| `.github/workflows/benchmark-commit.yml` | Reusable workflow: benchmarks one commit on the environment matrix and returns its `<commit>.json`. |
+| `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
+| `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
 | `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
 | `results/<sha>.json` | One result file per Numba commit (generated). |
 | `results/README.md` | Commit index table (generated). |
@@ -72,12 +73,21 @@ editing the repo.
 
 ## CI
 
-`benchmark-commit.yml` is a reusable workflow (`workflow_call`) that takes a
-Numba commit, runs the environment matrix from `env_matrix.py`, merges the
-per-environment artifacts into `<commit>.json`, uploads it as
-`bench-result-<commit>`, and returns the same JSON in its `result` output.
-Callers from another repository pass `repository` and `ref` so the workflow
-checks out this benchmark repository.
+The CI is a chain of reusable workflows:
+
+- `benchmark-environment.yml` (`workflow_call`) benchmarks one commit in one
+  environment from `env_matrix.py` and uploads the environment JSON.
+- `benchmark-commit.yml` (`workflow_call`) takes one Numba commit, builds the
+  environment matrix, calls `benchmark-environment.yml` once per environment,
+  merges the per-environment artifacts into `<commit>.json`, uploads it as
+  `bench-result-<commit>`, and returns the same JSON in its `result` output.
+- `bench.yml` plans the commits, calls `benchmark-commit.yml` once per commit,
+  then `publish` downloads every `bench-result-*` artifact and merges them into
+  `results/`.
+
+Callers from another repository pass `repository` and `ref` so
+`benchmark-commit.yml` checks out this benchmark repository and forwards the
+same values to the environment workflow.
 
 - **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` commit and
   stops if `results/<sha>.json` already exists.
