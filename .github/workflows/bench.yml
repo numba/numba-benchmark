@@ -26,9 +26,6 @@ on:
 permissions:
   contents: write
 
-env:
-  WHEELS_INDEX_URL: https://pypi.anaconda.org/numba/label/dev/simple
-
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -39,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Plan commits and environments
+      - name: Plan commits
         id: plan
         env:
           EVENT: ${{ github.event_name }}
@@ -55,43 +52,12 @@ jobs:
     if: needs.prepare.outputs.has_work == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 2
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Install NumPy, SciPy, and llvmlite
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install '${{ matrix.spec }}' scipy
-          python -m pip install --no-cache-dir --pre -i "$WHEELS_INDEX_URL" llvmlite
-
-      - name: Install Numba from ${{ matrix.commit }}
-        run: python -m pip install 'git+https://github.com/numba/numba.git@${{ matrix.commit }}'
-
-      - name: Run benchmarks
-        run: |
-          mkdir -p bench-out
-          python bench.py run \
-            --commit "${{ matrix.commit }}" \
-            --position "${{ matrix.position }}" \
-            --os "${{ matrix.os }}" \
-            --python "${{ matrix.python }}" \
-            --numpy "${{ matrix.numpy }}" \
-            --out "bench-out/${{ matrix.commit }}.${{ matrix.os }}-${{ matrix.python }}-${{ matrix.numpy }}.json"
-
-      - name: Upload result
-        uses: actions/upload-artifact@v4
-        with:
-          name: bench-${{ matrix.commit }}-${{ matrix.os }}-${{ matrix.python }}-${{ matrix.numpy }}
-          path: bench-out/*.json
-          if-no-files-found: error
+    uses: ./.github/workflows/benchmark-commit.yml
+    with:
+      commit: ${{ matrix.commit }}
+      position: ${{ matrix.position }}
 
   publish:
     needs: [prepare, bench]
@@ -106,7 +72,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          pattern: bench-*
+          pattern: bench-result-*
           path: artifacts
 
       - name: Merge results

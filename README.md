@@ -10,11 +10,12 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `cases/` | Case registry (`Case`, `@case`, discovery, version gates) and the benchmark cases. |
 | `benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
 | `bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
-| `ci.py` | Resolves Numba commits and emits the CI matrix. |
+| `ci.py` | Resolves Numba commits and emits the commit matrix. |
 | `scripts/results_readme.py` | Incrementally updates `results/README.md`, the commit index. |
 | `template.html` | Chart.js report page template, one section per case prefix. |
 | `tests/` | Stdlib-only report and CLI tests; no numpy or numba required. |
-| `.github/workflows/bench.yml` | Tests on push/PR, nightly and historic benchmark runs. |
+| `.github/workflows/benchmark-commit.yml` | Reusable workflow: benchmarks one commit on the environment matrix and returns its `<commit>.json`. |
+| `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
 | `results/<sha>.json` | One result file per Numba commit (generated). |
 | `results/README.md` | Commit index table (generated). |
 | `site/index.html` | Report page (generated). |
@@ -71,10 +72,15 @@ editing the repo.
 
 ## CI
 
-- **Tests** (`test` job): pushes and pull requests run
-  `python -m unittest discover -s tests` without numpy or numba.
-- **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` on four
-  environments and stops if `results/<sha>.json` already exists.
+`benchmark-commit.yml` is a reusable workflow (`workflow_call`) that takes a
+Numba commit, runs the environment matrix from `env_matrix.py`, merges the
+per-environment artifacts into `<commit>.json`, uploads it as
+`bench-result-<commit>`, and returns the same JSON in its `result` output.
+Callers from another repository pass `repository` and `ref` so the workflow
+checks out this benchmark repository.
+
+- **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` commit and
+  stops if `results/<sha>.json` already exists.
 - **Historic**: run *benchmarks* from the Actions tab with `last`, `from`, `to`,
   `limit` (default 10, max 50), and `ref` to backfill first-parent commits.
   `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
@@ -83,6 +89,9 @@ editing the repo.
   `to` (or at `ref`'s head). Results record each commit's first-parent
   `position`, so backfilled commits keep history order on the chart even though
   they are measured concurrently.
+
+Both paths call `benchmark-commit.yml` once per planned commit, then `publish`
+downloads every `bench-result-*` artifact and merges them into `results/`.
 
 Results are committed to the default branch. When a run adds results, the
 workflow uploads the generated page as the `benchmark-report` artifact and

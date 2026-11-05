@@ -9,8 +9,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-from env_matrix import ENVIRONMENTS
-
 REPO = os.environ.get("NUMBA_REPO", "https://github.com/numba/numba.git")
 
 
@@ -159,9 +157,7 @@ def main():
     commits = plan()
     matrix = {
         "include": [
-            {"commit": commit, "position": position, **environment}
-            for commit, position in commits
-            for environment in ENVIRONMENTS
+            {"commit": commit, "position": position} for commit, position in commits
         ]
     }
     print(f"matrix={json.dumps(matrix, separators=(',', ':'))}")
