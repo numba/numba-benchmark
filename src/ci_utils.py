@@ -79,6 +79,7 @@ def bounded_count(value, name, maximum=50):
 
 
 def historic_range(from_ref, to_ref, ref, limit):
+    """Pending commits of a range, plus how many were left for a later run."""
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
         end = git("rev-parse", "--verify", f"{to_ref or ref}^{{commit}}", cwd=clone)
@@ -87,17 +88,24 @@ def historic_range(from_ref, to_ref, ref, limit):
             commits = git(
                 "rev-list", "--first-parent", "--reverse", f"{start}..{end}", cwd=clone
             ).splitlines()
-            commits = pending(commits)[:limit]
+            missing = pending(commits)
+            commits = missing[:limit]
         else:
             commits = git(
                 "rev-list", "--first-parent", "--reverse", end, cwd=clone
             ).splitlines()
-            commits = pending(commits)[-limit:]
-        return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
+            missing = pending(commits)
+            commits = missing[-limit:]
+        remaining = len(missing) - len(commits)
+        return [
+            (commit, commit_position(commit, cwd=clone)) for commit in commits
+        ], remaining
 
 
 def cover(count, ref, from_ref="", to_ref=""):
     """Commits an explicit from..to range, or the last count commits of ref."""
+    if to_ref and not from_ref:
+        raise SystemExit("--to requires --from; use --count for the last N commits")
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
         head = git("rev-parse", "--verify", f"{to_ref or ref}^{{commit}}", cwd=clone)
@@ -107,36 +115,65 @@ def cover(count, ref, from_ref="", to_ref=""):
                 "rev-list", "--first-parent", "--reverse", f"{start}..{head}",
                 cwd=clone,
             ).splitlines()
+            parent = start
         else:
             commits = git(
                 "rev-list", "--first-parent", f"--max-count={count}", head, cwd=clone
             ).splitlines()
-        parent = ""
-        if commits:
-            try:
-                parent = git("rev-parse", "--verify", f"{commits[-1]}^", cwd=clone)
-            except subprocess.CalledProcessError:
-                parent = ""
+            parent = ""
+            if commits:
+                try:
+                    parent = git(
+                        "rev-parse", "--verify", f"{commits[-1]}^", cwd=clone
+                    )
+                except subprocess.CalledProcessError:
+                    parent = ""
     return head, parent, commits, pending(commits)
 
 
-def pending_head(ref, limit):
-    """New unbenchmarked commits reachable from ref, oldest first."""
+def cover_commits(value):
+    """Validate an explicit comma-separated list of full commit SHAs."""
+    commits = [sha.strip() for sha in value.split(",") if sha.strip()]
+    for commit in commits:
+        if not re.fullmatch(r"[0-9a-f]{40}", commit):
+            raise SystemExit(
+                f"commit must be a full 40-character lowercase hex SHA, got {commit!r}"
+            )
+    return commits
+
+
+def has_results():
+    return any(Path("results/data").glob("*.json"))
+
+
+def pending_head(ref, limit, window=50):
+    """Unbenchmarked commits reachable from ref, oldest first.
+
+    Covers the contiguous unmeasured run at the tip and any holes inside the
+    most recent ``window`` first-parent commits, so a failed publish or a
+    skipped commit does not strand older history.
+    """
     sha = remote_sha(ref)
-    if Path(f"results/data/{sha}.json").exists():
-        return []
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
         head = git("rev-parse", "--verify", f"{sha}^{{commit}}", cwd=clone)
-        commits = []
-        for commit in git("rev-list", "--first-parent", head, cwd=clone).splitlines():
+        history = git("rev-list", "--first-parent", head, cwd=clone).splitlines()
+        backlog = []
+        for commit in history:
             if Path(f"results/data/{commit}.json").exists():
                 break
-            commits.append(commit)
-            if len(commits) >= limit:
-                break
-        commits.reverse()
-        return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
+            backlog.append(commit)
+        recent = list(reversed(history[:window]))
+        candidates = set(backlog) | set(pending(recent))
+        commits = [commit for commit in reversed(history) if commit in candidates]
+        if has_results():
+            selected = commits[:limit]
+        else:
+            selected = commits[-limit:]
+        remaining = len(commits) - len(selected)
+        return [
+            (commit, commit_position(commit, cwd=clone)) for commit in selected
+        ], remaining
 
 
 def plan_nightly():
@@ -162,7 +199,7 @@ def plan_historic():
 
 USAGE = (
     "usage: python src/ci_utils.py plan nightly | plan historic | "
-    "cover [--count N] [--from REF] [--to REF] --ref REF"
+    "cover [--count N | --from REF --to REF | --commits SHA,...] --ref REF"
 )
 
 
@@ -176,10 +213,17 @@ def main():
         parser.add_argument("--from", dest="from_ref", default="")
         parser.add_argument("--to", dest="to_ref", default="")
         parser.add_argument("--ref", default="main")
+        parser.add_argument("--commits", default="")
         args = parser.parse_args(sys.argv[2:])
-        head, parent, commits, missing = cover(
-            args.count, args.ref, args.from_ref, args.to_ref
-        )
+        if args.commits:
+            commits = cover_commits(args.commits)
+            head = commits[-1] if commits else ""
+            parent = commits[0] if commits else ""
+            missing = pending(commits)
+        else:
+            head, parent, commits, missing = cover(
+                args.count, args.ref, args.from_ref, args.to_ref
+            )
         print(f"to={head}")
         print(f"from={parent}")
         print(f"count={len(commits)}")
@@ -193,7 +237,9 @@ def main():
     if sys.argv[1] != "plan" or mode not in ("nightly", "historic"):
         raise SystemExit(USAGE)
 
-    commits = plan_nightly() if mode == "nightly" else plan_historic()
+    commits, remaining = (
+        plan_nightly() if mode == "nightly" else plan_historic()
+    )
     matrix = {
         "include": [
             {"commit": commit, "position": position} for commit, position in commits
@@ -202,6 +248,12 @@ def main():
     print(f"matrix={json.dumps(matrix, separators=(',', ':'))}")
     print(f"has_work={'true' if commits else 'false'}")
     print(f"commits={','.join(commit for commit, _ in commits)}")
+    print(f"remaining={remaining}")
+    if remaining:
+        print(
+            f"{remaining} pending commit(s) were not scheduled; rerun to continue",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

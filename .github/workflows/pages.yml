@@ -1,13 +1,10 @@
 name: Benchmark pages generation
 
 on:
-  workflow_run:
-    workflows: ["nightly benchmarks", "historic benchmarks"]
-    types: [completed]
   workflow_dispatch:
     inputs:
       from:
-        description: 'First Numba commit of the range (exclusive)'
+        description: 'First Numba commit of the range (exclusive); requires to'
         required: false
         type: string
       to:
@@ -15,7 +12,11 @@ on:
         required: false
         type: string
       ref:
-        description: 'Numba branch the range is resolved against'
+        description: 'Numba branch the range is resolved against (default main)'
+        required: false
+        type: string
+      commits:
+        description: 'Comma-separated commits to include (overrides from/to)'
         required: false
         type: string
 
@@ -41,14 +42,17 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           submodules: recursive
 
-      - name: Check the last 30 merges or the requested range
+      - name: Check the requested commits or range
         id: cover
         env:
+          COMMITS: ${{ inputs.commits }}
           FROM: ${{ inputs.from }}
           TO: ${{ inputs.to }}
-          REF: ${{ inputs.ref || github.event.repository.default_branch }}
+          REF: ${{ inputs.ref || 'main' }}
         run: |
-          if [ -n "${FROM}${TO}" ]; then
+          if [ -n "$COMMITS" ]; then
+            python src/ci_utils.py cover --commits "$COMMITS" >> "$GITHUB_OUTPUT"
+          elif [ -n "$FROM" ]; then
             python src/ci_utils.py cover --from "$FROM" --to "$TO" \
               --ref "$REF" >> "$GITHUB_OUTPUT"
           else
@@ -59,34 +63,9 @@ jobs:
         if: steps.cover.outputs.count == '0'
         run: echo 'No commits in the requested range.' >> "$GITHUB_STEP_SUMMARY"
 
-  backfill:
-    needs: check
-    if: >-
-      needs.check.outputs.missing_count != '0' &&
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.name == 'nightly benchmarks'
-    runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: read
-    steps:
-      - name: Dispatch historic benchmark run
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          FROM: ${{ needs.check.outputs.from }}
-          TO: ${{ needs.check.outputs.to }}
-        run: gh workflow run historic.yml -f from="$FROM" -f to="$TO" -f limit=50
-
   build:
     needs: check
-    if: >-
-      needs.check.outputs.count != '0' &&
-      (
-        needs.check.outputs.missing_count == '0' ||
-        github.event_name == 'workflow_dispatch' ||
-        github.event.workflow_run.name == 'historic benchmarks'
-      )
+    if: needs.check.outputs.count != '0'
     runs-on: ubuntu-latest
     permissions:
       contents: read

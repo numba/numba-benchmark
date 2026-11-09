@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency: historic-benchmarks
 
@@ -51,6 +52,15 @@ jobs:
       - name: Report skip
         if: steps.plan.outputs.has_work == 'false'
         run: echo 'No commits to benchmark for the requested range.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report backlog
+        if: >-
+          steps.plan.outputs.remaining != '0' &&
+          steps.plan.outputs.remaining != ''
+        run: |
+          echo "${{ steps.plan.outputs.remaining }} pending commit(s) in the" \
+            "requested range were not scheduled; rerun to continue." \
+            >> "$GITHUB_STEP_SUMMARY"
 
   bench:
     needs: prepare

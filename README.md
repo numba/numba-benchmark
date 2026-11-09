@@ -97,7 +97,11 @@ The CI is a chain of reusable workflows:
   `bench-result-<commit>`, and returns the same JSON in its `result` output.
 - `publish.yml` (`workflow_call`) downloads every `bench-result-*` artifact from
   the calling run, merges them into `results/data/`, commits the results
-  submodule, and builds the report.
+  submodule, builds a report artifact for the run, and dispatches `pages.yml`
+  with the exact commits it published.
+- `pages.yml` (`workflow_dispatch`) generates the site. It accepts an explicit
+  `commits` list (what `publish.yml` sends), a `from`/`to` range, or falls back
+  to the last 30 first-parent commits of `ref` when nothing is given.
 - `nightly.yml` plans the unbenchmarked commits at `main`'s head and calls
   `benchmark-commit.yml` once per commit, then `publish.yml`.
 - `historic.yml` is dispatched manually with `last`, `from`, `to`, `limit`
@@ -108,17 +112,19 @@ Callers from another repository pass `repository` and `ref` so
 `benchmark-commit.yml` checks out this benchmark repository and forwards the
 same values to the environment workflow.
 
-- **Nightly** (`17 4 * * *`): resolves the default branch's head and benchmarks
-  every first-parent commit that has no `results/data/<sha>.json`, up to 10
-  commits. It skips the run entirely when the head commit is already
-  benchmarked.
-- **Historic**: run the *historic benchmarks* workflow from the Actions tab.
-  `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
+- **Nightly** (`17 4 * * *`): resolves `main`'s head and benchmarks first-parent
+  commits that have no `results/data/<sha>.json`, up to 10 commits. It covers
+  both the unmeasured tip and any holes in the last 50 first-parent commits, so
+  a failed publish or a skipped commit is retried. When more commits are pending
+  than the limit, the step summary reports the remainder; rerun to continue.
+- **Historic**: run the *Benchmark historic commits* workflow from the Actions
+  tab. `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
   hash and takes precedence over `from`/`to`; `from` is exclusive and `to` is
   inclusive. Leave `from` empty to backfill the last `limit` commits ending at
-  `to` (or at `ref`'s head). Results record each commit's first-parent
-  `position`, so backfilled commits keep history order on the chart even though
-  they are measured concurrently.
+  `to` (or at `ref`'s head). If the requested range has more pending commits than
+  `limit`, the step summary reports the remainder. Results record each commit's
+  first-parent `position`, so backfilled commits keep history order on the chart
+  even though they are measured concurrently.
 
 Both paths call `benchmark-commit.yml` once per planned commit, then
 `publish.yml` merges every `bench-result-*` artifact into `results/data/`.
@@ -132,3 +138,7 @@ output to the run summary, which links the artifact; the link expires with it.
 The same run refreshes `results/COMMITS.md`, reusing existing rows and inserting
 new commits in Numba first-parent order. Runs that add no results write no
 summary.
+
+The site deployment requires the repository's Pages setting to use **Source:
+GitHub Actions**. The `github-pages` environment then serves the page built by
+`pages.yml`.

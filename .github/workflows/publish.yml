@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: publish-benchmark-results
@@ -76,9 +77,30 @@ jobs:
           git commit -m 'Update benchmark results submodule' -m "$shas"
           git push
 
+      - name: Dispatch pages build
+        if: steps.new.outputs.any == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          COMMITS: ${{ inputs.commits }}
+        run: |
+          if [ -n "$COMMITS" ]; then
+            gh workflow run pages.yml -f commits="$COMMITS"
+          else
+            gh workflow run pages.yml
+          fi
+
       - name: Build page
         if: steps.new.outputs.any == 'true'
-        run: python src/bench.py report --results results/ --out site/index.html
+        env:
+          COMMITS: ${{ inputs.commits }}
+        run: |
+          if [ -n "$COMMITS" ]; then
+            python src/bench.py report --results results/ \
+              --commits "$COMMITS" --out site/index.html
+          else
+            python src/bench.py report --results results/ --out site/index.html
+          fi
 
       - id: upload-report
         if: steps.new.outputs.any == 'true'
