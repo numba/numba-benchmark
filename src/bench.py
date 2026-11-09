@@ -16,6 +16,7 @@ The registry is imported lazily by `cases` and `backfill-order` only, so
 """
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -181,6 +182,60 @@ def sort_key(text):
     return (text.lower(), text)
 
 
+SYSINFO_VOLATILE_KEYS = frozenset(
+    {"Start", "Start UTC", "Runtime", "Mem Available", "Numba Version"}
+)
+
+
+def machine_id(entry):
+    """Stable id for the machine a measurement ran on, or None without sysinfo.
+
+    Volatile sysinfo fields (run time, memory available, start time) and the
+    Numba version are excluded so commits measured on the same machine share a
+    record even though their Numba version differs.
+    """
+    sysinfo = entry.get("sysinfo")
+    if not isinstance(sysinfo, dict) or "error" in sysinfo:
+        return None
+    stable = {
+        key: value for key, value in sysinfo.items() if key not in SYSINFO_VOLATILE_KEYS
+    }
+    fingerprint = json.dumps(
+        [
+            entry.get("os"),
+            entry.get("python"),
+            entry.get("numpy"),
+            entry.get("llvmlite"),
+            stable,
+        ],
+        sort_keys=True,
+        default=str,
+    )
+    return hashlib.sha256(fingerprint.encode()).hexdigest()[:12]
+
+
+def record_machine(entry, machines):
+    """Add the machine behind a measurement to ``machines``, return its id."""
+    identifier = machine_id(entry)
+    if identifier is None:
+        return None
+    if identifier not in machines:
+        sysinfo = entry.get("sysinfo") or {}
+        machines[identifier] = {
+            "id": identifier,
+            "os": entry.get("os"),
+            "python": entry.get("python"),
+            "numpy": entry.get("numpy"),
+            "llvmlite": entry.get("llvmlite"),
+            "sysinfo": {
+                key: value
+                for key, value in sysinfo.items()
+                if key not in SYSINFO_VOLATILE_KEYS
+            },
+        }
+    return identifier
+
+
 def case_sections(case_ids):
     groups = {}
     for case_id in case_ids:
@@ -196,10 +251,22 @@ def report_payload(documents):
     environments = list(ENVIRONMENT_KEYS)
     cases = []
     skips = {}
-    for document in documents:
+    machines = {}
+    meta = {env: [None] * len(documents) for env in environments}
+    for index, document in enumerate(documents):
         for key, entry in document["measurements"].items():
             if key not in environments:
                 environments.append(key)
+                meta[key] = [None] * len(documents)
+            meta[key][index] = {
+                "machine": record_machine(entry, machines),
+                "os": entry.get("os"),
+                "python": entry.get("python"),
+                "numpy": entry.get("numpy"),
+                "numba": entry.get("numba"),
+                "llvmlite": entry.get("llvmlite"),
+                "timestamp": entry.get("timestamp"),
+            }
             for case in entry["cases"]:
                 if case["id"] not in cases:
                     cases.append(case["id"])
@@ -236,12 +303,15 @@ def report_payload(documents):
 
     return {
         "labels": [document["commit"][:10] for document in documents],
+        "commits": [document["commit"] for document in documents],
         "dates": [document["date"] for document in documents],
         "envs": environments,
         "cases": cases,
         "sections": case_sections(cases),
         "data": data,
         "skips": skips,
+        "meta": meta,
+        "machines": machines,
     }
 
 
@@ -324,7 +394,7 @@ def cmd_report(args):
     )
     template = Path(__file__).with_name("template.html").read_text()
     html = template.replace("__SUMMARY__", summary).replace(
-        "__DATA__", json.dumps(payload)
+        "__DATA__", json.dumps(payload).replace("<", "\\u003c")
     )
 
     out = Path(args.out)

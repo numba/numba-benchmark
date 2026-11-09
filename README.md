@@ -12,7 +12,7 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `src/bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
 | `src/ci_utils.py` | Resolves Numba commits and emits the commit matrix. |
 | `src/env_matrix_constants.py` | Environment matrix used by the CI. |
-| `src/template.html` | Chart.js report page template, one section per case prefix. |
+| `src/template.html` | Chart.js report page template with expandable, filterable benchmark charts and machine details. |
 | `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
 | `.github/workflows/nightly.yml` | Nightly run: benchmarks new Numba commits, or skips when `main` has no new commit. |
@@ -61,6 +61,20 @@ newest measurement.
 `merge`, `compare`, `report`, and `summary` run without numpy or numba.
 `python src/bench.py cases` prints the registry order and, when numba is installed,
 whether each case runs or is skipped by its version gate.
+
+## Report page
+
+`bench.py report` writes a self-contained page: one card per benchmark, grouped
+by case prefix. Clicking a card expands a larger chart with per-benchmark
+filters: environments, commit range, metric (speedup, NumPy/Numba call time,
+compile time), log scale, y-axis zoom, date spacing, and a reference commit that
+normalizes each series to its value at that commit.
+
+Each measurement records the pinned Python, NumPy, Numba, and llvmlite versions
+plus the `numba --sysinfo` payload. Hovering a point shows its versions and a
+`numba -s` summary; clicking a point shows the machine information, the pinned
+versions, the timings, and the full sysinfo dump. Results measured before
+sysinfo collection was added only show their pinned dependency versions.
 
 ## Cases
 

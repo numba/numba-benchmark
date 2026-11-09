@@ -13,152 +13,910 @@
     font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: #f6f7f9; color: #111827;
   }
-  header { max-width: 1440px; margin: 0 auto 24px; }
+  header { max-width: 1440px; margin: 0 auto 18px; }
   h1 { margin: 0 0 4px; font-size: 26px; letter-spacing: -0.02em; }
   .meta { color: #6b7280; }
+  .hint { color: #9ca3af; font-size: 12px; margin: 4px 0 0; }
+  .toolbar {
+    max-width: 1440px; margin: 0 auto 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .toolbar input[type="search"] {
+    width: 280px; padding: 7px 10px; font: inherit; color: inherit;
+    background: #fff; border: 1px solid #d1d5db; border-radius: 8px;
+  }
+  .toolbar input[type="search"]:focus {
+    outline: 2px solid #bfdbfe; border-color: #2563eb;
+  }
   .grid {
     max-width: 1440px; margin: 0 auto;
     display: grid; gap: 18px;
     grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+    align-items: start;
   }
   .card {
     background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
     padding: 16px 18px 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+    min-width: 0;
   }
-  .card h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; }
+  .card.expanded {
+    grid-column: 1 / -1;
+    box-shadow: 0 12px 32px rgb(15 23 42 / 0.12);
+    border-color: #bfdbfe;
+  }
+  .card-head {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    margin: 0; padding: 0 0 10px; border: 0; background: none;
+    font: inherit; font-size: 14px; font-weight: 600; color: inherit;
+    text-align: left; cursor: pointer;
+  }
+  .card-head .spacer { flex: 1; }
+  .card-title { overflow-wrap: anywhere; }
+  .card-head:hover .card-title { color: #2563eb; }
+  .expand-hint { color: #9ca3af; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .card.expanded .expand-hint { color: #2563eb; }
   .section-title {
     max-width: 1440px; margin: 28px auto 10px; font-size: 18px;
   }
   .skip {
-    margin-left: 6px; padding: 0 6px; font-size: 11px; font-weight: 500;
+    padding: 0 6px; font-size: 11px; font-weight: 500;
     color: #9ca3af; border: 1px solid #e5e7eb; border-radius: 999px;
     cursor: help;
   }
   .empty-note { margin: 0; color: #9ca3af; }
   .plot { position: relative; height: 250px; }
   .empty { max-width: 1440px; margin: 40px auto; color: #6b7280; }
+
+  .detail { margin-top: 10px; border-top: 1px solid #e5e7eb; padding-top: 16px; }
+  .detail[hidden] { display: none; }
+  .detail-grid {
+    display: grid; gap: 18px;
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .detail-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+  .filters {
+    background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 12px; font-size: 12px;
+  }
+  .filter-group + .filter-group { margin-top: 14px; }
+  .filter-group h4 {
+    margin: 0 0 6px; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280;
+  }
+  .filter-group select,
+  .filter-group input[type="number"] {
+    width: 100%; padding: 4px 6px; font: inherit; font-size: 11px;
+    background: #fff; color: inherit;
+    border: 1px solid #d1d5db; border-radius: 6px;
+  }
+  .filter-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+  .filter-row span { color: #6b7280; min-width: 30px; }
+  .env-list { display: flex; flex-direction: column; gap: 4px; }
+  .env-option {
+    display: flex; align-items: flex-start; gap: 7px;
+    cursor: pointer; padding: 2px 0; line-height: 1.25;
+  }
+  .env-option input { margin: 2px 0 0; }
+  .env-option .env-text {
+    display: flex; flex-direction: column; min-width: 0;
+    overflow: hidden; overflow-wrap: anywhere;
+  }
+  .env-option small {
+    color: #9ca3af; font-size: 10px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .swatch {
+    width: 10px; height: 10px; border-radius: 3px;
+    flex: 0 0 auto; margin-top: 3px; background: #9ca3af;
+  }
+  .toggle {
+    display: flex; align-items: center; gap: 6px;
+    padding: 2px 0; cursor: pointer;
+  }
+  .toggle input { margin: 0; }
+  .reset {
+    width: 100%; margin-top: 14px; padding: 5px 8px;
+    font: inherit; font-size: 12px; color: #374151; cursor: pointer;
+    background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
+  }
+  .reset:hover { border-color: #9ca3af; }
+  .detail-main { min-width: 0; }
+  .chart-lg { position: relative; height: 380px; }
+  .skip-notes { margin: 10px 0 0; padding-left: 18px; color: #b45309; font-size: 12px; }
+  .point-info { margin-top: 16px; border-top: 1px solid #e5e7eb; padding-top: 14px; }
+  .point-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .point-head .swatch { margin-top: 0; }
+  .point-commit { color: #6b7280; font-size: 12px; }
+  .point-grid {
+    display: grid; gap: 18px; margin-top: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .info-section h4 {
+    margin: 0 0 6px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; color: #6b7280;
+  }
+  .kv { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .kv th {
+    width: 38%; padding: 2px 10px 2px 0; text-align: left; vertical-align: top;
+    font-weight: 500; color: #6b7280;
+  }
+  .kv td {
+    padding: 2px 0; vertical-align: top;
+    overflow-wrap: anywhere; white-space: pre-wrap;
+  }
+  .sysinfo { margin-top: 14px; }
+  .sysinfo summary {
+    cursor: pointer; font-size: 12px; font-weight: 600; color: #374151;
+  }
+  .sysinfo-wrap {
+    margin-top: 8px; max-height: 300px; overflow: auto;
+    border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px;
+    background: #fbfcfd;
+  }
 </style>
 </head>
 <body>
 <header>
   <h1>Numba benchmarks</h1>
   <div class="meta">__SUMMARY__</div>
+  <p class="hint">Click a benchmark to expand it. Hover a point for its pinned dependency versions and
+    numba -s summary; click a point for the full machine information.</p>
 </header>
+<div class="toolbar">
+  <input id="search" type="search" placeholder="Filter benchmarks by name" aria-label="Filter benchmarks by name">
+  <span id="count" class="hint"></span>
+</div>
 <main id="report"></main>
 <p id="empty" class="empty" hidden>No results yet.</p>
 <script>
 const DATA = __DATA__;
-const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed", "#0891b2"];
+const COLORS = ["#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed", "#0891b2", "#be123c", "#4d7c0f"];
 const report = document.getElementById("report");
+const search = document.getElementById("search");
+const count = document.getElementById("count");
 
-function ms(ns) {
+const METRICS = {
+  speedup: {
+    title: "Speedup (NumPy / Numba)",
+    short: "speedup",
+    pick: (point) => point.speedup,
+    format: (value) => `${value.toFixed(2)}x`,
+  },
+  numpy: {
+    title: "NumPy call time (ms)",
+    short: "NumPy ms",
+    pick: (point) => point.numpy_ns / 1e6,
+    format: (value) => `${value.toFixed(3)} ms`,
+  },
+  numba: {
+    title: "Numba call time (ms)",
+    short: "Numba ms",
+    pick: (point) => point.numba_ns / 1e6,
+    format: (value) => `${value.toFixed(3)} ms`,
+  },
+  compile: {
+    title: "Numba compile time (ms)",
+    short: "compile ms",
+    pick: (point) => point.compile_ns / 1e6,
+    format: (value) => `${value.toFixed(3)} ms`,
+  },
+};
+
+const MACHINE_KEYS = [
+  "Machine", "CPU Name", "CPU Count", "CPUs Allowed", "List CPUs Allowed",
+  "Mem Total", "Mem Available", "Platform Name", "Platform Release",
+  "OS Name", "OS Version", "OS Specific Version", "Libc Version",
+  "CPU Features", "Python Compiler", "Python Implementation",
+  "Python Version", "LLVM Version", "NumPy Version", "SciPy Version",
+];
+
+let expandedCard = null;
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = String(text);
+  return node;
+}
+
+function fmtMs(ns) {
+  if (typeof ns !== "number" || !Number.isFinite(ns)) return "—";
   return (ns / 1e6).toFixed(3);
+}
+
+function dateOf(index) {
+  const date = DATA.dates[index];
+  return date ? date.slice(0, 10) : "";
+}
+
+function colorFor(env) {
+  const index = DATA.envs.indexOf(env);
+  return COLORS[index % COLORS.length];
+}
+
+function metaFor(env, docIndex) {
+  const list = DATA.meta && DATA.meta[env];
+  if (!list) return null;
+  return list[docIndex] || null;
+}
+
+function recordFor(meta) {
+  if (!meta || !meta.machine) return null;
+  return (DATA.machines && DATA.machines[meta.machine]) || null;
+}
+
+function machineSummary(meta) {
+  const record = recordFor(meta);
+  const sysinfo = (record && record.sysinfo) || {};
+  const cpu = sysinfo["CPU Name"] || sysinfo["Machine"];
+  const os = sysinfo["OS Name"] || sysinfo["Platform Name"];
+  const parts = [cpu, os].filter(Boolean);
+  return parts.length ? parts.join(" · ") : "";
+}
+
+function machineLine(meta) {
+  const record = recordFor(meta);
+  const sysinfo = (record && record.sysinfo) || {};
+  const parts = [];
+  const cpu = sysinfo["CPU Name"] || sysinfo["Machine"];
+  if (cpu) parts.push(cpu);
+  if (sysinfo["CPU Count"]) parts.push(`${sysinfo["CPU Count"]} cores`);
+  if (typeof sysinfo["Mem Total"] === "number") {
+    parts.push(`${(sysinfo["Mem Total"] / 1024 ** 3).toFixed(1)} GiB`);
+  }
+  const os = [sysinfo["OS Name"], sysinfo["Platform Release"]].filter(Boolean).join(" ");
+  if (os) parts.push(os);
+  if (sysinfo["LLVM Version"]) parts.push(`LLVM ${sysinfo["LLVM Version"]}`);
+  return parts.join(" · ");
+}
+
+function latestMeta(env) {
+  const list = (DATA.meta && DATA.meta[env]) || [];
+  for (let index = list.length - 1; index >= 0; index -= 1) {
+    if (list[index]) return list[index];
+  }
+  return null;
+}
+
+function versionLine(meta) {
+  if (!meta) return "No pinned dependency versions recorded";
+  return `py ${meta.python ?? "?"} · np ${meta.numpy ?? "?"} · nb ${meta.numba ?? "?"} · llvmlite ${meta.llvmlite ?? "?"}`;
+}
+
+function displayValue(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  if (Array.isArray(value)) {
+    if (!value.length) return "[]";
+    return value.every((item) => typeof item === "string" || typeof item === "number")
+      ? value.join("\n")
+      : JSON.stringify(value, null, 2);
+  }
+  if (typeof value === "object") return JSON.stringify(value, null, 2);
+  return String(value);
+}
+
+function keyValueTable(rows) {
+  const table = el("table", "kv");
+  for (const [key, value] of rows) {
+    const row = document.createElement("tr");
+    row.append(el("th", null, key), el("td", null, displayValue(value)));
+    table.append(row);
+  }
+  return table;
+}
+
+function infoSection(title, body) {
+  const section = el("section", "info-section");
+  section.append(el("h4", null, title), body);
+  return section;
+}
+
+function tooltipLabel(context) {
+  const item = context.dataset.points[context.dataIndex];
+  if (!item) return `${context.dataset.label}: no data`;
+  const point = item.point;
+  const metric = METRICS[context.dataset.metricKey] || METRICS.speedup;
+  const meta = metaFor(item.env, item.docIndex);
+  const raw = metric.format(metric.pick(point));
+  const first = context.dataset.normalized
+    ? `${context.dataset.label}: ${raw} (${Number(context.parsed.y).toFixed(2)}x reference)`
+    : `${context.dataset.label}: ${raw}`;
+  const lines = [
+    first,
+    `NumPy ${fmtMs(point.numpy_ns)} ms · Numba ${fmtMs(point.numba_ns)} ms · compile ${fmtMs(point.compile_ns)} ms`,
+    versionLine(meta),
+  ];
+  const machine = machineLine(meta);
+  if (machine) lines.push(machine);
+  lines.push(meta && meta.machine
+    ? "Click the point for the full numba -s information"
+    : "No numba -s information recorded for this point");
+  return lines;
+}
+
+function tooltipConfig() {
+  return {
+    padding: 8,
+    titleFont: { size: 11 },
+    bodyFont: { size: 11 },
+    bodySpacing: 3,
+    callbacks: {
+      title(items) {
+        if (!items.length) return "";
+        const item = items[0].dataset.points[items[0].dataIndex];
+        if (!item) return "";
+        return `${DATA.labels[item.docIndex]} · ${dateOf(item.docIndex)}`;
+      },
+      label: tooltipLabel,
+    },
+  };
+}
+
+function skipReasons(caseId) {
+  const reasons = [];
+  for (const env of DATA.envs) {
+    const byCase = DATA.skips && DATA.skips[env];
+    if (byCase && byCase[caseId]) reasons.push(`${env}: ${byCase[caseId]}`);
+  }
+  return reasons;
+}
+
+function miniDatasets(caseId) {
+  const datasets = [];
+  DATA.envs.forEach((env, index) => {
+    const series = (DATA.data[env] && DATA.data[env][caseId]) || [];
+    const points = series.map((point, docIndex) => (point ? { env, docIndex, point } : null));
+    if (!points.some(Boolean)) return;
+    const color = COLORS[index % COLORS.length];
+    datasets.push({
+      label: env,
+      data: series.map((point) => (point ? point.speedup : null)),
+      points,
+      metricKey: "speedup",
+      normalized: false,
+      borderColor: color,
+      backgroundColor: color,
+      borderWidth: 2,
+      pointRadius: 2,
+      pointHoverRadius: 5,
+      pointHitRadius: 6,
+      spanGaps: false,
+      tension: 0.2,
+    });
+  });
+  return datasets;
+}
+
+function detailDatasets(caseId, state) {
+  const metric = METRICS[state.metric];
+  const indexes = [];
+  for (let index = state.from; index <= state.to; index += 1) indexes.push(index);
+  const refIndex = state.reference === "" ? null : Number(state.reference);
+  const datasets = [];
+  DATA.envs.forEach((env, colorIndex) => {
+    if (!state.envs.has(env)) return;
+    const series = (DATA.data[env] && DATA.data[env][caseId]) || [];
+    let refValue = null;
+    if (refIndex !== null) {
+      const refPoint = series[refIndex];
+      refValue = refPoint ? metric.pick(refPoint) : null;
+    }
+    const points = indexes.map((docIndex) => {
+      const point = series[docIndex];
+      return point ? { env, docIndex, point } : null;
+    });
+    if (!points.some(Boolean)) return;
+    const values = points.map((item) => {
+      if (!item) return null;
+      let value = metric.pick(item.point);
+      if (refIndex !== null) {
+        if (!refValue) return null;
+        value /= refValue;
+      }
+      if (state.logScale && !(value > 0)) return null;
+      return value;
+    });
+    const data = state.dateScale
+      ? points.map((item, position) => {
+          const parsed = Date.parse(DATA.dates[indexes[position]] || "");
+          return { x: Number.isNaN(parsed) ? null : parsed, y: values[position] };
+        })
+      : values;
+    const color = COLORS[colorIndex % COLORS.length];
+    datasets.push({
+      label: env,
+      data,
+      points,
+      metricKey: state.metric,
+      normalized: refIndex !== null,
+      borderColor: color,
+      backgroundColor: color,
+      borderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 7,
+      pointHitRadius: 8,
+      spanGaps: false,
+      tension: 0.2,
+    });
+  });
+  return { datasets, refIndex };
+}
+
+function detailChartOptions(caseId, state, showPoint) {
+  const { datasets, refIndex } = detailDatasets(caseId, state);
+  const metric = METRICS[state.metric];
+  const indexes = [];
+  for (let index = state.from; index <= state.to; index += 1) indexes.push(index);
+
+  const x = state.dateScale
+    ? {
+        type: "linear",
+        grid: { display: false },
+        ticks: {
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 10,
+          callback(value) {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+          },
+        },
+      }
+    : {
+        type: "category",
+        grid: { display: false },
+        ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+      };
+
+  const y = {
+    type: state.logScale ? "logarithmic" : "linear",
+    title: {
+      display: true,
+      text: refIndex === null
+        ? metric.title
+        : `${metric.title} (relative to ${DATA.labels[refIndex]})`,
+    },
+    grid: { color: "#eef0f3" },
+    beginAtZero: !state.logScale && !state.zoom,
+  };
+
+  return {
+    type: "line",
+    data: {
+      labels: state.dateScale ? undefined : indexes.map((index) => DATA.labels[index]),
+      datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "nearest", intersect: true },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 } },
+        },
+        tooltip: tooltipConfig(),
+      },
+      scales: { x, y },
+      onClick(event, elements, chart) {
+        if (!elements.length) return;
+        const element = elements[0];
+        const dataset = chart.data.datasets[element.datasetIndex];
+        const item = dataset.points[element.index];
+        if (item) showPoint(item);
+      },
+    },
+  };
+}
+
+function machineTable(sysinfo) {
+  const rows = [];
+  for (const key of MACHINE_KEYS) {
+    if (sysinfo[key] === undefined || sysinfo[key] === null) continue;
+    let value = sysinfo[key];
+    if (key === "Mem Total" && typeof value === "number") {
+      value = `${(value / 1024 ** 3).toFixed(1)} GiB (${value} bytes)`;
+    }
+    rows.push([key, value]);
+  }
+  if (!rows.length) return el("p", "hint", "No machine information recorded for this point.");
+  return keyValueTable(rows);
+}
+
+function renderPointInfo(container, item, state) {
+  const point = item.point;
+  const meta = metaFor(item.env, item.docIndex);
+  const record = recordFor(meta);
+  const sysinfo = (record && record.sysinfo) || {};
+  const metric = METRICS[state.metric];
+
+  container.replaceChildren();
+
+  const head = el("div", "point-head");
+  const swatch = el("span", "swatch");
+  swatch.style.background = colorFor(item.env);
+  head.append(
+    swatch,
+    el("strong", null, item.env),
+    el("span", "point-commit", `${DATA.labels[item.docIndex]} · ${dateOf(item.docIndex)}`),
+  );
+  if (state.reference !== "") {
+    head.append(el("span", "skip", `relative to ${DATA.labels[Number(state.reference)]}`));
+  }
+  container.append(head);
+
+  const dependencies = keyValueTable([
+    ["Environment", item.env],
+    ["OS", meta && meta.os],
+    ["Python", meta && meta.python],
+    ["NumPy", meta && meta.numpy],
+    ["Numba", meta && meta.numba],
+    ["llvmlite", meta && meta.llvmlite],
+    ["Measured at", meta && meta.timestamp],
+    ["Commit", (DATA.commits && DATA.commits[item.docIndex]) || DATA.labels[item.docIndex]],
+  ]);
+
+  const timingRows = [
+    ["Speedup", `${point.speedup.toFixed(2)}x`],
+    ["NumPy", `${fmtMs(point.numpy_ns)} ms`],
+    ["Numba", `${fmtMs(point.numba_ns)} ms`],
+    ["Numba compile", `${fmtMs(point.compile_ns)} ms`],
+  ];
+  if (state.metric !== "speedup") {
+    timingRows.push([`Chart metric (${metric.short})`, metric.format(metric.pick(point))]);
+  }
+  const timing = keyValueTable(timingRows);
+
+  const grid = el("div", "point-grid");
+  grid.append(
+    infoSection("Pinned dependencies", dependencies),
+    infoSection("Machine", machineTable(sysinfo)),
+    infoSection("Timing", timing),
+  );
+  container.append(grid);
+
+  const details = el("details", "sysinfo");
+  details.open = true;
+  details.append(el("summary", null, "numba -s (numba --sysinfo)"));
+  if (Object.keys(sysinfo).length) {
+    const wrap = el("div", "sysinfo-wrap");
+    const rows = Object.keys(sysinfo).map((key) => [key, sysinfo[key]]);
+    if (meta && meta.numba && !("Numba Version" in sysinfo)) {
+      rows.push(["Numba Version", meta.numba]);
+    }
+    rows.sort((left, right) => left[0].localeCompare(right[0]));
+    wrap.append(keyValueTable(rows));
+    details.append(wrap);
+  } else {
+    details.append(el(
+      "p",
+      "hint",
+      "No numba -s information recorded for this point; older results only carry the pinned dependency versions above.",
+    ));
+  }
+  container.append(details);
+}
+
+function filterGroup(title, nodes) {
+  const group = el("div", "filter-group");
+  group.append(el("h4", null, title));
+  for (const node of nodes) group.append(node);
+  return group;
+}
+
+function buildFilterPanel(caseId, state, refresh) {
+  const aside = el("aside", "filters");
+  const activeEnvs = DATA.envs.filter(
+    (env) => ((DATA.data[env] && DATA.data[env][caseId]) || []).some(Boolean),
+  );
+
+  const envBox = el("div", "env-list");
+  const envInputs = new Map();
+  DATA.envs.forEach((env, index) => {
+    if (!activeEnvs.includes(env)) return;
+    const row = el("label", "env-option");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = state.envs.has(env);
+    input.addEventListener("change", () => {
+      if (input.checked) state.envs.add(env);
+      else state.envs.delete(env);
+      refresh();
+    });
+    envInputs.set(env, input);
+    const swatch = el("span", "swatch");
+    swatch.style.background = COLORS[index % COLORS.length];
+    const text = el("span", "env-text", env);
+    const meta = latestMeta(env);
+    const machine = machineSummary(meta);
+    if (machine) text.append(el("small", null, machine));
+    row.append(input, swatch, text);
+    envBox.append(row);
+  });
+  if (!envBox.childElementCount) {
+    envBox.append(el("p", "hint", "No environments measured this benchmark."));
+  }
+  aside.append(filterGroup("Environments", [envBox]));
+
+  const fromSelect = document.createElement("select");
+  const toSelect = document.createElement("select");
+  DATA.labels.forEach((label, index) => {
+    const option = `${label} · ${dateOf(index)}`;
+    fromSelect.append(new Option(option, String(index)));
+    toSelect.append(new Option(option, String(index)));
+  });
+  fromSelect.value = String(state.from);
+  toSelect.value = String(state.to);
+  fromSelect.addEventListener("change", () => {
+    state.from = Math.min(Number(fromSelect.value), state.to);
+    fromSelect.value = String(state.from);
+    refresh();
+  });
+  toSelect.addEventListener("change", () => {
+    state.to = Math.max(Number(toSelect.value), state.from);
+    toSelect.value = String(state.to);
+    refresh();
+  });
+  const fromRow = el("div", "filter-row");
+  fromRow.append(el("span", null, "From"), fromSelect);
+  const toRow = el("div", "filter-row");
+  toRow.append(el("span", null, "To"), toSelect);
+  aside.append(filterGroup("Commits", [fromRow, toRow]));
+
+  const metricSelect = document.createElement("select");
+  for (const [key, metric] of Object.entries(METRICS)) {
+    metricSelect.append(new Option(metric.title, key));
+  }
+  metricSelect.value = state.metric;
+  metricSelect.addEventListener("change", () => {
+    state.metric = metricSelect.value;
+    refresh();
+  });
+  aside.append(filterGroup("Metric", [metricSelect]));
+
+  function makeToggle(labelText, checked, onChange) {
+    const label = el("label", "toggle");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    input.addEventListener("change", () => onChange(input.checked));
+    label.append(input, el("span", null, labelText));
+    return { label, input };
+  }
+
+  const logToggle = makeToggle("Log scale", state.logScale, (checked) => {
+    state.logScale = checked;
+    refresh();
+  });
+  const zoomToggle = makeToggle("Zoom y-axis (hide zero)", state.zoom, (checked) => {
+    state.zoom = checked;
+    refresh();
+  });
+  const dateToggle = makeToggle("Date spacing", state.dateScale, (checked) => {
+    state.dateScale = checked;
+    refresh();
+  });
+
+  const referenceSelect = document.createElement("select");
+  referenceSelect.append(new Option("None (raw values)", ""));
+  DATA.labels.forEach((label, index) => {
+    referenceSelect.append(new Option(`${label} · ${dateOf(index)}`, String(index)));
+  });
+  referenceSelect.value = state.reference;
+  referenceSelect.addEventListener("change", () => {
+    state.reference = referenceSelect.value;
+    refresh();
+  });
+  const referenceRow = el("div", "filter-row");
+  referenceRow.append(el("span", null, "Ref"), referenceSelect);
+
+  aside.append(filterGroup("Plot settings", [
+    logToggle.label,
+    zoomToggle.label,
+    dateToggle.label,
+    referenceRow,
+  ]));
+
+  const reset = el("button", "reset", "Reset filters");
+  reset.type = "button";
+  reset.addEventListener("click", () => {
+    state.metric = "speedup";
+    state.from = 0;
+    state.to = DATA.labels.length - 1;
+    state.logScale = false;
+    state.zoom = false;
+    state.dateScale = false;
+    state.reference = "";
+    state.envs = new Set(activeEnvs);
+    metricSelect.value = "speedup";
+    fromSelect.value = "0";
+    toSelect.value = String(state.to);
+    logToggle.input.checked = false;
+    zoomToggle.input.checked = false;
+    dateToggle.input.checked = false;
+    referenceSelect.value = "";
+    envInputs.forEach((input, env) => {
+      input.checked = state.envs.has(env);
+    });
+    refresh();
+  });
+  aside.append(reset);
+
+  return aside;
+}
+
+function createDetail(card, caseId) {
+  const panel = el("div", "detail");
+  panel.hidden = true;
+
+  const state = {
+    metric: "speedup",
+    envs: new Set(DATA.envs),
+    from: 0,
+    to: Math.max(0, DATA.labels.length - 1),
+    logScale: false,
+    zoom: false,
+    dateScale: false,
+    reference: "",
+  };
+
+  const main = el("div", "detail-main");
+  const chartBox = el("div", "chart-lg");
+  const canvas = document.createElement("canvas");
+  chartBox.append(canvas);
+  const empty = el("p", "hint", "No series match the current filters.");
+  empty.hidden = true;
+  const info = el("div", "point-info");
+  info.append(el("p", "hint", "Click a point to see the machine information, pinned dependency versions, and numba -s output."));
+  main.append(chartBox, empty, info);
+
+  const reasons = skipReasons(caseId);
+  if (reasons.length) {
+    const notes = el("ul", "skip-notes");
+    for (const reason of reasons) notes.append(el("li", null, reason));
+    main.append(notes);
+  }
+
+  let chart = null;
+  function showPoint(item) {
+    renderPointInfo(info, item, state);
+  }
+  function refresh() {
+    if (chart) chart.destroy();
+    chart = new Chart(canvas, detailChartOptions(caseId, state, showPoint));
+    empty.hidden = chart.data.datasets.length > 0;
+  }
+
+  const layout = el("div", "detail-grid");
+  layout.append(buildFilterPanel(caseId, state, refresh), main);
+  panel.append(layout);
+  card.append(panel);
+
+  return { panel, refresh };
+}
+
+function setExpanded(card, open) {
+  const detail = card._detail;
+  const hint = card.querySelector(".expand-hint");
+  const head = card.querySelector(".card-head");
+  const mini = card.querySelector(".mini");
+  if (open && expandedCard && expandedCard !== card) setExpanded(expandedCard, false);
+  card.classList.toggle("expanded", open);
+  detail.panel.hidden = !open;
+  if (mini) mini.hidden = open;
+  if (hint) hint.textContent = open ? "Collapse" : "Expand";
+  if (head) head.setAttribute("aria-expanded", String(open));
+  if (open) {
+    expandedCard = card;
+    detail.refresh();
+    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  } else if (expandedCard === card) {
+    expandedCard = null;
+  }
+}
+
+function renderCard(container, caseId) {
+  const card = el("section", "card");
+  card.dataset.case = caseId;
+
+  const head = document.createElement("button");
+  head.type = "button";
+  head.className = "card-head";
+  head.setAttribute("aria-expanded", "false");
+  head.append(el("span", "card-title", caseId));
+  const reasons = skipReasons(caseId);
+  if (reasons.length) {
+    const badge = el("span", "skip", "skipped");
+    badge.title = reasons.join("\n");
+    head.append(badge);
+  }
+  head.append(el("span", "spacer"), el("span", "expand-hint", "Expand"));
+  head.addEventListener("click", () => {
+    setExpanded(card, !card.classList.contains("expanded"));
+  });
+  card.append(head);
+
+  const datasets = miniDatasets(caseId);
+  if (datasets.length) {
+    const plot = el("div", "mini plot");
+    const canvas = document.createElement("canvas");
+    plot.append(canvas);
+    card.append(plot);
+    new Chart(canvas, {
+      type: "line",
+      data: { labels: DATA.labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "nearest", intersect: true },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 } },
+          },
+          tooltip: tooltipConfig(),
+        },
+        scales: {
+          y: {
+            title: { display: true, text: "Speedup (NumPy / Numba)" },
+            grid: { color: "#eef0f3" },
+          },
+          x: {
+            grid: { display: false },
+            ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+          },
+        },
+      },
+    });
+    canvas.addEventListener("click", () => setExpanded(card, true));
+  } else {
+    card.append(el("p", "empty-note", "No measurements."));
+  }
+
+  card._detail = createDetail(card, caseId);
+  container.append(card);
+}
+
+function applySearch() {
+  const needle = search.value.trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll(".card").forEach((card) => {
+    const match = !needle || card.dataset.case.toLowerCase().includes(needle);
+    card.hidden = !match;
+    if (match) visible += 1;
+  });
+  document.querySelectorAll(".section-block").forEach((block) => {
+    const anyVisible = Array.from(block.querySelectorAll(".card")).some((card) => !card.hidden);
+    block.hidden = !anyVisible;
+  });
+  count.textContent = `${visible} shown`;
 }
 
 if (!DATA.labels.length) {
   document.getElementById("empty").hidden = false;
-}
-
-function renderCard(container, caseId) {
-  const card = document.createElement("section");
-  card.className = "card";
-  const title = document.createElement("h3");
-  title.textContent = caseId;
-
-  const reasons = Object.entries(DATA.skips || {})
-    .filter(([, byCase]) => byCase[caseId])
-    .map(([env, byCase]) => `${env}: ${byCase[caseId]}`);
-  if (reasons.length) {
-    const badge = document.createElement("span");
-    badge.className = "skip";
-    badge.textContent = "skipped";
-    badge.title = reasons.join("\n");
-    title.append(" ", badge);
-  }
-  card.appendChild(title);
-  container.appendChild(card);
-
-  const datasets = DATA.envs
-    .map((env, index) => ({ env, index }))
-    .filter(({ env }) => DATA.data[env][caseId].some((point) => point))
-    .map(({ env, index }) => ({
-      label: env,
-      data: DATA.data[env][caseId].map((point) => (point ? point.speedup : null)),
-      times: DATA.data[env][caseId],
-      borderColor: COLORS[index % COLORS.length],
-      backgroundColor: COLORS[index % COLORS.length],
-      borderWidth: 2,
-      pointRadius: 2,
-      tension: 0.2,
-      spanGaps: false,
-    }));
-
-  if (!datasets.length) {
-    const note = document.createElement("p");
-    note.className = "empty-note";
-    note.textContent = "No measurements.";
-    card.appendChild(note);
-    return;
-  }
-
-  const plot = document.createElement("div");
-  plot.className = "plot";
-  const canvas = document.createElement("canvas");
-  plot.appendChild(canvas);
-  card.appendChild(plot);
-
-  new Chart(canvas, {
-    type: "line",
-    data: { labels: DATA.labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
-      plugins: {
-        legend: { position: "bottom", labels: { boxWidth: 10, usePointStyle: true } },
-        tooltip: {
-          callbacks: {
-            title(items) {
-              if (!items.length) return "";
-              const i = items[0].dataIndex;
-              return `${DATA.labels[i]} (${DATA.dates[i].slice(0, 10)})`;
-            },
-            label(context) {
-              const point = context.dataset.times[context.dataIndex];
-              if (!point) return `${context.dataset.label}: no data`;
-              return `${context.dataset.label}: ${point.speedup.toFixed(2)}x ` +
-                `(NumPy ${ms(point.numpy_ns)} ms, Numba ${ms(point.numba_ns)} ms)`;
-            },
-          },
-        },
-      },
-      scales: {
-        y: {
-          title: { display: true, text: "Speedup (NumPy / Numba)" },
-          grid: { color: "#eef0f3" },
-        },
-        x: {
-          grid: { display: false },
-          ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
-        },
-      },
-    },
-  });
+  count.textContent = "0 shown";
 }
 
 if (DATA.labels.length) DATA.sections.forEach((section) => {
+  const block = el("div", "section-block");
   const heading = document.createElement("h2");
   heading.className = "section-title";
   heading.id = `section-${section.name}`;
   heading.textContent = section.name;
-  report.appendChild(heading);
+  block.append(heading);
 
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  report.appendChild(grid);
+  const grid = el("div", "grid");
+  block.append(grid);
+  report.append(block);
 
   section.cases.forEach((caseId) => renderCard(grid, caseId));
 });
+
+search.addEventListener("input", applySearch);
+applySearch();
 </script>
 </body>
 </html>
