@@ -47,7 +47,7 @@ jobs:
           DISPATCH_LAST: ${{ inputs.last }}
           DISPATCH_LIMIT: ${{ inputs.limit }}
           DISPATCH_REF: ${{ inputs.ref }}
-        run: python src/ci.py plan >> "$GITHUB_OUTPUT"
+        run: python src/ci_utils.py plan >> "$GITHUB_OUTPUT"
 
   bench:
     needs: prepare

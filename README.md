@@ -8,10 +8,10 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | File | Job |
 |---|---|
 | `src/cases/` | Case registry (`Case`, `@case`, discovery, version gates) and the benchmark cases. |
-| `src/benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
+| `src/benchmark_utils.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
 | `src/bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
-| `src/ci.py` | Resolves Numba commits and emits the commit matrix. |
-| `src/env_matrix.py` | Environment matrix used by the CI. |
+| `src/ci_utils.py` | Resolves Numba commits and emits the commit matrix. |
+| `src/env_matrix_constants.py` | Environment matrix used by the CI. |
 | `src/template.html` | Chart.js report page template, one section per case prefix. |
 | `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
@@ -88,7 +88,7 @@ editing the repo.
 The CI is a chain of reusable workflows:
 
 - `benchmark-environment.yml` (`workflow_call`) benchmarks one commit in one
-  environment from `src/env_matrix.py` and uploads the environment JSON.
+  environment from `src/env_matrix_constants.py` and uploads the environment JSON.
 - `benchmark-commit.yml` (`workflow_call`) takes one Numba commit, builds the
   environment matrix, calls `benchmark-environment.yml` once per environment,
   merges the per-environment artifacts into `<commit>.json`, uploads it as

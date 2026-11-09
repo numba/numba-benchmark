@@ -22,7 +22,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from env_matrix import ENVIRONMENT_KEYS
+from env_matrix_constants import ENVIRONMENT_KEYS
 
 
 def utcnow():
@@ -43,7 +43,7 @@ def cmd_run(args):
     if not re.fullmatch(r"[0-9a-f]{40}", args.commit):
         sys.exit("--commit must be a full 40-character lowercase hex SHA")
 
-    from benchmark import run_benchmarks
+    from benchmark_utils import run_benchmarks
 
     key = env_key(args.os_name, args.python_minor, args.numpy_minor)
     print(f"measuring {key}", file=sys.stderr)

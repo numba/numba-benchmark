@@ -30,7 +30,7 @@ jobs:
 
       - name: Check the last 30 merges
         id: cover
-        run: python src/ci.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
+        run: python src/ci_utils.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
 
   backfill:
     needs: check

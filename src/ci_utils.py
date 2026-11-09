@@ -138,10 +138,12 @@ def plan():
 
 def main():
     if len(sys.argv) < 2:
-        raise SystemExit("usage: python src/ci.py plan | cover --count N --ref REF")
+        raise SystemExit(
+            "usage: python src/ci_utils.py plan | cover --count N --ref REF"
+        )
 
     if sys.argv[1] == "cover":
-        parser = argparse.ArgumentParser(prog="python src/ci.py cover")
+        parser = argparse.ArgumentParser(prog="python src/ci_utils.py cover")
         parser.add_argument("--count", type=int, default=30)
         parser.add_argument("--ref", default="main")
         args = parser.parse_args(sys.argv[2:])
@@ -156,7 +158,9 @@ def main():
         return
 
     if len(sys.argv) != 2 or sys.argv[1] != "plan":
-        raise SystemExit("usage: python src/ci.py plan | cover --count N --ref REF")
+        raise SystemExit(
+            "usage: python src/ci_utils.py plan | cover --count N --ref REF"
+        )
 
     commits = plan()
     matrix = {
