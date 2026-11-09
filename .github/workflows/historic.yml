@@ -36,8 +36,6 @@ jobs:
       commits: ${{ steps.plan.outputs.commits }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Plan commits
         id: plan
