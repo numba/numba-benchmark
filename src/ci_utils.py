@@ -96,18 +96,27 @@ def historic_range(from_ref, to_ref, ref, limit):
         return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
 
 
-def cover(count, ref):
+def cover(count, ref, from_ref="", to_ref=""):
+    """Commits an explicit from..to range, or the last count commits of ref."""
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
-        head = git("rev-parse", "--verify", f"{ref}^{{commit}}", cwd=clone)
-        commits = git(
-            "rev-list", "--first-parent", f"--max-count={count}", head, cwd=clone
-        ).splitlines()
-        oldest = commits[-1]
-        try:
-            parent = git("rev-parse", "--verify", f"{oldest}^", cwd=clone)
-        except subprocess.CalledProcessError:
-            parent = ""
+        head = git("rev-parse", "--verify", f"{to_ref or ref}^{{commit}}", cwd=clone)
+        if from_ref:
+            start = git("rev-parse", "--verify", f"{from_ref}^{{commit}}", cwd=clone)
+            commits = git(
+                "rev-list", "--first-parent", "--reverse", f"{start}..{head}",
+                cwd=clone,
+            ).splitlines()
+        else:
+            commits = git(
+                "rev-list", "--first-parent", f"--max-count={count}", head, cwd=clone
+            ).splitlines()
+        parent = ""
+        if commits:
+            try:
+                parent = git("rev-parse", "--verify", f"{commits[-1]}^", cwd=clone)
+            except subprocess.CalledProcessError:
+                parent = ""
     return head, parent, commits, pending(commits)
 
 
@@ -153,7 +162,7 @@ def plan_historic():
 
 USAGE = (
     "usage: python src/ci_utils.py plan nightly | plan historic | "
-    "cover --count N --ref REF"
+    "cover [--count N] [--from REF] [--to REF] --ref REF"
 )
 
 
@@ -164,9 +173,13 @@ def main():
     if sys.argv[1] == "cover":
         parser = argparse.ArgumentParser(prog="python src/ci_utils.py cover")
         parser.add_argument("--count", type=int, default=30)
+        parser.add_argument("--from", dest="from_ref", default="")
+        parser.add_argument("--to", dest="to_ref", default="")
         parser.add_argument("--ref", default="main")
         args = parser.parse_args(sys.argv[2:])
-        head, parent, commits, missing = cover(args.count, args.ref)
+        head, parent, commits, missing = cover(
+            args.count, args.ref, args.from_ref, args.to_ref
+        )
         print(f"to={head}")
         print(f"from={parent}")
         print(f"count={len(commits)}")

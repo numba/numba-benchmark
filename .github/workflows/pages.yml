@@ -5,6 +5,19 @@ on:
     workflows: ["nightly benchmarks", "historic benchmarks"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      from:
+        description: 'First Numba commit of the range (exclusive)'
+        required: false
+        type: string
+      to:
+        description: 'Last Numba commit of the range (inclusive, defaults to ref head)'
+        required: false
+        type: string
+      ref:
+        description: 'Numba branch the range is resolved against'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -28,9 +41,23 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           submodules: recursive
 
-      - name: Check the last 30 merges
+      - name: Check the last 30 merges or the requested range
         id: cover
-        run: python src/ci_utils.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
+        env:
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+          REF: ${{ inputs.ref || github.event.repository.default_branch }}
+        run: |
+          if [ -n "${FROM}${TO}" ]; then
+            python src/ci_utils.py cover --from "$FROM" --to "$TO" \
+              --ref "$REF" >> "$GITHUB_OUTPUT"
+          else
+            python src/ci_utils.py cover --count 30 --ref "$REF" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report empty range
+        if: steps.cover.outputs.count == '0'
+        run: echo 'No commits in the requested range.' >> "$GITHUB_STEP_SUMMARY"
 
   backfill:
     needs: check
@@ -54,9 +81,12 @@ jobs:
   build:
     needs: check
     if: >-
-      needs.check.outputs.missing_count == '0' ||
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.name == 'historic benchmarks'
+      needs.check.outputs.count != '0' &&
+      (
+        needs.check.outputs.missing_count == '0' ||
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.name == 'historic benchmarks'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -70,6 +100,21 @@ jobs:
         with:
           ref: ${{ github.event.repository.default_branch }}
           submodules: recursive
+
+      - name: Report selected range
+        env:
+          FROM: ${{ needs.check.outputs.from }}
+          TO: ${{ needs.check.outputs.to }}
+          COUNT: ${{ needs.check.outputs.count }}
+          PRESENT: ${{ needs.check.outputs.present }}
+          MISSING: ${{ needs.check.outputs.missing_count }}
+        run: |
+          echo "Page covers ${COUNT} commit(s), ${PRESENT} with results." \
+            "Range: ${FROM:-start}..${TO}" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$MISSING" != '0' ]; then
+            echo "${MISSING} commit(s) have no results yet and are omitted." \
+              >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Build page
         env:
