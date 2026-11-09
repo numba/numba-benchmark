@@ -8,7 +8,8 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | File | Job |
 |---|---|
 | `src/cases/` | Case registry (`Case`, `@case`, discovery, version gates) and the benchmark cases. |
-| `src/benchmark_utils.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
+| `src/benchmark_utils.py` | Timing: compile (event-based), warm-up, auto-sized loop, best of 5. |
+| `src/compile_time.py` | Compile-time tracker listening to Numba's `numba:compile` events. |
 | `src/bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
 | `src/ci_utils.py` | Resolves Numba commits and emits the commit matrix. |
 | `src/env_matrix_constants.py` | Environment matrix used by the CI. |
