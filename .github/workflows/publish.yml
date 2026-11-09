@@ -1,69 +1,23 @@
-name: benchmarks
+name: publish benchmark results
 
 on:
-  schedule:
-    - cron: '17 4 * * *'
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      last:
-        description: 'Benchmark the last N commits of ref (overrides from/to)'
+      commits:
+        description: Comma-separated Numba commits benchmarked by the calling run
         required: false
-      from:
-        description: 'First Numba commit (exclusive) for a historic backfill'
-        required: false
-      to:
-        description: 'Last Numba commit (inclusive) for a historic backfill'
-        required: false
-      limit:
-        description: 'Maximum commits per backfill (default 10, max 50)'
-        required: false
-        default: '10'
-      ref:
-        description: 'Numba branch to benchmark when from/to are empty'
-        required: false
-        default: 'main'
+        type: string
+        default: ''
 
 permissions:
   contents: write
 
+concurrency:
+  group: publish-benchmark-results
+  cancel-in-progress: false
+
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.plan.outputs.matrix }}
-      has_work: ${{ steps.plan.outputs.has_work }}
-      commits: ${{ steps.plan.outputs.commits }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Plan commits
-        id: plan
-        env:
-          EVENT: ${{ github.event_name }}
-          DISPATCH_FROM: ${{ inputs.from }}
-          DISPATCH_TO: ${{ inputs.to }}
-          DISPATCH_LAST: ${{ inputs.last }}
-          DISPATCH_LIMIT: ${{ inputs.limit }}
-          DISPATCH_REF: ${{ inputs.ref }}
-        run: python src/ci_utils.py plan >> "$GITHUB_OUTPUT"
-
-  bench:
-    needs: prepare
-    if: needs.prepare.outputs.has_work == 'true'
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
-    uses: ./.github/workflows/benchmark-commit.yml
-    with:
-      commit: ${{ matrix.commit }}
-      position: ${{ matrix.position }}
-
   publish:
-    needs: [prepare, bench]
-    if: always() && needs.prepare.outputs.has_work == 'true' && needs.bench.result != 'cancelled'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -140,5 +94,5 @@ jobs:
           ARTIFACT_URL: ${{ steps.upload-report.outputs.artifact-url }}
         run: |
           python src/bench.py summary --results results/ \
-            --commits "${{ needs.prepare.outputs.commits }}" \
+            --commits "${{ inputs.commits }}" \
             --artifact-url "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"

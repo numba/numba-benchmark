@@ -2,7 +2,7 @@ name: pages
 
 on:
   workflow_run:
-    workflows: ["benchmarks"]
+    workflows: ["nightly benchmarks", "historic benchmarks"]
     types: [completed]
   workflow_dispatch:
 
@@ -36,7 +36,8 @@ jobs:
     needs: check
     if: >-
       needs.check.outputs.missing_count != '0' &&
-      !endsWith(github.event.workflow_run.display_title, 'backfill')
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.name == 'nightly benchmarks'
     runs-on: ubuntu-latest
     permissions:
       actions: write
@@ -48,13 +49,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           FROM: ${{ needs.check.outputs.from }}
           TO: ${{ needs.check.outputs.to }}
-        run: gh workflow run benchmarks -f from="$FROM" -f to="$TO" -f limit=50
+        run: gh workflow run historic.yml -f from="$FROM" -f to="$TO" -f limit=50
 
   build:
     needs: check
     if: >-
       needs.check.outputs.missing_count == '0' ||
-      endsWith(github.event.workflow_run.display_title, 'backfill')
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.name == 'historic benchmarks'
     runs-on: ubuntu-latest
     permissions:
       contents: read

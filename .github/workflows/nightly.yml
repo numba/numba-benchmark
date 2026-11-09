@@ -1,0 +1,54 @@
+name: nightly benchmarks
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: nightly-benchmarks
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has_work: ${{ steps.plan.outputs.has_work }}
+      commits: ${{ steps.plan.outputs.commits }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Plan new commits
+        id: plan
+        env:
+          NIGHTLY_REF: ${{ github.event.repository.default_branch }}
+          NIGHTLY_LIMIT: '10'
+        run: python src/ci_utils.py plan nightly >> "$GITHUB_OUTPUT"
+
+      - name: Report skip
+        if: steps.plan.outputs.has_work == 'false'
+        run: echo 'No new Numba commits to benchmark.' >> "$GITHUB_STEP_SUMMARY"
+
+  bench:
+    needs: prepare
+    if: needs.prepare.outputs.has_work == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    uses: ./.github/workflows/benchmark-commit.yml
+    with:
+      commit: ${{ matrix.commit }}
+      position: ${{ matrix.position }}
+
+  publish:
+    needs: [prepare, bench]
+    if: always() && needs.prepare.outputs.has_work == 'true' && needs.bench.result != 'cancelled'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
+    with:
+      commits: ${{ needs.prepare.outputs.commits }}

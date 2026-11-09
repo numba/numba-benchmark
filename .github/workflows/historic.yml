@@ -1,0 +1,73 @@
+name: historic benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      last:
+        description: 'Benchmark the last N commits of ref (overrides from/to)'
+        required: false
+      from:
+        description: 'First Numba commit (exclusive) for a historic backfill'
+        required: false
+      to:
+        description: 'Last Numba commit (inclusive) for a historic backfill'
+        required: false
+      limit:
+        description: 'Maximum commits per backfill (default 10, max 50)'
+        required: false
+        default: '10'
+      ref:
+        description: 'Numba branch to benchmark when from/to are empty'
+        required: false
+        default: 'main'
+
+permissions:
+  contents: write
+
+concurrency: historic-benchmarks
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has_work: ${{ steps.plan.outputs.has_work }}
+      commits: ${{ steps.plan.outputs.commits }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Plan commits
+        id: plan
+        env:
+          DISPATCH_FROM: ${{ inputs.from }}
+          DISPATCH_TO: ${{ inputs.to }}
+          DISPATCH_LAST: ${{ inputs.last }}
+          DISPATCH_LIMIT: ${{ inputs.limit }}
+          DISPATCH_REF: ${{ inputs.ref }}
+        run: python src/ci_utils.py plan historic >> "$GITHUB_OUTPUT"
+
+      - name: Report skip
+        if: steps.plan.outputs.has_work == 'false'
+        run: echo 'No commits to benchmark for the requested range.' >> "$GITHUB_STEP_SUMMARY"
+
+  bench:
+    needs: prepare
+    if: needs.prepare.outputs.has_work == 'true'
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    uses: ./.github/workflows/benchmark-commit.yml
+    with:
+      commit: ${{ matrix.commit }}
+      position: ${{ matrix.position }}
+
+  publish:
+    needs: [prepare, bench]
+    if: always() && needs.prepare.outputs.has_work == 'true' && needs.bench.result != 'cancelled'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
+    with:
+      commits: ${{ needs.prepare.outputs.commits }}

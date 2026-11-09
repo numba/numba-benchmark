@@ -111,36 +111,55 @@ def cover(count, ref):
     return head, parent, commits, pending(commits)
 
 
-def plan():
-    event = os.environ["EVENT"]
-    from_ref = (os.environ.get("DISPATCH_FROM") or "").strip()
-    to_ref = (os.environ.get("DISPATCH_TO") or "").strip()
-    last = (os.environ.get("DISPATCH_LAST") or "").strip()
-    ref = (os.environ.get("DISPATCH_REF") or "main").strip()
-
-    if event == "workflow_dispatch" and (last or from_ref or to_ref):
-        if last:
-            limit = bounded_count(last, "last")
-            from_ref = ""
-        else:
-            limit = bounded_count(os.environ.get("DISPATCH_LIMIT") or 10, "limit")
-        return historic_range(from_ref, to_ref, ref, limit)
-
+def pending_head(ref, limit):
+    """New unbenchmarked commits reachable from ref, oldest first."""
     sha = remote_sha(ref)
     if Path(f"results/data/{sha}.json").exists():
         return []
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)
-        sha = git("rev-parse", "--verify", f"{sha}^{{commit}}", cwd=clone)
-        position = commit_position(sha, cwd=clone)
-    return [(sha, position)]
+        head = git("rev-parse", "--verify", f"{sha}^{{commit}}", cwd=clone)
+        commits = []
+        for commit in git("rev-list", "--first-parent", head, cwd=clone).splitlines():
+            if Path(f"results/data/{commit}.json").exists():
+                break
+            commits.append(commit)
+            if len(commits) >= limit:
+                break
+        commits.reverse()
+        return [(commit, commit_position(commit, cwd=clone)) for commit in commits]
+
+
+def plan_nightly():
+    ref = (os.environ.get("NIGHTLY_REF") or "main").strip()
+    limit = bounded_count(os.environ.get("NIGHTLY_LIMIT") or 10, "limit")
+    return pending_head(ref, limit)
+
+
+def plan_historic():
+    from_ref = (os.environ.get("DISPATCH_FROM") or "").strip()
+    to_ref = (os.environ.get("DISPATCH_TO") or "").strip()
+    last = (os.environ.get("DISPATCH_LAST") or "").strip()
+    ref = (os.environ.get("DISPATCH_REF") or "main").strip()
+
+    if last:
+        limit = bounded_count(last, "last")
+        from_ref = ""
+        to_ref = ""
+    else:
+        limit = bounded_count(os.environ.get("DISPATCH_LIMIT") or 10, "limit")
+    return historic_range(from_ref, to_ref, ref, limit)
+
+
+USAGE = (
+    "usage: python src/ci_utils.py plan nightly | plan historic | "
+    "cover --count N --ref REF"
+)
 
 
 def main():
     if len(sys.argv) < 2:
-        raise SystemExit(
-            "usage: python src/ci_utils.py plan | cover --count N --ref REF"
-        )
+        raise SystemExit(USAGE)
 
     if sys.argv[1] == "cover":
         parser = argparse.ArgumentParser(prog="python src/ci_utils.py cover")
@@ -157,12 +176,11 @@ def main():
         print(f"missing={','.join(missing)}")
         return
 
-    if len(sys.argv) != 2 or sys.argv[1] != "plan":
-        raise SystemExit(
-            "usage: python src/ci_utils.py plan | cover --count N --ref REF"
-        )
+    mode = sys.argv[2] if len(sys.argv) == 3 else ""
+    if sys.argv[1] != "plan" or mode not in ("nightly", "historic"):
+        raise SystemExit(USAGE)
 
-    commits = plan()
+    commits = plan_nightly() if mode == "nightly" else plan_historic()
     matrix = {
         "include": [
             {"commit": commit, "position": position} for commit, position in commits

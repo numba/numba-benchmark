@@ -15,7 +15,9 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `src/template.html` | Chart.js report page template, one section per case prefix. |
 | `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
-| `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
+| `.github/workflows/nightly.yml` | Nightly run: benchmarks new Numba commits, or skips when `main` has no new commit. |
+| `.github/workflows/historic.yml` | Manual historic run: benchmarks the last N commits or a `from`/`to` range. |
+| `.github/workflows/publish.yml` | Reusable workflow: merges `bench-result-*` artifacts into `results/`, commits them, and builds the report. |
 | `results/` | Git submodule pointing at [numba-benchmark-results](https://github.com/numba/numba-benchmark-results). |
 | `results/data/<sha>.json` | One result file per Numba commit (generated). |
 | `results/COMMITS.md` | Commit index table (generated). |
@@ -93,18 +95,24 @@ The CI is a chain of reusable workflows:
   environment matrix, calls `benchmark-environment.yml` once per environment,
   merges the per-environment artifacts into `<commit>.json`, uploads it as
   `bench-result-<commit>`, and returns the same JSON in its `result` output.
-- `bench.yml` plans the commits, calls `benchmark-commit.yml` once per commit,
-  then `publish` downloads every `bench-result-*` artifact and merges them into
-  `results/data/`.
+- `publish.yml` (`workflow_call`) downloads every `bench-result-*` artifact from
+  the calling run, merges them into `results/data/`, commits the results
+  submodule, and builds the report.
+- `nightly.yml` plans the unbenchmarked commits at `main`'s head and calls
+  `benchmark-commit.yml` once per commit, then `publish.yml`.
+- `historic.yml` is dispatched manually with `last`, `from`, `to`, `limit`
+  (default 10, max 50), and `ref` to backfill first-parent commits; it calls the
+  same `benchmark-commit.yml` and `publish.yml`.
 
 Callers from another repository pass `repository` and `ref` so
 `benchmark-commit.yml` checks out this benchmark repository and forwards the
 same values to the environment workflow.
 
-- **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` commit and
-  stops if `results/data/<sha>.json` already exists.
-- **Historic**: run *benchmarks* from the Actions tab with `last`, `from`, `to`,
-  `limit` (default 10, max 50), and `ref` to backfill first-parent commits.
+- **Nightly** (`17 4 * * *`): resolves the default branch's head and benchmarks
+  every first-parent commit that has no `results/data/<sha>.json`, up to 10
+  commits. It skips the run entirely when the head commit is already
+  benchmarked.
+- **Historic**: run the *historic benchmarks* workflow from the Actions tab.
   `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
   hash and takes precedence over `from`/`to`; `from` is exclusive and `to` is
   inclusive. Leave `from` empty to backfill the last `limit` commits ending at
@@ -112,8 +120,8 @@ same values to the environment workflow.
   `position`, so backfilled commits keep history order on the chart even though
   they are measured concurrently.
 
-Both paths call `benchmark-commit.yml` once per planned commit, then `publish`
-downloads every `bench-result-*` artifact and merges them into `results/data/`.
+Both paths call `benchmark-commit.yml` once per planned commit, then
+`publish.yml` merges every `bench-result-*` artifact into `results/data/`.
 
 Results are committed to the results submodule's `main` branch, and the parent
 repository commits the updated submodule pointer. This needs a
