@@ -11,15 +11,27 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
 | `bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
 | `ci.py` | Resolves Numba commits and emits the commit matrix. |
-| `scripts/results_readme.py` | Incrementally updates `results/README.md`, the commit index. |
+| `scripts/results_readme.py` | Incrementally updates `results/COMMITS.md`, the commit index. |
 | `template.html` | Chart.js report page template, one section per case prefix. |
 | `tests/` | Stdlib-only report and CLI tests; no numpy or numba required. |
 | `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
 | `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
+| `results/` | Git submodule pointing at [numba-benchmark-results](https://github.com/numba/numba-benchmark-results). |
 | `results/<sha>.json` | One result file per Numba commit (generated). |
-| `results/README.md` | Commit index table (generated). |
+| `results/COMMITS.md` | Commit index table (generated). |
 | `site/index.html` | Report page (generated). |
+
+Results live in the separate
+[numba-benchmark-results](https://github.com/numba/numba-benchmark-results)
+repository, mounted at `results/` as a git submodule. Clone with submodules, or
+initialize it in an existing clone:
+
+```bash
+git clone --recurse-submodules https://github.com/numba/numba-benchmark.git
+# or, in an existing clone:
+git submodule update --init
+```
 
 ## Local
 
@@ -103,9 +115,12 @@ same values to the environment workflow.
 Both paths call `benchmark-commit.yml` once per planned commit, then `publish`
 downloads every `bench-result-*` artifact and merges them into `results/`.
 
-Results are committed to the default branch. When a run adds results, the
-workflow uploads the generated page as the `benchmark-report` artifact and
-writes the `summary` output to the run summary, which links the artifact; the
-link expires with it. The same run refreshes `results/README.md`, reusing
-existing rows and inserting new commits in Numba first-parent order. Runs that
-add no results write no summary.
+Results are committed to the results submodule's `main` branch, and the parent
+repository commits the updated submodule pointer. This needs a
+`RESULTS_PUSH_TOKEN` repository secret with write access to
+`numba-benchmark-results`. When a run adds results, the workflow uploads the
+generated page as the `benchmark-report` artifact and writes the `summary`
+output to the run summary, which links the artifact; the link expires with it.
+The same run refreshes `results/COMMITS.md`, reusing existing rows and inserting
+new commits in Numba first-parent order. Runs that add no results write no
+summary.
