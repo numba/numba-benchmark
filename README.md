@@ -7,19 +7,19 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 
 | File | Job |
 |---|---|
-| `cases/` | Case registry (`Case`, `@case`, discovery, version gates) and the benchmark cases. |
-| `benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
-| `bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
-| `ci.py` | Resolves Numba commits and emits the commit matrix. |
-| `scripts/results_readme.py` | Incrementally updates `results/COMMITS.md`, the commit index. |
-| `template.html` | Chart.js report page template, one section per case prefix. |
-| `tests/` | Stdlib-only report and CLI tests; no numpy or numba required. |
+| `src/cases/` | Case registry (`Case`, `@case`, discovery, version gates) and the benchmark cases. |
+| `src/benchmark.py` | Timing: compile time, warm-up, auto-sized loop, best of 5. |
+| `src/bench.py` | `run`, `merge`, `compare`, `report`, `summary`, `cases`, and `backfill-order`. |
+| `src/ci.py` | Resolves Numba commits and emits the commit matrix. |
+| `src/env_matrix.py` | Environment matrix used by the CI. |
+| `src/template.html` | Chart.js report page template, one section per case prefix. |
 | `.github/workflows/benchmark-environment.yml` | Reusable workflow: benchmarks one commit in one environment and uploads its environment JSON. |
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
 | `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
 | `results/` | Git submodule pointing at [numba-benchmark-results](https://github.com/numba/numba-benchmark-results). |
 | `results/data/<sha>.json` | One result file per Numba commit (generated). |
 | `results/COMMITS.md` | Commit index table (generated). |
+| `results/scripts/results_readme.py` | Regenerates `results/COMMITS.md`, the commit index (lives in the results repository). |
 | `site/index.html` | Report page (generated). |
 
 Results live in the separate
@@ -39,13 +39,13 @@ git submodule update --init
 pip install 'numpy>=2.2,<2.3' scipy
 pip install --pre -i https://pypi.anaconda.org/numba/label/dev/simple llvmlite
 pip install 'git+https://github.com/numba/numba.git@<numba-sha>'
-python bench.py run --commit <numba-sha> --os linux --python 3.13 --numpy 2.2 --out run.json
+python src/bench.py run --commit <numba-sha> --os linux --python 3.13 --numpy 2.2 --out run.json
 mkdir -p artifacts && cp run.json artifacts/
-python bench.py merge artifacts --out results/data/
-python bench.py compare --results results/ --commit <numba-sha>
-python bench.py report --results results/ --out site/index.html
-python bench.py summary --results results/ --out summary.md
-python bench.py cases
+python src/bench.py merge artifacts --out results/data/
+python src/bench.py compare --results results/ --commit <numba-sha>
+python src/bench.py report --results results/ --out site/index.html
+python src/bench.py summary --results results/ --out summary.md
+python src/bench.py cases
 ```
 
 `scipy` is needed because Numba's `np.dot` uses BLAS. Numba `main` also needs a
@@ -53,13 +53,13 @@ matching llvmlite dev build; install it from Numba's dev wheel index before
 Numba, as Numba's own CI does. Results are keyed by `os|python|numpy`;
 re-running a key keeps the newest measurement.
 
-`merge`, `compare`, `report`, `summary`, and the tests run without numpy or numba.
-`python bench.py cases` prints the registry order and, when numba is installed,
+`merge`, `compare`, `report`, and `summary` run without numpy or numba.
+`python src/bench.py cases` prints the registry order and, when numba is installed,
 whether each case runs or is skipped by its version gate.
 
 ## Cases
 
-A case is one module in `cases/`; it needs no registration elsewhere and no
+A case is one module in `src/cases/`; it needs no registration elsewhere and no
 `order`. The build function takes one `numpy.random.RandomState` and returns
 `(numpy_fn, numba_fn, args)`:
 
@@ -88,7 +88,7 @@ editing the repo.
 The CI is a chain of reusable workflows:
 
 - `benchmark-environment.yml` (`workflow_call`) benchmarks one commit in one
-  environment from `env_matrix.py` and uploads the environment JSON.
+  environment from `src/env_matrix.py` and uploads the environment JSON.
 - `benchmark-commit.yml` (`workflow_call`) takes one Numba commit, builds the
   environment matrix, calls `benchmark-environment.yml` once per environment,
   merges the per-environment artifacts into `<commit>.json`, uploads it as

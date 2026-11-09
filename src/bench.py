@@ -1,14 +1,14 @@
 """Minimal NumPy-vs-Numba benchmark: measure, merge, compare, report.
 
 Usage:
-    python bench.py run --commit SHA --os linux --python 3.13 --numpy 2.2 --out FILE
-    python bench.py merge DIR --out results/data/
-    python bench.py compare --results results/ --commit SHA
-    python bench.py report --results results/ --out site/index.html
-    python bench.py summary --results results/ [--commits SHA[,SHA...]]
+    python src/bench.py run --commit SHA --os linux --python 3.13 --numpy 2.2 --out FILE
+    python src/bench.py merge DIR --out results/data/
+    python src/bench.py compare --results results/ --commit SHA
+    python src/bench.py report --results results/ --out site/index.html
+    python src/bench.py summary --results results/ [--commits SHA[,SHA...]]
                             [--artifact-url URL] [--out FILE]
-    python bench.py cases
-    python bench.py backfill-order --results results/
+    python src/bench.py cases
+    python src/bench.py backfill-order --results results/
 
 Numba's BLAS-backed np.dot needs scipy in the environment being measured.
 The registry is imported lazily by `cases` and `backfill-order` only, so

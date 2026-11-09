@@ -78,7 +78,7 @@ jobs:
           args=()
           if [ "$POSITION" -gt 0 ]; then args+=(--position "$POSITION"); fi
           mkdir -p bench-out
-          python bench.py run \
+          python src/bench.py run \
             --commit "$COMMIT" \
             "${args[@]}" \
             --os "${{ inputs.os }}" \

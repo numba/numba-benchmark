@@ -47,7 +47,7 @@ jobs:
           DISPATCH_LAST: ${{ inputs.last }}
           DISPATCH_LIMIT: ${{ inputs.limit }}
           DISPATCH_REF: ${{ inputs.ref }}
-        run: python ci.py plan >> "$GITHUB_OUTPUT"
+        run: python src/ci.py plan >> "$GITHUB_OUTPUT"
 
   bench:
     needs: prepare
@@ -80,7 +80,7 @@ jobs:
           path: artifacts
 
       - name: Merge results
-        run: python bench.py merge artifacts --out results/data/
+        run: python src/bench.py merge artifacts --out results/data/
 
       - name: Check for new results
         id: new
@@ -98,8 +98,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          python scripts/results_readme.py \
-            --results results/data/ --out results/COMMITS.md
+          python results/scripts/results_readme.py
 
       - name: Commit results
         if: steps.new.outputs.any == 'true'
@@ -125,7 +124,7 @@ jobs:
 
       - name: Build page
         if: steps.new.outputs.any == 'true'
-        run: python bench.py report --results results/ --out site/index.html
+        run: python src/bench.py report --results results/ --out site/index.html
 
       - id: upload-report
         if: steps.new.outputs.any == 'true'
@@ -140,6 +139,6 @@ jobs:
         env:
           ARTIFACT_URL: ${{ steps.upload-report.outputs.artifact-url }}
         run: |
-          python bench.py summary --results results/ \
+          python src/bench.py summary --results results/ \
             --commits "${{ needs.prepare.outputs.commits }}" \
             --artifact-url "$ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"

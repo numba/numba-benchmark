@@ -47,7 +47,7 @@ jobs:
       - name: Build environment matrix
         id: matrix
         run: |
-          matrix=$(python -c 'import json; from env_matrix import ENVIRONMENTS; print(json.dumps({"include": ENVIRONMENTS}))')
+          matrix=$(PYTHONPATH=src python -c 'import json; from env_matrix import ENVIRONMENTS; print(json.dumps({"include": ENVIRONMENTS}))')
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   benchmark:
@@ -86,7 +86,7 @@ jobs:
           path: artifacts
 
       - name: Merge environment results
-        run: python bench.py merge artifacts --out bench-result
+        run: python src/bench.py merge artifacts --out bench-result
 
       - name: Expose commit result
         id: result

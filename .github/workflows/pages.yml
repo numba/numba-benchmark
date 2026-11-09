@@ -30,7 +30,7 @@ jobs:
 
       - name: Check the last 30 merges
         id: cover
-        run: python ci.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
+        run: python src/ci.py cover --count 30 --ref main >> "$GITHUB_OUTPUT"
 
   backfill:
     needs: check
@@ -73,7 +73,7 @@ jobs:
         env:
           COMMITS: ${{ needs.check.outputs.commits }}
         run: |
-          python bench.py report --results results/ \
+          python src/bench.py report --results results/ \
             --commits "$COMMITS" --out site/index.html
 
       - name: Upload built site
