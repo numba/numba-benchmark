@@ -18,7 +18,7 @@ historic backfill, an HTML report artifact, and a Markdown run summary.
 | `.github/workflows/benchmark-commit.yml` | Reusable workflow: runs the environment matrix for one commit and returns its `<commit>.json`. |
 | `.github/workflows/bench.yml` | Nightly and historic runs; calls `benchmark-commit.yml` once per commit, then publishes. |
 | `results/` | Git submodule pointing at [numba-benchmark-results](https://github.com/numba/numba-benchmark-results). |
-| `results/<sha>.json` | One result file per Numba commit (generated). |
+| `results/data/<sha>.json` | One result file per Numba commit (generated). |
 | `results/COMMITS.md` | Commit index table (generated). |
 | `site/index.html` | Report page (generated). |
 
@@ -41,7 +41,7 @@ pip install --pre -i https://pypi.anaconda.org/numba/label/dev/simple llvmlite
 pip install 'git+https://github.com/numba/numba.git@<numba-sha>'
 python bench.py run --commit <numba-sha> --os linux --python 3.13 --numpy 2.2 --out run.json
 mkdir -p artifacts && cp run.json artifacts/
-python bench.py merge artifacts --out results/
+python bench.py merge artifacts --out results/data/
 python bench.py compare --results results/ --commit <numba-sha>
 python bench.py report --results results/ --out site/index.html
 python bench.py summary --results results/ --out summary.md
@@ -95,14 +95,14 @@ The CI is a chain of reusable workflows:
   `bench-result-<commit>`, and returns the same JSON in its `result` output.
 - `bench.yml` plans the commits, calls `benchmark-commit.yml` once per commit,
   then `publish` downloads every `bench-result-*` artifact and merges them into
-  `results/`.
+  `results/data/`.
 
 Callers from another repository pass `repository` and `ref` so
 `benchmark-commit.yml` checks out this benchmark repository and forwards the
 same values to the environment workflow.
 
 - **Nightly** (`17 4 * * *`): benchmarks the current Numba `main` commit and
-  stops if `results/<sha>.json` already exists.
+  stops if `results/data/<sha>.json` already exists.
 - **Historic**: run *benchmarks* from the Actions tab with `last`, `from`, `to`,
   `limit` (default 10, max 50), and `ref` to backfill first-parent commits.
   `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
@@ -113,7 +113,7 @@ same values to the environment workflow.
   they are measured concurrently.
 
 Both paths call `benchmark-commit.yml` once per planned commit, then `publish`
-downloads every `bench-result-*` artifact and merges them into `results/`.
+downloads every `bench-result-*` artifact and merges them into `results/data/`.
 
 Results are committed to the results submodule's `main` branch, and the parent
 repository commits the updated submodule pointer. This needs a

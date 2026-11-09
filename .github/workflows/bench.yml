@@ -80,13 +80,13 @@ jobs:
           path: artifacts
 
       - name: Merge results
-        run: python bench.py merge artifacts --out results/
+        run: python bench.py merge artifacts --out results/data/
 
       - name: Check for new results
         id: new
         run: |
           changed=$(git -C results status --porcelain --untracked-files=all |
-            awk '{print $2}' | grep -E '^[0-9a-f]{40}\.json$' || true)
+            awk '{print $2}' | grep -E '^data/[0-9a-f]{40}\.json$' || true)
           if [ -n "$changed" ]; then
             echo 'any=true' >> "$GITHUB_OUTPUT"
           else
@@ -99,7 +99,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           python scripts/results_readme.py \
-            --results results/ --out results/COMMITS.md
+            --results results/data/ --out results/COMMITS.md
 
       - name: Commit results
         if: steps.new.outputs.any == 'true'
@@ -111,7 +111,7 @@ jobs:
           git -C results config user.name 'github-actions[bot]'
           git -C results config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           changed=$(git -C results status --porcelain --untracked-files=all |
-            awk '{print $2}' | grep -E '^[0-9a-f]{40}\.json$')
+            awk '{print $2}' | grep -E '^data/[0-9a-f]{40}\.json$')
           shas=$(echo "$changed" | xargs -n1 basename | sed 's/\.json$//' | tr '\n' ' ')
           git -C results add --all
           git -C results commit -m 'Add benchmark results' -m "$shas"

@@ -63,7 +63,11 @@ def commit_position(commit, cwd):
 
 
 def pending(commits):
-    return [commit for commit in commits if not Path(f"results/{commit}.json").exists()]
+    return [
+        commit
+        for commit in commits
+        if not Path(f"results/data/{commit}.json").exists()
+    ]
 
 
 def bounded_count(value, name, maximum=50):
@@ -123,7 +127,7 @@ def plan():
         return historic_range(from_ref, to_ref, ref, limit)
 
     sha = remote_sha(ref)
-    if Path(f"results/{sha}.json").exists():
+    if Path(f"results/data/{sha}.json").exists():
         return []
     with tempfile.TemporaryDirectory() as clone:
         clone_history(ref, clone)

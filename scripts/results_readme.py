@@ -2,9 +2,9 @@
 
 Usage:
     python scripts/results_readme.py
-    python scripts/results_readme.py --results results/ --out results/COMMITS.md
+    python scripts/results_readme.py --results results/data/ --out results/COMMITS.md
 
-Each `results/<sha>.json` file becomes one row with the commit, its subject,
+Each `results/data/<sha>.json` file becomes one row with the commit, its subject,
 and a relative link to the result file. Rows already present in the index are
 reused, so a run only looks up commits it has not seen. Rows are sorted by the
 first-parent position recorded in each result file, which is Numba's linear
@@ -170,7 +170,9 @@ def generate_readme(result_files, out_path, args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--results", default="results/", help="result JSON directory")
+    parser.add_argument(
+        "--results", default="results/data/", help="result JSON directory"
+    )
     parser.add_argument(
         "--out", default="results/COMMITS.md", help="index path to write"
     )

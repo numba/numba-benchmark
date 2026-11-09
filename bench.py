@@ -2,7 +2,7 @@
 
 Usage:
     python bench.py run --commit SHA --os linux --python 3.13 --numpy 2.2 --out FILE
-    python bench.py merge DIR --out results/
+    python bench.py merge DIR --out results/data/
     python bench.py compare --results results/ --commit SHA
     python bench.py report --results results/ --out site/index.html
     python bench.py summary --results results/ [--commits SHA[,SHA...]]
@@ -476,7 +476,7 @@ def summary_markdown(documents, planned=None, artifact_url=""):
     missing = [sha for sha in planned if sha not in {d["commit"] for d in documents}]
     if missing:
         lines.append(
-            "Missing from results/: " + ", ".join(f"`{sha}`" for sha in missing)
+            "Missing from results/data/: " + ", ".join(f"`{sha}`" for sha in missing)
         )
     lines.append("")
 
