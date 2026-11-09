@@ -35,6 +35,21 @@ def time_call(fn, args, compiled):
     return compile_ns, int(best)
 
 
+def collect_sysinfo():
+    """The `numba --sys-json` payload, or an error record if it cannot be read."""
+    try:
+        from numba.misc.numba_sysinfo import get_sysinfo
+
+        info = get_sysinfo()
+    except Exception as exc:  # sysinfo must never fail a benchmark run
+        return {"error": f"{type(exc).__name__}: {exc}"}
+    for key in ("Start", "Start UTC"):
+        value = info.get(key)
+        if hasattr(value, "isoformat"):
+            info[key] = value.isoformat()
+    return info
+
+
 def run_benchmarks():
     try:
         import llvmlite
@@ -77,5 +92,6 @@ def run_benchmarks():
         "numpy": np.__version__,
         "numba": numba.__version__,
         "llvmlite": llvmlite.__version__,
+        "sysinfo": collect_sysinfo(),
     }
     return rows, skipped, environment
