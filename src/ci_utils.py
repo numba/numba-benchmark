@@ -102,6 +102,24 @@ def historic_range(from_ref, to_ref, ref, limit):
         ], remaining
 
 
+def last_commits(ref, limit):
+    """The newest ``limit`` first-parent commits of ref, oldest first.
+
+    Unlike a backfill this keeps the window fixed: commits that already have
+    results are scheduled again so a rerun measures the same trailing window.
+    The publish step then replaces their stored measurements with the newest
+    ones instead of appending a second record.
+    """
+    with tempfile.TemporaryDirectory() as clone:
+        clone_history(ref, clone)
+        head = git("rev-parse", "--verify", f"{ref}^{{commit}}", cwd=clone)
+        commits = git(
+            "rev-list", "--first-parent", f"--max-count={limit}", head, cwd=clone
+        ).splitlines()
+        commits.reverse()
+        return [(commit, commit_position(commit, cwd=clone)) for commit in commits], 0
+
+
 def cover(count, ref, from_ref="", to_ref=""):
     """Commits an explicit from..to range, or the last count commits of ref."""
     if to_ref and not from_ref:
@@ -189,11 +207,9 @@ def plan_historic():
     ref = (os.environ.get("DISPATCH_REF") or "main").strip()
 
     if last:
-        limit = bounded_count(last, "last")
-        from_ref = ""
-        to_ref = ""
-    else:
-        limit = bounded_count(os.environ.get("DISPATCH_LIMIT") or 10, "limit")
+        return last_commits(ref, bounded_count(last, "last"))
+
+    limit = bounded_count(os.environ.get("DISPATCH_LIMIT") or 10, "limit")
     return historic_range(from_ref, to_ref, ref, limit)
 
 

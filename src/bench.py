@@ -94,15 +94,22 @@ def load_results(directory):
 
 
 def merge_documents(documents):
+    """One record per commit, holding the newest measurement per environment.
+
+    Duplicate documents for the same commit (for example when a commit is
+    benchmarked again) never append a second record: the entry with the newest
+    ``timestamp`` replaces the older one, entries for environments the latest
+    run did not measure are kept, and the record's ``date`` is the newest one
+    seen. Documents are ordered oldest first so ties resolve to the latest.
+    """
     merged = {}
-    for document in documents:
+    for document in sorted(documents, key=document_order):
         commit = document["commit"]
         date = document.get("date", "")
         target = merged.setdefault(
-            commit, {"commit": commit, "date": date, "measurements": {}}
+            commit, {"commit": commit, "date": "", "measurements": {}}
         )
-        if date and (not target["date"] or date < target["date"]):
-            target["date"] = date
+        target["date"] = max(target["date"], date)
         if document.get("position") is not None:
             target.setdefault("position", document["position"])
         for key, entry in document["measurements"].items():

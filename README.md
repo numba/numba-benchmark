@@ -53,7 +53,10 @@ python src/bench.py cases
 `scipy` is needed because Numba's `np.dot` uses BLAS. Numba `main` also needs a
 matching llvmlite dev build; install it from Numba's dev wheel index before
 Numba, as Numba's own CI does. Results are keyed by `os|python|numpy`;
-re-running a key keeps the newest measurement.
+re-running a key keeps the newest measurement. A commit has exactly one
+`results/data/<sha>.json`: benchmarking it again replaces the entries the new
+run measured, keeps entries it did not, and sets the record's date to the
+newest measurement.
 
 `merge`, `compare`, `report`, and `summary` run without numpy or numba.
 `python src/bench.py cases` prints the registry order and, when numba is installed,
@@ -118,10 +121,12 @@ same values to the environment workflow.
   a failed publish or a skipped commit is retried. When more commits are pending
   than the limit, the step summary reports the remainder; rerun to continue.
 - **Historic**: run the *Benchmark historic commits* workflow from the Actions
-  tab. `last` benchmarks the last `N` commits of `ref` (max 50) without needing a
-  hash and takes precedence over `from`/`to`; `from` is exclusive and `to` is
-  inclusive. Leave `from` empty to backfill the last `limit` commits ending at
-  `to` (or at `ref`'s head). If the requested range has more pending commits than
+  tab. `last` benchmarks exactly the last `N` first-parent commits of `ref`
+  (max 50) without needing a hash and takes precedence over `from`/`to`;
+  commits that already have results are measured again and their entries are
+  replaced by the newer data. `from` is exclusive and `to` is inclusive. Leave
+  `from` empty to backfill the last `limit` pending commits ending at `to` (or
+  at `ref`'s head). If the requested range has more pending commits than
   `limit`, the step summary reports the remainder. Results record each commit's
   first-parent `position`, so backfilled commits keep history order on the chart
   even though they are measured concurrently.
