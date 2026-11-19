@@ -248,6 +248,23 @@ function recordFor(meta) {
   return (DATA.machines && DATA.machines[meta.machine]) || null;
 }
 
+function cpuNameFor(env, docIndex) {
+  const record = recordFor(metaFor(env, docIndex));
+  const sysinfo = (record && record.sysinfo) || {};
+  return sysinfo["CPU Name"] || sysinfo["Machine"] || "unknown";
+}
+
+// Lighten/darken a #rrggbb color by percent (-100..100).
+function shadeColor(hex, percent) {
+  const value = parseInt(hex.slice(1), 16);
+  const amount = Math.round(2.55 * percent);
+  const channel = (shift) => Math.min(255, Math.max(0, ((value >> shift) & 0xff) + amount));
+  return `#${((1 << 24) + (channel(16) << 16) + (channel(8) << 8) + channel(0)).toString(16).slice(1)}`;
+}
+
+// Per-CPU variants within one env color; index 0 is the unmodified env color.
+const SHADE_STEPS = [0, -30, 22, -50, 40];
+
 function machineSummary(meta) {
   const record = recordFor(meta);
   const sysinfo = (record && record.sysinfo) || {};
@@ -343,6 +360,7 @@ function tooltipConfig() {
     titleFont: { size: 11 },
     bodyFont: { size: 11 },
     bodySpacing: 3,
+    filter: (context) => !context.dataset.trend,
     callbacks: {
       title(items) {
         if (!items.length) return "";
@@ -364,27 +382,67 @@ function skipReasons(caseId) {
   return reasons;
 }
 
+function legendFilter(item, chartData) {
+  return !chartData.datasets[item.datasetIndex].trend;
+}
+
+// Push a series dataset plus a dotted trend dataset that spans its gaps.
+function pushWithTrend(datasets, dataset) {
+  datasets.push(dataset, Object.assign({}, dataset, {
+    label: `${dataset.label} (trend)`,
+    trend: true,
+    borderDash: [3, 3],
+    borderWidth: 1.5,
+    pointRadius: 0,
+    pointHoverRadius: 0,
+    pointHitRadius: 0,
+    spanGaps: true,
+  }));
+}
+
+function cpuSeries(env, series, indexes) {
+  // Split one env series into per-CPU sub-series, preserving point order.
+  const cpus = [];
+  indexes.forEach((docIndex) => {
+    if (!series[docIndex]) return;
+    const cpu = cpuNameFor(env, docIndex);
+    if (!cpus.includes(cpu)) cpus.push(cpu);
+  });
+  return cpus.map((cpu) => ({
+    cpu,
+    points: indexes.map((docIndex) => {
+      const point = series[docIndex];
+      return point && cpuNameFor(env, docIndex) === cpu ? { env, docIndex, point } : null;
+    }),
+  }));
+}
+
 function miniDatasets(caseId) {
   const datasets = [];
+  const indexes = DATA.labels.map((unused, index) => index);
   DATA.envs.forEach((env, index) => {
     const series = (DATA.data[env] && DATA.data[env][caseId]) || [];
-    const points = series.map((point, docIndex) => (point ? { env, docIndex, point } : null));
-    if (!points.some(Boolean)) return;
+    const groups = cpuSeries(env, series, indexes).filter((group) => group.points.some(Boolean));
     const color = COLORS[index % COLORS.length];
-    datasets.push({
-      label: env,
-      data: series.map((point) => (point ? point.speedup : null)),
-      points,
-      metricKey: "speedup",
-      normalized: false,
-      borderColor: color,
-      backgroundColor: color,
-      borderWidth: 2,
-      pointRadius: 2,
-      pointHoverRadius: 5,
-      pointHitRadius: 6,
-      spanGaps: false,
-      tension: 0.2,
+    groups.forEach((group, groupIndex) => {
+      const shade = groups.length === 1
+        ? color
+        : shadeColor(color, SHADE_STEPS[groupIndex % SHADE_STEPS.length]);
+      pushWithTrend(datasets, {
+        label: groups.length === 1 ? env : `${env} · ${group.cpu}`,
+        data: group.points.map((item) => (item ? item.point.speedup : null)),
+        points: group.points,
+        metricKey: "speedup",
+        normalized: false,
+        borderColor: shade,
+        backgroundColor: shade,
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 5,
+        pointHitRadius: 6,
+        spanGaps: false,
+        tension: 0.2,
+      });
     });
   });
   return datasets;
@@ -399,47 +457,51 @@ function detailDatasets(caseId, state) {
   DATA.envs.forEach((env, colorIndex) => {
     if (!state.envs.has(env)) return;
     const series = (DATA.data[env] && DATA.data[env][caseId]) || [];
-    let refValue = null;
-    if (refIndex !== null) {
-      const refPoint = series[refIndex];
-      refValue = refPoint ? metric.pick(refPoint) : null;
-    }
-    const points = indexes.map((docIndex) => {
-      const point = series[docIndex];
-      return point ? { env, docIndex, point } : null;
-    });
-    if (!points.some(Boolean)) return;
-    const values = points.map((item) => {
-      if (!item) return null;
-      let value = metric.pick(item.point);
-      if (refIndex !== null) {
-        if (!refValue) return null;
-        value /= refValue;
-      }
-      if (state.logScale && !(value > 0)) return null;
-      return value;
-    });
-    const data = state.dateScale
-      ? points.map((item, position) => {
-          const parsed = Date.parse(DATA.dates[indexes[position]] || "");
-          return { x: Number.isNaN(parsed) ? null : parsed, y: values[position] };
-        })
-      : values;
+    const groups = cpuSeries(env, series, indexes).filter((group) => group.points.some(Boolean));
     const color = COLORS[colorIndex % COLORS.length];
-    datasets.push({
-      label: env,
-      data,
-      points,
-      metricKey: state.metric,
-      normalized: refIndex !== null,
-      borderColor: color,
-      backgroundColor: color,
-      borderWidth: 2,
-      pointRadius: 3,
-      pointHoverRadius: 7,
-      pointHitRadius: 8,
-      spanGaps: false,
-      tension: 0.2,
+    groups.forEach((group, groupIndex) => {
+      // Each CPU series is normalized against its own reference point.
+      let refValue = null;
+      if (refIndex !== null) {
+        const refPoint = series[refIndex];
+        refValue = refPoint && cpuNameFor(env, refIndex) === group.cpu
+          ? metric.pick(refPoint)
+          : null;
+      }
+      const values = group.points.map((item) => {
+        if (!item) return null;
+        let value = metric.pick(item.point);
+        if (refIndex !== null) {
+          if (!refValue) return null;
+          value /= refValue;
+        }
+        if (state.logScale && !(value > 0)) return null;
+        return value;
+      });
+      const data = state.dateScale
+        ? group.points.map((item, position) => {
+            const parsed = Date.parse(DATA.dates[indexes[position]] || "");
+            return { x: Number.isNaN(parsed) ? null : parsed, y: values[position] };
+          })
+        : values;
+      const shade = groups.length === 1
+        ? color
+        : shadeColor(color, SHADE_STEPS[groupIndex % SHADE_STEPS.length]);
+      pushWithTrend(datasets, {
+        label: groups.length === 1 ? env : `${env} · ${group.cpu}`,
+        data,
+        points: group.points,
+        metricKey: state.metric,
+        normalized: refIndex !== null,
+        borderColor: shade,
+        backgroundColor: shade,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointHoverRadius: 7,
+        pointHitRadius: 8,
+        spanGaps: false,
+        tension: 0.2,
+      });
     });
   });
   return { datasets, refIndex };
@@ -496,7 +558,7 @@ function detailChartOptions(caseId, state, showPoint) {
       plugins: {
         legend: {
           position: "bottom",
-          labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 } },
+          labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 }, filter: legendFilter },
         },
         tooltip: tooltipConfig(),
       },
@@ -855,7 +917,7 @@ function renderCard(container, caseId) {
         plugins: {
           legend: {
             position: "bottom",
-            labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 } },
+            labels: { boxWidth: 10, usePointStyle: true, font: { size: 11 }, filter: legendFilter },
           },
           tooltip: tooltipConfig(),
         },
